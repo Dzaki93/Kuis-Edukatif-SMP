@@ -660,4 +660,404 @@
       'const QUESTIONS_BANK = ' + safeQuestions + ';\n',
       'const QUIZ_TOTAL_QUESTIONS = 10;\n',
       'const TYPE_LABELS = { pg: "Pilihan Ganda", pg_kompleks: "Pilihan Ganda Kompleks", benar_salah: "Benar / Salah", setuju_tidak: "Setuju / Tidak Setuju", iya_tidak: "Iya / Tidak", essay: "Essay" };\n',
-      'let isStudentQuizActive =
+      'let isStudentQuizActive = false, violationCount = 0, totalPenaltyPoints = 0, activeSessionQuestions = [], currentIdx = 0, score = 0, activeStudent = null, lastSummaryText = "", autoAdvanceTimer = null;\n',
+      'function recordFocusViolation() { if (!isStudentQuizActive || !activeSessionQuestions.length) return; violationCount++; const p = Number((activeSessionQuestions[currentIdx] && activeSessionQuestions[currentIdx].poin) || 100); score -= p; totalPenaltyPoints += p; document.getElementById("score-display").innerText = "Poin: " + score; document.getElementById("violation-badge").innerText = "Keluar: " + violationCount + " (-" + totalPenaltyPoints + " poin)"; document.getElementById("overlay-last-penalty").innerText = "-" + p; document.getElementById("overlay-total-penalty").innerText = "-" + totalPenaltyPoints; document.getElementById("overlay-violation-count").innerText = violationCount; document.getElementById("focus-warning-overlay").classList.add("active"); }\n',
+      'function dismissFocusWarning() { document.getElementById("focus-warning-overlay").classList.remove("active"); requestFullscreenMode(); }\n',
+      'function requestFullscreenMode() { const el = document.documentElement; if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(function(){}); }\n',
+      'function exitFullscreenMode() { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); }\n',
+      'document.addEventListener("visibilitychange", function(){ if (document.hidden && isStudentQuizActive) recordFocusViolation(); });\n',
+      'window.addEventListener("blur", function(){ if (isStudentQuizActive) recordFocusViolation(); });\n',
+      'window.addEventListener("beforeunload", function(e){ if (isStudentQuizActive) { e.preventDefault(); e.returnValue = "Sesi kuis sedang berlangsung."; return e.returnValue; } });\n',
+      'function shuffleArray(arr) { const c = arr.slice(); for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = c[i]; c[i] = c[j]; c[j] = t; } return c; }\n',
+      'function prepareSingleQuestionForStudent(item) { const type = item.type || "pg"; const poin = Number(item.poin) || 100; if (type === "essay") return { type: "essay", q: item.q, essayKey: item.essayKey || "", poin: poin, userAnswer: "", answered: false, earnedScore: 0 }; if (type === "pg_kompleks") { const base = (item.options || []).filter(Boolean); const set = new Set(item.answers || []); const sh = shuffleArray(base.map(function(text, idx){ return { text: text, isCorrect: set.has(idx) }; })); return { type: "pg_kompleks", q: item.q, options: sh.map(function(o){ return o.text; }), answers: sh.map(function(o, i){ return o.isCorrect ? i : -1; }).filter(function(i){ return i !== -1; }), poin: poin, userAnswer: [], answered: false, earnedScore: 0 }; } let opts = (item.options && item.options.length) ? item.options.slice() : ["A", "B", "C", "D"]; const ansIdx = Number(item.answer) || 0; if (type === "benar_salah") opts = ["Benar", "Salah"]; else if (type === "setuju_tidak") opts = ["Setuju", "Tidak Setuju"]; else if (type === "iya_tidak") opts = ["Iya", "Tidak"]; const sh = shuffleArray(opts.map(function(text, idx){ return { text: text, isCorrect: idx === ansIdx }; })); return { type: type, q: item.q, options: sh.map(function(o){ return o.text; }), answer: sh.findIndex(function(o){ return o.isCorrect; }), poin: poin, userAnswer: null, answered: false, earnedScore: 0 }; }\n',
+      'function buildStudentQuizSet(bank) { const sPool = shuffleArray(bank.filter(function(x){ return ["pg", "benar_salah", "setuju_tidak", "iya_tidak"].indexOf(x.type || "pg") !== -1; })); const cPool = shuffleArray(bank.filter(function(x){ return x.type === "pg_kompleks"; })); const ePool = shuffleArray(bank.filter(function(x){ return x.type === "essay"; })); const picked = []; const used = new Set(); function take(pool, cnt) { for (let i = 0; i < pool.length; i++) { if (picked.length >= QUIZ_TOTAL_QUESTIONS || cnt <= 0) break; if (!used.has(pool[i])) { picked.push(pool[i]); used.add(pool[i]); cnt--; } } } take(sPool, 5); take(cPool, 3); take(ePool, 2); if (picked.length < QUIZ_TOTAL_QUESTIONS) { const rem = shuffleArray(bank.filter(function(x){ return !used.has(x); })); for (let i = 0; i < rem.length; i++) { if (picked.length >= QUIZ_TOTAL_QUESTIONS) break; picked.push(rem[i]); used.add(rem[i]); } } return shuffleArray(picked).map(prepareSingleQuestionForStudent); }\n',
+      'function renderQuestionNav() { const grid = document.getElementById("question-nav-grid"); grid.innerHTML = ""; activeSessionQuestions.forEach(function(qItem, idx){ const btn = document.createElement("button"); btn.className = "q-num-btn" + (qItem.answered ? " answered" : "") + (idx === currentIdx ? " current" : ""); btn.innerText = String(idx + 1); btn.onclick = function(){ jumpToQuestion(idx); }; grid.appendChild(btn); }); }\n',
+      'function jumpToQuestion(idx) { if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; } currentIdx = idx; loadQuestion(); }\n',
+      'function recalculateTotalScore() { const sum = activeSessionQuestions.reduce(function(acc, q){ return acc + (q.earnedScore || 0); }, 0); score = sum - totalPenaltyPoints; document.getElementById("score-display").innerText = "Poin: " + score; }\n',
+      'function scheduleNextQuestion() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); autoAdvanceTimer = setTimeout(function(){ if (!isStudentQuizActive) return; if (currentIdx < activeSessionQuestions.length - 1) { currentIdx++; loadQuestion(); } }, 550); }\n',
+      'function loadQuestion() { const qObj = activeSessionQuestions[currentIdx]; renderQuestionNav(); recalculateTotalScore(); document.getElementById("q-type-badge").innerText = (TYPE_LABELS[qObj.type] || "Soal") + " (" + qObj.poin + " poin)"; document.getElementById("q-counter").innerText = "Soal " + (currentIdx + 1) + "/" + activeSessionQuestions.length; document.getElementById("question-text").innerText = qObj.q; const area = document.getElementById("answer-area"); const statusEl = document.getElementById("status-poin"); area.innerHTML = ""; statusEl.innerText = qObj.answered ? "Sudah dijawab. Anda bisa mengganti atau memilih nomor soal lain." : ""; statusEl.style.color = qObj.answered ? "var(--success)" : "var(--muted)"; const labels = ["A", "B", "C", "D"]; if (qObj.type === "essay") { const ta = document.createElement("textarea"); ta.rows = 4; ta.placeholder = "Tulis jawaban uraian Anda di sini..."; ta.value = qObj.userAnswer || ""; const btn = document.createElement("button"); btn.className = "btn btn-primary"; btn.innerText = "Simpan Jawaban & Lanjut"; btn.onclick = function(){ submitEssayAnswer(ta.value); }; area.appendChild(ta); area.appendChild(btn); return; } if (qObj.type === "pg_kompleks") { const grid = document.createElement("div"); grid.className = "options-grid"; const sel = new Set(qObj.userAnswer || []); qObj.options.forEach(function(opt, idx){ const b = document.createElement("button"); b.className = "option-btn" + (sel.has(idx) ? " selected" : ""); b.innerText = (sel.has(idx) ? "[x] " : "[ ] ") + (labels[idx] || (idx + 1)) + ". " + opt; b.onclick = function(){ toggleComplexOption(idx); }; grid.appendChild(b); }); const cBtn = document.createElement("button"); cBtn.className = "btn btn-success"; cBtn.style.marginTop = "14px"; cBtn.innerText = "Konfirmasi Jawaban Kompleks & Lanjut"; cBtn.onclick = function(){ confirmComplexAnswer(); }; area.appendChild(grid); area.appendChild(cBtn); return; } const grid = document.createElement("div"); grid.className = "options-grid"; qObj.options.forEach(function(opt, idx){ const b = document.createElement("button"); b.className = "option-btn" + (qObj.answered && qObj.userAnswer === idx ? " selected" : ""); const pref = qObj.type === "pg" ? ((labels[idx] || (idx + 1)) + ". ") : ""; b.innerText = pref + opt; b.onclick = function(){ selectSingleAnswer(idx); }; grid.appendChild(b); }); area.appendChild(grid); }\n',
+      'function selectSingleAnswer(idx) { const qObj = activeSessionQuestions[currentIdx]; qObj.userAnswer = idx; qObj.answered = true; qObj.earnedScore = (idx === qObj.answer) ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--success)"; st.innerText = "Jawaban tersimpan - mengarah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
+      'function toggleComplexOption(idx) { const qObj = activeSessionQuestions[currentIdx]; const s = new Set(qObj.userAnswer || []); if (s.has(idx)) s.delete(idx); else s.add(idx); qObj.userAnswer = Array.from(s).sort(function(a,b){ return a - b; }); loadQuestion(); }\n',
+      'function confirmComplexAnswer() { const qObj = activeSessionQuestions[currentIdx]; const ch = (qObj.userAnswer || []).slice().sort(function(a,b){ return a - b; }); const ex = (qObj.answers || []).slice().sort(function(a,b){ return a - b; }); if (!ch.length) { alert("Pilih minimal satu jawaban."); return; } const ok = ch.length === ex.length && ch.every(function(v, i){ return v === ex[i]; }); qObj.answered = true; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--success)"; st.innerText = "Jawaban kompleks tersimpan - mengarah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
+      'function submitEssayAnswer(val) { const qObj = activeSessionQuestions[currentIdx]; const cl = String(val || "").trim(); if (!cl) { alert("Silakan isi jawaban essay."); return; } qObj.userAnswer = cl; qObj.answered = true; const kws = (qObj.essayKey || "").split(",").map(function(k){ return k.trim().toLowerCase(); }).filter(Boolean); if (kws.length) { const lo = cl.toLowerCase(); qObj.earnedScore = kws.some(function(kw){ return lo.indexOf(kw) !== -1; }) ? qObj.poin : 0; } else { qObj.earnedScore = cl.length >= 10 ? qObj.poin : 0; } recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--success)"; st.innerText = "Jawaban essay tersimpan - mengarah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
+      'function confirmFinishQuiz() { const unans = activeSessionQuestions.filter(function(q){ return !q.answered; }).length; const msg = unans > 0 ? ("Masih ada " + unans + " soal belum dijawab. Yakin ingin menyelesaikan kuis?") : "Yakin ingin menyelesaikan dan mengumpulkan hasil kuis?"; if (confirm(msg)) finishStudentQuiz(); }\n',
+      'function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); isStudentQuizActive = false; document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const ts = new Date().toLocaleString("id-ID"); lastSummaryText = "REKAP HASIL KUIS SISWA\\nNama: " + activeStudent.fullName + "\\nUsername: " + activeStudent.username + "\\nTerjawab: " + ansCnt + "/" + tot + " soal\\nTotal Poin Akhir: " + score + "\\nKeluar Layar: " + violationCount + " kali (Potongan: -" + totalPenaltyPoints + " poin)\\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (@" + activeStudent.username + ")"; document.getElementById("final-score").innerText = score + " Poin"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Keluar Layar & Potongan:</strong> " + violationCount + " kali (-" + totalPenaltyPoints + " poin)<br><strong>Total Poin Akhir:</strong> " + score + "<br><strong>Waktu Selesai:</strong> " + ts; }\n',
+      'function copyStudentSummary() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastSummaryText).then(function(){ alert("Rekap nilai berhasil disalin!"); }).catch(function(){ prompt("Salin rekap berikut:", lastSummaryText); }); else prompt("Salin rekap berikut:", lastSummaryText); }\n',
+      'function downloadStudentSummary() { const blob = new Blob([lastSummaryText], { type: "text/plain;charset=utf-8;" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "rekap_" + (activeStudent.username || "siswa") + ".txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }\n',
+      'function loginStudent() { const u = document.getElementById("login-username").value.trim(); const p = document.getElementById("login-password").value.trim(); const t = document.getElementById("login-token").value.trim(); const err = document.getElementById("student-login-error"); if (!u || !p || !t) { err.innerText = "Harap isi username, password, dan token!"; return; } if (t.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { err.innerText = "Token kelas tidak valid!"; return; } const f = STUDENTS_DATA.find(function(s){ return s.username.toLowerCase() === u.toLowerCase() && s.password === p; }); if (!f) { err.innerText = "Username atau password siswa salah!"; return; } if (!QUESTIONS_BANK.length) { err.innerText = "Belum ada soal tersedia."; return; } err.innerText = ""; activeStudent = f; currentIdx = 0; score = 0; violationCount = 0; totalPenaltyPoints = 0; isStudentQuizActive = true; requestFullscreenMode(); activeSessionQuestions = buildStudentQuizSet(QUESTIONS_BANK); document.getElementById("start-screen").style.display = "none"; document.getElementById("result-screen").style.display = "none"; document.getElementById("quiz-screen").style.display = "block"; document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName; document.getElementById("violation-badge").innerText = "Keluar: 0 (-0 poin)"; loadQuestion(); }\n',
+      'function logoutStudent() { isStudentQuizActive = false; activeStudent = null; activeSessionQuestions = []; violationCount = 0; totalPenaltyPoints = 0; document.getElementById("login-username").value = ""; document.getElementById("login-password").value = ""; document.getElementById("login-token").value = ""; document.getElementById("result-screen").style.display = "none"; document.getElementById("start-screen").style.display = "block"; }\n',
+      '</' + 'script>\n</body>\n</html>'
+    ];
+
+    triggerDownload("index.html", parts.join(""), "text/html;charset=utf-8;");
+    alert("Berkas 'index.html' (khusus siswa) berhasil diunduh! Silakan unggah ke GitHub untuk memperbarui tautan siswa.");
+  }
+
+  function getSingleChoicesForType(type) {
+    if (type === "benar_salah") return ["Benar", "Salah"];
+    if (type === "setuju_tidak") return ["Setuju", "Tidak Setuju"];
+    if (type === "iya_tidak") return ["Iya", "Tidak"];
+    return [0, 1, 2, 3].map(function(i){
+      const v = document.getElementById("input-opt" + i).value.trim();
+      return v || ("Opsi " + (i + 1));
+    });
+  }
+
+  function handleTypeChange() {
+    const type = document.getElementById("input-type").value;
+    const isMultiChoice = type === "pg" || type === "pg_kompleks";
+    const isComplex = type === "pg_kompleks";
+    const isEssay = type === "essay";
+
+    document.getElementById("multi-options-box").style.display = isMultiChoice ? "grid" : "none";
+    document.getElementById("single-answer-box").style.display = (!isComplex && !isEssay) ? "block" : "none";
+    document.getElementById("complex-answer-box").style.display = isComplex ? "block" : "none";
+    document.getElementById("essay-answer-box").style.display = isEssay ? "block" : "none";
+
+    if (!isComplex && !isEssay) {
+      const sel = document.getElementById("input-single-ans");
+      const prev = sel.value;
+      const choices = getSingleChoicesForType(type);
+      sel.innerHTML = choices.map(function(c, idx){
+        return '<option value="' + idx + '">' + c + '</option>';
+      }).join("");
+      if (prev && Number(prev) < choices.length) sel.value = prev;
+    }
+
+    if (isComplex) {
+      const labels = ["Opsi A", "Opsi B", "Opsi C", "Opsi D"];
+      [0, 1, 2, 3].forEach(function(i){
+        const v = document.getElementById("input-opt" + i).value.trim();
+        document.getElementById("lbl-chk-" + i).innerText = v ? (labels[i] + ": " + v) : labels[i];
+      });
+    }
+  }
+
+  function saveQuestion() {
+    const type = document.getElementById("input-type").value;
+    const q = document.getElementById("input-q").value.trim();
+    const poin = parseInt(document.getElementById("input-poin").value, 10) || 100;
+    const editIdx = parseInt(document.getElementById("edit-index").value, 10);
+
+    if (!q) { alert("Harap isi pertanyaan atau pernyataan!"); return; }
+    const item = { type: type, q: q, poin: poin };
+
+    if (type === "essay") {
+      item.essayKey = document.getElementById("input-essay-key").value.trim();
+    } else if (type === "pg_kompleks") {
+      const opts = [0, 1, 2, 3].map(function(i){ return document.getElementById("input-opt" + i).value.trim(); });
+      if (opts.some(function(o){ return !o; })) { alert("Isi semua opsi A, B, C, D!"); return; }
+      const checked = [0, 1, 2, 3].filter(function(i){ return document.getElementById("chk-ans-" + i).checked; });
+      if (!checked.length) { alert("Pilih minimal satu kunci jawaban benar!"); return; }
+      item.options = opts;
+      item.answers = checked;
+    } else if (type === "pg") {
+      const opts = [0, 1, 2, 3].map(function(i){ return document.getElementById("input-opt" + i).value.trim(); });
+      if (opts.some(function(o){ return !o; })) { alert("Isi semua opsi A, B, C, D!"); return; }
+      item.options = opts;
+      item.answer = parseInt(document.getElementById("input-single-ans").value, 10) || 0;
+    } else {
+      item.options = getSingleChoicesForType(type);
+      item.answer = parseInt(document.getElementById("input-single-ans").value, 10) || 0;
+    }
+
+    if (editIdx === -1) questions.push(item);
+    else questions[editIdx] = item;
+
+    localStorage.setItem(STORAGE_NAMESPACE + "_q", JSON.stringify(questions));
+    clearForm();
+    renderQuestionsList();
+    alert("Soal berhasil disimpan!");
+  }
+
+  function editQuestion(idx) {
+    const item = questions[idx];
+    const type = item.type || "pg";
+    clearForm();
+    document.getElementById("form-title").innerText = "Edit Soal #" + (idx + 1);
+    document.getElementById("edit-index").value = String(idx);
+    document.getElementById("input-type").value = type;
+    document.getElementById("input-poin").value = String(item.poin || 100);
+    document.getElementById("input-q").value = item.q;
+    handleTypeChange();
+
+    if (type === "pg" || type === "pg_kompleks") {
+      (item.options || []).forEach(function(opt, i){
+        const el = document.getElementById("input-opt" + i);
+        if (el) el.value = opt || "";
+      });
+      handleTypeChange();
+    }
+    if (type === "pg_kompleks") {
+      const set = new Set(item.answers || []);
+      [0, 1, 2, 3].forEach(function(i){ document.getElementById("chk-ans-" + i).checked = set.has(i); });
+    } else if (type === "essay") {
+      document.getElementById("input-essay-key").value = item.essayKey || "";
+    } else {
+      document.getElementById("input-single-ans").value = String(item.answer || 0);
+    }
+  }
+
+  function deleteQuestion(idx) {
+    if (confirm("Hapus soal ini?")) {
+      questions.splice(idx, 1);
+      localStorage.setItem(STORAGE_NAMESPACE + "_q", JSON.stringify(questions));
+      renderQuestionsList();
+    }
+  }
+
+  function clearForm() {
+    document.getElementById("form-title").innerText = "Buat Soal Baru";
+    document.getElementById("edit-index").value = "-1";
+    document.getElementById("input-type").value = "pg";
+    document.getElementById("input-poin").value = "100";
+    document.getElementById("input-q").value = "";
+    [0, 1, 2, 3].forEach(function(i){
+      document.getElementById("input-opt" + i).value = "";
+      document.getElementById("chk-ans-" + i).checked = false;
+    });
+    document.getElementById("input-essay-key").value = "";
+    handleTypeChange();
+  }
+
+  function resetDefaultQuestions() {
+    if (confirm("Kembalikan bank soal ke pengaturan bawaan?")) {
+      questions = DEFAULT_QUESTIONS.slice();
+      localStorage.setItem(STORAGE_NAMESPACE + "_q", JSON.stringify(questions));
+      renderQuestionsList();
+    }
+  }
+
+  function renderQuestionsList() {
+    document.getElementById("total-q").innerText = String(questions.length);
+    const container = document.getElementById("questions-list");
+    container.innerHTML = "";
+    const labels = ["A", "B", "C", "D"];
+
+    questions.forEach(function(item, idx){
+      const type = item.type || "pg";
+      let kunciText = "";
+      if (type === "essay") {
+        kunciText = "Kata kunci: <strong>" + (item.essayKey || "(bebas)") + "</strong>";
+      } else if (type === "pg_kompleks") {
+        const kList = (item.answers || []).map(function(i){ return labels[i] || String(i + 1); }).join(", ");
+        kunciText = "Kunci: <strong>" + kList + "</strong>";
+      } else {
+        const ansIdx = item.answer || 0;
+        const optVal = (item.options && item.options[ansIdx]) ? item.options[ansIdx] : (labels[ansIdx] || "A");
+        kunciText = "Kunci: <strong>" + optVal + "</strong>";
+      }
+
+      const div = document.createElement("div");
+      div.className = "question-item";
+      div.innerHTML =
+        "<h4>" + (idx + 1) + ". [" + (TYPE_LABELS[type] || type) + "] " + item.q + "</h4>" +
+        "<small>" + kunciText + " | Bobot & Penalti: <strong>" + (item.poin || 100) + " poin</strong></small>" +
+        '<div class="question-actions">' +
+          '<button class="btn btn-warning btn-sm" onclick="editQuestion(' + idx + ')">Edit</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="deleteQuestion(' + idx + ')">Hapus</button>' +
+        "</div>";
+      container.appendChild(div);
+    });
+  }
+
+  function parseCSVLine(line, delimiter) {
+    const delim = delimiter || ",";
+    const res = [];
+    let cur = "";
+    let quotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (quotes && line[i + 1] === '"') { cur += '"'; i++; }
+        else quotes = !quotes;
+      } else if (ch === delim && !quotes) {
+        res.push(cur.trim());
+        cur = "";
+      } else {
+        cur += ch;
+      }
+    }
+    res.push(cur.trim());
+    return res;
+  }
+
+  function parseSingleAns(raw) {
+    const c = String(raw || "").trim().toUpperCase();
+    if (["A", "0", "BENAR", "SETUJU", "IYA", "YA"].indexOf(c) !== -1) return 0;
+    if (["B", "1", "SALAH", "TIDAK SETUJU", "TIDAK"].indexOf(c) !== -1) return 1;
+    if (["C", "2"].indexOf(c) !== -1) return 2;
+    if (["D", "3"].indexOf(c) !== -1) return 3;
+    return 0;
+  }
+
+  function importStudents(overwrite) {
+    const input = document.getElementById("file-murid-input");
+    const file = input.files[0];
+    if (!file) { alert("Pilih berkas siswa terlebih dahulu!"); return; }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const text = String(e.target.result || "").trim();
+        let parsed = [];
+        if (file.name.toLowerCase().endsWith(".json") || text.startsWith("[")) {
+          const arr = JSON.parse(text);
+          parsed = arr.filter(function(s){ return s && s.username && s.password; }).map(function(s){
+            return {
+              fullName: String(s.fullName || s.nama || s.username).trim(),
+              username: String(s.username).trim(),
+              password: String(s.password).trim()
+            };
+          });
+        } else {
+          const lines = text.split(/\r?\n/).map(function(l){ return l.trim(); }).filter(Boolean);
+          const semiCnt = (lines[0].match(/;/g) || []).length;
+          const commaCnt = (lines[0].match(/,/g) || []).length;
+          const delim = semiCnt > commaCnt ? ";" : ",";
+          lines.forEach(function(line, idx){
+            const cols = parseCSVLine(line, delim);
+            if (idx === 0 && (cols[0] || "").toLowerCase().indexOf("nama") !== -1) return;
+            if (cols.length >= 3 && cols[0] && cols[1] && cols[2]) {
+              parsed.push({ fullName: cols[0], username: cols[1], password: cols[2] });
+            }
+          });
+        }
+
+        if (!parsed.length) { alert("Tidak ada data siswa valid terbaca."); return; }
+        let added = 0;
+        const base = overwrite ? [] : students.slice();
+        const seen = new Set(base.map(function(s){ return s.username.toLowerCase(); }));
+        parsed.forEach(function(s){
+          const k = s.username.toLowerCase();
+          if (!seen.has(k)) { seen.add(k); base.push(s); added++; }
+        });
+        students = base;
+        localStorage.setItem(STORAGE_NAMESPACE + "_stu", JSON.stringify(students));
+        renderStudentsAndToken();
+        input.value = "";
+        alert("Berhasil memasukkan " + added + " akun siswa baru!");
+      } catch (err) {
+        alert("Gagal membaca berkas: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function triggerDownload(filename, content, mime) {
+    const blob = new Blob([content], { type: mime || "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadQuestionTemplate() {
+    const csv =
+      "tipe,pertanyaan,opsiA,opsiB,opsiC,opsiD,kunci,poin\n" +
+      'pg,"Ibu kota Jawa Timur adalah...","Surabaya","Malang","Jember","Madiun","A",100\n' +
+      'pg_kompleks,"Pilih bilangan genap:","2","3","4","5","A|C",120\n' +
+      'benar_salah,"Matahari terbit dari timur.","","","","Benar",100\n' +
+      'setuju_tidak,"Belajar kelompok membantu bertukar pikiran.","","","","Setuju",100\n' +
+      'iya_tidak,"Apakah 9 bilangan prima?","","","","Tidak",100\n' +
+      'essay,"Sebutkan satu fungsi daun!","","","","fotosintesis, bernapas",150';
+    triggerDownload("template_soal_multitipe.csv", csv);
+  }
+
+  function downloadStudentTemplate() {
+    const csv =
+      "nama_lengkap_kelas,username,password\n" +
+      '"Dewi Lestari - VIII A","dewi8a","pass123"\n' +
+      '"Rizky Ramadhan - VIII A","rizky8a","pass123"';
+    triggerDownload("template_data_siswa.csv", csv);
+  }
+
+  function renderStudentsAndToken() {
+    document.getElementById("input-token-aktif").value = activeToken;
+    document.getElementById("current-token-label").innerText = activeToken;
+    document.getElementById("total-students").innerText = String(students.length);
+    const list = document.getElementById("students-list");
+    list.innerHTML = "";
+    students.forEach(function(stu, idx){
+      const div = document.createElement("div");
+      div.className = "item-card";
+      div.innerHTML =
+        "<div><strong>" + stu.fullName + "</strong><br><small>Username: <code>" + stu.username + "</code> | Password: <code>" + stu.password + "</code></small></div>" +
+        '<button class="btn btn-danger btn-sm" onclick="deleteStudent(' + idx + ')">Hapus</button>';
+      list.appendChild(div);
+    });
+  }
+
+  function saveToken() {
+    const val = document.getElementById("input-token-aktif").value.trim().toUpperCase();
+    if (!val) { alert("Token tidak boleh kosong!"); return; }
+    activeToken = val;
+    localStorage.setItem(STORAGE_NAMESPACE + "_token", activeToken);
+    renderStudentsAndToken();
+    alert("Token diperbarui menjadi: " + activeToken);
+  }
+
+  function generateRandomToken() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let res = "";
+    for (let i = 0; i < 6; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+    document.getElementById("input-token-aktif").value = res;
+    saveToken();
+  }
+
+  function addStudent() {
+    const fullName = document.getElementById("stu-fullname").value.trim();
+    const username = document.getElementById("stu-username").value.trim();
+    const password = document.getElementById("stu-password").value.trim();
+    if (!fullName || !username || !password) { alert("Lengkapi semua kolom siswa!"); return; }
+    if (students.some(function(s){ return s.username.toLowerCase() === username.toLowerCase(); })) { alert("Username sudah ada!"); return; }
+    students.push({ fullName: fullName, username: username, password: password });
+    localStorage.setItem(STORAGE_NAMESPACE + "_stu", JSON.stringify(students));
+    document.getElementById("stu-fullname").value = "";
+    document.getElementById("stu-username").value = "";
+    document.getElementById("stu-password").value = "";
+    renderStudentsAndToken();
+  }
+
+  function deleteStudent(idx) {
+    if (confirm("Hapus akun siswa " + students[idx].fullName + "?")) {
+      students.splice(idx, 1);
+      localStorage.setItem(STORAGE_NAMESPACE + "_stu", JSON.stringify(students));
+      renderStudentsAndToken();
+    }
+  }
+
+  function renderResultsTable() {
+    const tbody = document.getElementById("results-tbody");
+    if (!results.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);">Belum ada rekap nilai tersimpan di perangkat ini.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = results.map(function(r, i){
+      return "<tr><td>" + (i + 1) + "</td><td>" + r.fullName + "</td><td><code>" + r.username + "</code></td><td>" + r.answered + "/" + r.total + "</td><td><strong>" + r.score + "</strong></td><td>" + (r.violations || 0) + "x (-" + (r.penalty || 0) + ")</td><td>" + r.time + "</td></tr>";
+    }).join("");
+  }
+
+  function downloadResultsCSV() {
+    if (!results.length) { alert("Belum ada data rekap."); return; }
+    const header = "no,nama_siswa,username,terjawab,total_soal,poin_akhir,keluar_layar,potongan_poin,waktu\n";
+    const rows = results.map(function(r, i){
+      return (i + 1) + ',"' + String(r.fullName).replace(/"/g, '""') + '","' + String(r.username).replace(/"/g, '""') + '",' + r.answered + "," + r.total + "," + r.score + "," + (r.violations || 0) + "," + (r.penalty || 0) + ',"' + String(r.time).replace(/"/g, '""') + '"';
+    }).join("\n");
+    triggerDownload("rekap_nilai_siswa.csv", header + rows);
+  }
+
+  function clearResults() {
+    if (confirm("Hapus semua rekap nilai di perangkat ini?")) {
+      results = [];
+      localStorage.setItem(STORAGE_NAMESPACE + "_res", JSON.stringify(results));
+      renderResultsTable();
+    }
+  }
+</script>
+</body>
+</html>
