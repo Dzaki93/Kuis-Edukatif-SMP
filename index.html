@@ -5,601 +5,252 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal Kuis Edukasi SMP - Halaman Siswa</title>
   <style>
-    :root {
-      --primary: #4f46e5;
-      --primary-dark: #3730a3;
-      --success: #10b981;
-      --danger: #ef4444;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-    }
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body {
-      margin: 0;
-      background: linear-gradient(135deg, #e0e7ff 0%, #cffafe 100%);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 20px;
-    }
-    .container {
-      width: 100%;
-      max-width: 900px;
-      background: var(--card);
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15);
-      overflow: hidden;
-    }
+    :root { --primary: #4f46e5; --primary-dark: #3730a3; --success: #10b981; --danger: #ef4444; --card: #ffffff; --text: #1e293b; --muted: #64748b; }
+    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    body { margin: 0; background: linear-gradient(135deg, #e0e7ff 0%, #cffafe 100%); color: var(--text); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }
+    .container { width: 100%; max-width: 900px; background: var(--card); border-radius: 20px; box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15); overflow: hidden; }
     header { background: var(--primary); color: white; padding: 20px; text-align: center; }
     header h1 { margin: 0; font-size: 1.7rem; }
     header p { margin: 6px 0 0; opacity: 0.92; font-size: 0.92rem; }
     .section { padding: 25px; }
-    .btn {
-      padding: 10px 16px; border: none; border-radius: 10px; font-weight: bold;
-      cursor: pointer; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px;
-    }
+    .btn { padding: 10px 16px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-secondary { background: #e2e8f0; color: var(--text); }
     .btn-sm { padding: 6px 12px; font-size: 0.84rem; }
-    input[type="text"], input[type="password"], textarea {
-      width: 100%; padding: 10px 12px; margin: 6px 0 14px;
-      border: 2px solid #cbd5e1; border-radius: 10px; font-size: 0.96rem;
-    }
-    input:focus, textarea:focus { outline: none; border-color: var(--primary); }
-    .login-box {
-      max-width: 440px; margin: 10px auto; padding: 24px;
-      border: 2px solid #e2e8f0; border-radius: 16px; background: #f8fafc;
-    }
+    input[type="text"], input[type="password"], select, textarea { width: 100%; padding: 10px 12px; margin: 6px 0 14px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 0.96rem; }
+    .login-box { max-width: 440px; margin: 10px auto; padding: 24px; border: 2px solid #e2e8f0; border-radius: 16px; background: #f8fafc; }
     .login-box h3 { margin-top: 0; text-align: center; }
     .error-msg { color: var(--danger); font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; min-height: 20px; text-align: center; }
-    .focus-banner {
-      background: #fef3c7; border: 1px solid #f59e0b; color: #92400e;
-      padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; margin-bottom: 14px;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
-    }
-    .lock-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.92);
-      color: white; z-index: 9999; justify-content: center; align-items: center; padding: 20px; text-align: center;
-    }
+    .focus-banner { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .lock-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.92); color: white; z-index: 9999; justify-content: center; align-items: center; padding: 20px; text-align: center; }
     .lock-overlay.active { display: flex; }
     .lock-modal { max-width: 460px; background: #1e293b; border: 2px solid #ef4444; border-radius: 16px; padding: 24px; }
     .game-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; font-weight: bold; }
     .badge { padding: 7px 14px; border-radius: 20px; background: #e0e7ff; color: var(--primary); font-size: 0.88rem; }
     .badge-warn { background: #fee2e2; color: #991b1b; }
     .badge-type { background: #cffafe; color: #0e7490; }
+    .badge-mapel { background: #dcfce7; color: #166534; }
     .q-nav-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 10px 12px; margin-bottom: 16px; }
     .q-nav-title { font-size: 0.84rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
     .q-nav-grid { display: flex; flex-wrap: wrap; gap: 7px; }
-    .q-num-btn {
-      width: 38px; height: 38px; border-radius: 9px; border: 2px solid #cbd5e1;
-      background: white; color: var(--text); font-weight: bold; cursor: pointer; font-size: 0.9rem;
-    }
+    .q-num-btn { width: 38px; height: 38px; border-radius: 9px; border: 2px solid #cbd5e1; background: white; color: var(--text); font-weight: bold; cursor: pointer; font-size: 0.9rem; }
     .q-num-btn.answered { background: #d1fae5; border-color: var(--success); color: #065f46; }
     .q-num-btn.current { background: var(--primary); border-color: var(--primary-dark); color: white; }
     .question-box { font-size: 1.15rem; font-weight: 600; margin-bottom: 16px; line-height: 1.55; }
     .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
-    .option-btn {
-      padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; background: #f8fafc;
-      text-align: left; font-size: 0.96rem; cursor: pointer; font-weight: 500;
-    }
-    .option-btn:hover { border-color: var(--primary); background: #eef2ff; }
+    .option-btn { padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; background: #f8fafc; text-align: left; font-size: 0.96rem; cursor: pointer; font-weight: 500; }
     .option-btn.selected { border-color: var(--primary); background: #e0e7ff; color: var(--primary-dark); }
     .status-poin { margin-top: 14px; font-weight: bold; min-height: 22px; }
-    .rekap-card {
-      max-width: 540px; margin: 16px auto; background: #f8fafc;
-      border: 2px solid #cbd5e1; border-radius: 14px; padding: 16px; text-align: left; font-size: 0.92rem; line-height: 1.65;
-    }
+    .rekap-card { max-width: 540px; margin: 16px auto; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 14px; padding: 16px; text-align: left; font-size: 0.92rem; line-height: 1.65; }
     .action-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
   </style>
 </head>
 <body>
-
-<div id="focus-warning-overlay" class="lock-overlay">
-  <div class="lock-modal">
-    <h3 style="margin-top: 0; color: #fca5a5;">⚠️ Pelanggaran Fokus Terdeteksi!</h3>
-    <p style="font-size: 0.95rem; line-height: 1.55;">
-      Anda terdeteksi keluar layar atau berpindah aplikasi/tab saat kuis berlangsung.<br>
-      Potongan poin kali ini: <strong id="overlay-last-penalty" style="color: #fca5a5;">0</strong> poin<br>
-      Total potongan poin: <strong id="overlay-total-penalty" style="color: #fca5a5;">0</strong> poin<br>
-      Jumlah keluar layar: <strong id="overlay-violation-count">0</strong> kali
-    </p>
-    <button class="btn btn-danger" style="width: 100%; justify-content: center;" onclick="dismissFocusWarning()">Kembali ke Soal Kuis</button>
-  </div>
-</div>
-
-<div class="container">
-  <header>
-    <h1>🎓 Portal Kuis Edukasi SMP</h1>
-    <p>10 Soal Acak per Siswa • Navigasi Soal Bebas • Penalti Poin Keluar Layar</p>
-  </header>
-
-  <div class="section">
-    <div id="start-screen" class="login-box">
-      <h3>🔑 Login Siswa</h3>
-      <label>Username:</label>
-      <input type="text" id="login-username" placeholder="Masukkan username siswa" />
-      <label>Password:</label>
-      <input type="password" id="login-password" placeholder="Masukkan password siswa" />
-      <label>Token Kelas / Ujian:</label>
-      <input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key==='Enter') loginStudent()" />
-      <div class="error-msg" id="student-login-error"></div>
-      <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="loginStudent()">Masuk &amp; Mulai Kuis (10 Soal) ▶️</button>
-    </div>
-
-    <div id="quiz-screen" style="display: none;">
-      <div class="focus-banner">
-        <span>🔒 <strong>Mode Fokus Aktif:</strong> Keluar layar memotong poin sesuai bobot soal aktif!</span>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">⛶ Layar Penuh</button>
-          <button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">✅ Selesaikan Kuis</button>
-        </div>
-      </div>
-
-      <div class="game-header">
-        <span class="badge" id="student-badge">Siswa: -</span>
-        <span class="badge badge-type" id="q-type-badge">Tipe: -</span>
-        <span class="badge" id="q-counter">Soal 1/10</span>
-        <span class="badge" id="score-display">Poin: 0</span>
-        <span class="badge badge-warn" id="violation-badge">Keluar: 0 (-0 poin)</span>
-      </div>
-
-      <div class="q-nav-box">
-        <div class="q-nav-title">📌 Menu Nomor Soal (Klik nomor mana saja untuk mengerjakan soal yang mudah lebih dulu):</div>
-        <div class="q-nav-grid" id="question-nav-grid"></div>
-      </div>
-
-      <div class="question-box" id="question-text">Memuat soal...</div>
-      <div id="answer-area"></div>
-      <div class="status-poin" id="status-poin"></div>
-    </div>
-
-    <div id="result-screen" style="display: none; text-align: center;">
-      <h2>🎉 Kuis Selesai!</h2>
-      <p id="final-player" style="font-size: 1.15rem; font-weight: bold;"></p>
-      <p>Total Poin Akhir:</p>
-      <h1 id="final-score" style="color: var(--primary); font-size: 3rem; margin: 10px 0 12px;">0</h1>
-      <div class="rekap-card" id="student-summary-box"></div>
-      <div class="action-row">
-        <button class="btn btn-success" onclick="copyStudentSummary()">📋 Salin Rekap Nilai</button>
-        <button class="btn btn-secondary" onclick="downloadStudentSummary()">⬇️ Unduh Bukti (.TXT)</button>
-      </div>
-      <div class="action-row" style="margin-top: 22px;">
-        <button class="btn btn-primary" onclick="logoutStudent()">Selesai &amp; Kembali ke Login 🔄</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+<div id="focus-warning-overlay" class="lock-overlay"><div class="lock-modal"><h3 style="margin-top:0;color:#fca5a5;">Pelanggaran Fokus Terdeteksi!</h3><p style="font-size:0.95rem;line-height:1.55;">Potongan poin kali ini: <strong id="overlay-last-penalty">0</strong><br>Total potongan poin: <strong id="overlay-total-penalty">0</strong><br>Jumlah keluar layar: <strong id="overlay-violation-count">0</strong></p><button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="dismissFocusWarning()">Kembali ke Soal Kuis</button></div></div>
+<div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Soal Sesuai Kelas & Mapel - Navigasi Soal Bebas - Penalti Poin Keluar Layar</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas:</label><input type="text" id="login-kelas" placeholder="Contoh: VIII A" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key==='Enter') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif:</strong> Keluar layar memotong poin sesuai bobot soal aktif!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/10</span><span class="badge" id="score-display">Poin: 0</span><span class="badge badge-warn" id="violation-badge">Keluar: 0 (-0 poin)</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk mengerjakan soal yang mudah lebih dulu):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Kuis Selesai!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p>Total Poin Akhir:</p><h1 id="final-score" style="color:var(--primary);font-size:3rem;margin:10px 0 12px;">0</h1><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Rekap Nilai</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>
 <script>
-  const ACTIVE_TOKEN = "SMP2026";
-  const STUDENTS_DATA = [
-    { fullName: "Budi Santoso - VIII A", username: "budi", password: "123" },
-    { fullName: "Siti Aminah - VIII A", username: "siti", password: "123" },
-    { fullName: "Andi Pratama - VIII B", username: "andi", password: "123" }
-  ];
-  const QUESTIONS_BANK = [
-    { type: "pg", q: "Bagian sel tumbuhan yang berfungsi sebagai tempat berlangsungnya fotosintesis adalah...", options: ["Mitokondria", "Kloroplas", "Ribosom", "Vakuola"], answer: 1, poin: 100 },
-    { type: "pg", q: "Majas yang membandingkan benda mati seolah-olah memiliki sifat seperti manusia disebut...", options: ["Hiperbola", "Metafora", "Personifikasi", "Simile"], answer: 2, poin: 100 },
-    { type: "benar_salah", q: "Air mendidih pada suhu 100°C di tekanan udara normal 1 atm.", options: ["Benar", "Salah"], answer: 0, poin: 100 },
-    { type: "setuju_tidak", q: "Membaca buku setiap hari dapat memperkaya kosakata dan pemahaman bacaan.", options: ["Setuju", "Tidak Setuju"], answer: 0, poin: 100 },
-    { type: "iya_tidak", q: "Apakah angka 17 termasuk bilangan prima?", options: ["Iya", "Tidak"], answer: 0, poin: 100 },
-    { type: "pg", q: "Jika 3x + 5 = 20, maka nilai x adalah...", options: ["3", "4", "5", "6"], answer: 2, poin: 100 },
-    { type: "pg_kompleks", q: "Manakah yang termasuk planet dalam tata surya kita? (Pilih lebih dari satu)", options: ["Merkurius", "Jupiter", "Venus", "Saturnus"], answers: [0, 2], poin: 120 },
-    { type: "pg_kompleks", q: "Pilihlah kalimat yang menggunakan huruf kapital dengan tepat:", options: ["Presiden sedang berkunjung ke Jember.", "Hari senin kami upacara bendera.", "Sungai Brantas mengalir di Jawa Timur.", "Adik membeli buku di Gramedia."], answers: [0, 2, 3], poin: 120 },
-    { type: "pg_kompleks", q: "Bilangan berikut yang merupakan kelipatan 4 adalah...", options: ["12", "18", "24", "30"], answers: [0, 2], poin: 120 },
-    { type: "essay", q: "Jelaskan secara singkat apa yang dimaksud dengan gagasan pokok dalam sebuah paragraf!", essayKey: "gagasan utama, inti, pikiran pokok", poin: 150 },
-    { type: "essay", q: "Sebutkan salah satu manfaat menjaga kebersihan lingkungan sekolah!", essayKey: "sehat, nyaman, bebas penyakit, bersih", poin: 150 }
-  ];
-  const QUIZ_TOTAL_QUESTIONS = 10;
-
-  const TYPE_LABELS = {
-    pg: "Pilihan Ganda",
-    pg_kompleks: "Pilihan Ganda Kompleks",
-    benar_salah: "Benar / Salah",
-    setuju_tidak: "Setuju / Tidak Setuju",
-    iya_tidak: "Iya / Tidak",
-    essay: "Essay"
-  };
-
-  let isStudentQuizActive = false;
-  let violationCount = 0;
-  let totalPenaltyPoints = 0;
-  let activeSessionQuestions = [];
-  let currentIdx = 0;
-  let score = 0;
-  let activeStudent = null;
-  let lastSummaryText = "";
-  let autoAdvanceTimer = null;
-
-  function recordFocusViolation() {
-    if (!isStudentQuizActive || activeSessionQuestions.length === 0) return;
-    violationCount++;
-    const currentQ = activeSessionQuestions[currentIdx] || { poin: 100 };
-    const penalty = Number(currentQ.poin) || 100;
-    score -= penalty;
-    totalPenaltyPoints += penalty;
-    document.getElementById("score-display").innerText = "Poin: " + score;
-    document.getElementById("violation-badge").innerText = "Keluar: " + violationCount + " (-" + totalPenaltyPoints + " poin)";
-    document.getElementById("overlay-last-penalty").innerText = "-" + penalty;
-    document.getElementById("overlay-total-penalty").innerText = "-" + totalPenaltyPoints;
-    document.getElementById("overlay-violation-count").innerText = violationCount;
-    document.getElementById("focus-warning-overlay").classList.add("active");
+const ACTIVE_TOKEN = "SMP2026";
+const STUDENTS_DATA = [
+  {
+    "fullName": "Budi Santoso",
+    "kelas": "VIII A",
+    "username": "budi",
+    "password": "123"
+  },
+  {
+    "fullName": "Siti Aminah",
+    "kelas": "VIII A",
+    "username": "siti",
+    "password": "123"
+  },
+  {
+    "fullName": "Andi Pratama",
+    "kelas": "VIII B",
+    "username": "andi",
+    "password": "123"
   }
-
-  function dismissFocusWarning() {
-    document.getElementById("focus-warning-overlay").classList.remove("active");
-    requestFullscreenMode();
+];
+const QUESTIONS_BANK = [
+  {
+    "kelas": "VIII A",
+    "mapel": "IPA",
+    "type": "pg",
+    "q": "Bagian sel tumbuhan yang berfungsi sebagai tempat berlangsungnya fotosintesis adalah...",
+    "options": [
+      "Mitokondria",
+      "Kloroplas",
+      "Ribosom",
+      "Vakuola"
+    ],
+    "answer": 1,
+    "poin": 100
+  },
+  {
+    "kelas": "VIII A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Majas yang membandingkan benda mati seolah-olah memiliki sifat seperti manusia disebut...",
+    "options": [
+      "Hiperbola",
+      "Metafora",
+      "Personifikasi",
+      "Simile"
+    ],
+    "answer": 2,
+    "poin": 100
+  },
+  {
+    "kelas": "VIII A",
+    "mapel": "IPA",
+    "type": "benar_salah",
+    "q": "Air mendidih pada suhu 100°C di tekanan udara normal 1 atm.",
+    "options": [
+      "Benar",
+      "Salah"
+    ],
+    "answer": 0,
+    "poin": 100
+  },
+  {
+    "kelas": "VIII A",
+    "mapel": "Bahasa Indonesia",
+    "type": "setuju_tidak",
+    "q": "Membaca buku setiap hari dapat memperkaya kosakata dan pemahaman bacaan.",
+    "options": [
+      "Setuju",
+      "Tidak Setuju"
+    ],
+    "answer": 0,
+    "poin": 100
+  },
+  {
+    "kelas": "VIII B",
+    "mapel": "Matematika",
+    "type": "iya_tidak",
+    "q": "Apakah angka 17 termasuk bilangan prima?",
+    "options": [
+      "Iya",
+      "Tidak"
+    ],
+    "answer": 0,
+    "poin": 100
+  },
+  {
+    "kelas": "VIII B",
+    "mapel": "Matematika",
+    "type": "pg",
+    "q": "Jika 3x + 5 = 20, maka nilai x adalah...",
+    "options": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "answer": 2,
+    "poin": 100
+  },
+  {
+    "kelas": "VIII A",
+    "mapel": "IPA",
+    "type": "pg_kompleks",
+    "q": "Manakah yang termasuk planet dalam tata surya kita? (Pilih lebih dari satu)",
+    "options": [
+      "Merkurius",
+      "Jupiter",
+      "Venus",
+      "Saturnus"
+    ],
+    "answers": [
+      0,
+      2
+    ],
+    "poin": 120
+  },
+  {
+    "kelas": "VIII A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg_kompleks",
+    "q": "Pilihlah kalimat yang menggunakan huruf kapital dengan tepat:",
+    "options": [
+      "Presiden sedang berkunjung ke Jember.",
+      "Hari senin kami upacara bendera.",
+      "Sungai Brantas mengalir di Jawa Timur.",
+      "Adik membeli buku di Gramedia."
+    ],
+    "answers": [
+      0,
+      2,
+      3
+    ],
+    "poin": 120
+  },
+  {
+    "kelas": "VIII B",
+    "mapel": "Matematika",
+    "type": "pg_kompleks",
+    "q": "Bilangan berikut yang merupakan kelipatan 4 adalah...",
+    "options": [
+      "12",
+      "18",
+      "24",
+      "30"
+    ],
+    "answers": [
+      0,
+      2
+    ],
+    "poin": 120
+  },
+  {
+    "kelas": "VIII A",
+    "mapel": "Bahasa Indonesia",
+    "type": "essay",
+    "q": "Jelaskan secara singkat apa yang dimaksud dengan gagasan pokok dalam sebuah paragraf!",
+    "essayKey": "gagasan utama, inti, pikiran pokok",
+    "poin": 150
+  },
+  {
+    "kelas": "VIII B",
+    "mapel": "IPA",
+    "type": "essay",
+    "q": "Sebutkan salah satu manfaat menjaga kebersihan lingkungan sekolah!",
+    "essayKey": "sehat, nyaman, bebas penyakit, bersih",
+    "poin": 150
   }
-
-  function requestFullscreenMode() {
-    const el = document.documentElement;
-    if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(() => {});
-  }
-
-  function exitFullscreenMode() {
-    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
-  }
-
-  document.addEventListener("visibilitychange", function() {
-    if (document.hidden && isStudentQuizActive) recordFocusViolation();
-  });
-  window.addEventListener("blur", function() {
-    if (isStudentQuizActive) recordFocusViolation();
-  });
-  window.addEventListener("beforeunload", function(e) {
-    if (isStudentQuizActive) {
-      e.preventDefault();
-      e.returnValue = "Sesi kuis sedang berlangsung.";
-      return e.returnValue;
-    }
-  });
-
-  function shuffleArray(arr) {
-    const copy = [...arr];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  }
-
-  function prepareSingleQuestionForStudent(item) {
-    const type = item.type || "pg";
-    const poin = Number(item.poin) || 100;
-
-    if (type === "essay") {
-      return { type: "essay", q: item.q, essayKey: item.essayKey || "", poin, userAnswer: "", answered: false, earnedScore: 0 };
-    }
-    if (type === "pg_kompleks") {
-      const baseOpts = (item.options || []).filter(Boolean);
-      const correctSet = new Set(item.answers || []);
-      const mapped = baseOpts.map((text, idx) => ({ text, isCorrect: correctSet.has(idx) }));
-      const shuffled = shuffleArray(mapped);
-      return {
-        type: "pg_kompleks",
-        q: item.q,
-        options: shuffled.map(o => o.text),
-        answers: shuffled.map((o, i) => (o.isCorrect ? i : -1)).filter(i => i !== -1),
-        poin,
-        userAnswer: [],
-        answered: false,
-        earnedScore: 0
-      };
-    }
-    let opts = item.options && item.options.length ? [...item.options] : ["A", "B", "C", "D"];
-    let ansIdx = Number(item.answer) || 0;
-    if (type === "benar_salah") opts = ["Benar", "Salah"];
-    else if (type === "setuju_tidak") opts = ["Setuju", "Tidak Setuju"];
-    else if (type === "iya_tidak") opts = ["Iya", "Tidak"];
-    const mapped = opts.map((text, idx) => ({ text, isCorrect: idx === ansIdx }));
-    const shuffled = shuffleArray(mapped);
-    return {
-      type,
-      q: item.q,
-      options: shuffled.map(o => o.text),
-      answer: shuffled.findIndex(o => o.isCorrect),
-      poin,
-      userAnswer: null,
-      answered: false,
-      earnedScore: 0
-    };
-  }
-
-  function buildStudentQuizSet(bank) {
-    const singlePool = shuffleArray(bank.filter(x => ["pg", "benar_salah", "setuju_tidak", "iya_tidak"].includes(x.type || "pg")));
-    const complexPool = shuffleArray(bank.filter(x => x.type === "pg_kompleks"));
-    const essayPool = shuffleArray(bank.filter(x => x.type === "essay"));
-    const picked = [];
-    const usedRef = new Set();
-
-    function takeFromPool(pool, count) {
-      for (const item of pool) {
-        if (picked.length >= QUIZ_TOTAL_QUESTIONS || count <= 0) break;
-        if (!usedRef.has(item)) { picked.push(item); usedRef.add(item); count--; }
-      }
-    }
-
-    takeFromPool(singlePool, 5);
-    takeFromPool(complexPool, 3);
-    takeFromPool(essayPool, 2);
-
-    if (picked.length < QUIZ_TOTAL_QUESTIONS) {
-      for (const item of shuffleArray(bank.filter(x => !usedRef.has(x)))) {
-        if (picked.length >= QUIZ_TOTAL_QUESTIONS) break;
-        picked.push(item);
-        usedRef.add(item);
-      }
-    }
-    return shuffleArray(picked).map(prepareSingleQuestionForStudent);
-  }
-
-  function renderQuestionNav() {
-    const grid = document.getElementById("question-nav-grid");
-    grid.innerHTML = "";
-    activeSessionQuestions.forEach((qItem, idx) => {
-      const btn = document.createElement("button");
-      btn.className = "q-num-btn";
-      if (qItem.answered) btn.classList.add("answered");
-      if (idx === currentIdx) btn.classList.add("current");
-      btn.innerText = idx + 1;
-      btn.onclick = () => jumpToQuestion(idx);
-      grid.appendChild(btn);
-    });
-  }
-
-  function jumpToQuestion(idx) {
-    if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
-    currentIdx = idx;
-    loadQuestion();
-  }
-
-  function recalculateTotalScore() {
-    const earnedSum = activeSessionQuestions.reduce((acc, q) => acc + (q.earnedScore || 0), 0);
-    score = earnedSum - totalPenaltyPoints;
-    document.getElementById("score-display").innerText = "Poin: " + score;
-  }
-
-  function scheduleNextQuestion() {
-    if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
-    autoAdvanceTimer = setTimeout(() => {
-      if (!isStudentQuizActive) return;
-      if (currentIdx < activeSessionQuestions.length - 1) {
-        currentIdx++;
-        loadQuestion();
-      }
-    }, 550);
-  }
-
-  function loadQuestion() {
-    const qObj = activeSessionQuestions[currentIdx];
-    renderQuestionNav();
-    recalculateTotalScore();
-
-    document.getElementById("q-type-badge").innerText = (TYPE_LABELS[qObj.type] || "Soal") + " (" + qObj.poin + " poin)";
-    document.getElementById("q-counter").innerText = "Soal " + (currentIdx + 1) + "/" + activeSessionQuestions.length;
-    document.getElementById("question-text").innerText = qObj.q;
-
-    const area = document.getElementById("answer-area");
-    const statusEl = document.getElementById("status-poin");
-    area.innerHTML = "";
-    statusEl.innerText = qObj.answered ? "Sudah dijawab. Anda bisa mengganti atau memilih nomor soal lain." : "";
-    statusEl.style.color = qObj.answered ? "var(--success)" : "var(--muted)";
-
-    const labels = ["A", "B", "C", "D"];
-
-    if (qObj.type === "essay") {
-      const ta = document.createElement("textarea");
-      ta.rows = 4;
-      ta.placeholder = "Tulis jawaban uraian Anda di sini...";
-      ta.value = qObj.userAnswer || "";
-      const saveBtn = document.createElement("button");
-      saveBtn.className = "btn btn-primary";
-      saveBtn.innerText = "Simpan Jawaban & Lanjut ➡️";
-      saveBtn.onclick = () => submitEssayAnswer(ta.value);
-      area.appendChild(ta);
-      area.appendChild(saveBtn);
-      return;
-    }
-
-    if (qObj.type === "pg_kompleks") {
-      const grid = document.createElement("div");
-      grid.className = "options-grid";
-      const selectedSet = new Set(qObj.userAnswer || []);
-      qObj.options.forEach((opt, idx) => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn" + (selectedSet.has(idx) ? " selected" : "");
-        btn.innerText = (selectedSet.has(idx) ? "☑ " : "☐ ") + (labels[idx] || (idx + 1)) + ". " + opt;
-        btn.onclick = () => toggleComplexOption(idx);
-        grid.appendChild(btn);
-      });
-      const confirmBtn = document.createElement("button");
-      confirmBtn.className = "btn btn-success";
-      confirmBtn.style.marginTop = "14px";
-      confirmBtn.innerText = "Konfirmasi Jawaban Kompleks & Lanjut ➡️";
-      confirmBtn.onclick = () => confirmComplexAnswer();
-      area.appendChild(grid);
-      area.appendChild(confirmBtn);
-      return;
-    }
-
-    const grid = document.createElement("div");
-    grid.className = "options-grid";
-    qObj.options.forEach((opt, idx) => {
-      const btn = document.createElement("button");
-      btn.className = "option-btn" + (qObj.answered && qObj.userAnswer === idx ? " selected" : "");
-      const prefix = qObj.type === "pg" ? ((labels[idx] || (idx + 1)) + ". ") : "";
-      btn.innerText = prefix + opt;
-      btn.onclick = () => selectSingleAnswer(idx);
-      grid.appendChild(btn);
-    });
-    area.appendChild(grid);
-  }
-
-  function selectSingleAnswer(selectedIdx) {
-    const qObj = activeSessionQuestions[currentIdx];
-    qObj.userAnswer = selectedIdx;
-    qObj.answered = true;
-    qObj.earnedScore = selectedIdx === qObj.answer ? qObj.poin : 0;
-    recalculateTotalScore();
-    renderQuestionNav();
-    const statusEl = document.getElementById("status-poin");
-    statusEl.style.color = "var(--success)";
-    statusEl.innerText = "Jawaban tersimpan — mengarah ke soal berikutnya...";
-    scheduleNextQuestion();
-  }
-
-  function toggleComplexOption(idx) {
-    const qObj = activeSessionQuestions[currentIdx];
-    const set = new Set(qObj.userAnswer || []);
-    if (set.has(idx)) set.delete(idx);
-    else set.add(idx);
-    qObj.userAnswer = Array.from(set).sort((a, b) => a - b);
-    loadQuestion();
-  }
-
-  function confirmComplexAnswer() {
-    const qObj = activeSessionQuestions[currentIdx];
-    const chosen = [...(qObj.userAnswer || [])].sort((a, b) => a - b);
-    const expected = [...(qObj.answers || [])].sort((a, b) => a - b);
-    if (chosen.length === 0) { alert("Pilih minimal satu jawaban."); return; }
-    const isExact = chosen.length === expected.length && chosen.every((v, i) => v === expected[i]);
-    qObj.answered = true;
-    qObj.earnedScore = isExact ? qObj.poin : 0;
-    recalculateTotalScore();
-    renderQuestionNav();
-    const statusEl = document.getElementById("status-poin");
-    statusEl.style.color = "var(--success)";
-    statusEl.innerText = "Jawaban kompleks tersimpan — mengarah ke soal berikutnya...";
-    scheduleNextQuestion();
-  }
-
-  function submitEssayAnswer(textVal) {
-    const qObj = activeSessionQuestions[currentIdx];
-    const clean = textVal.trim();
-    if (!clean) { alert("Silakan isi jawaban essay."); return; }
-    qObj.userAnswer = clean;
-    qObj.answered = true;
-    const keywords = (qObj.essayKey || "").split(",").map(k => k.trim().toLowerCase()).filter(Boolean);
-    if (keywords.length > 0) {
-      const lower = clean.toLowerCase();
-      qObj.earnedScore = keywords.some(kw => lower.includes(kw)) ? qObj.poin : 0;
-    } else {
-      qObj.earnedScore = clean.length >= 10 ? qObj.poin : 0;
-    }
-    recalculateTotalScore();
-    renderQuestionNav();
-    const statusEl = document.getElementById("status-poin");
-    statusEl.style.color = "var(--success)";
-    statusEl.innerText = "Jawaban essay tersimpan — mengarah ke soal berikutnya...";
-    scheduleNextQuestion();
-  }
-
-  function confirmFinishQuiz() {
-    const unanswered = activeSessionQuestions.filter(q => !q.answered).length;
-    const msg = unanswered > 0
-      ? "Masih ada " + unanswered + " soal belum dijawab. Yakin ingin menyelesaikan kuis?"
-      : "Yakin ingin menyelesaikan dan mengumpulkan hasil kuis?";
-    if (confirm(msg)) finishStudentQuiz();
-  }
-
-  function finishStudentQuiz() {
-    if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
-    isStudentQuizActive = false;
-    document.getElementById("focus-warning-overlay").classList.remove("active");
-    exitFullscreenMode();
-    recalculateTotalScore();
-
-    const answeredCount = activeSessionQuestions.filter(q => q.answered).length;
-    const totalSoal = activeSessionQuestions.length;
-    const timestamp = new Date().toLocaleString("id-ID");
-
-    lastSummaryText =
-      "REKAP HASIL KUIS SISWA\n" +
-      "Nama: " + activeStudent.fullName + "\n" +
-      "Username: " + activeStudent.username + "\n" +
-      "Terjawab: " + answeredCount + "/" + totalSoal + " soal\n" +
-      "Total Poin Akhir: " + score + "\n" +
-      "Keluar Layar: " + violationCount + " kali (Potongan: -" + totalPenaltyPoints + " poin)\n" +
-      "Waktu: " + timestamp;
-
-    document.getElementById("quiz-screen").style.display = "none";
-    document.getElementById("result-screen").style.display = "block";
-    document.getElementById("final-player").innerText = activeStudent.fullName + " (@" + activeStudent.username + ")";
-    document.getElementById("final-score").innerText = score + " Poin";
-    document.getElementById("student-summary-box").innerHTML =
-      "<strong>Nama:</strong> " + activeStudent.fullName + "<br>" +
-      "<strong>Username:</strong> " + activeStudent.username + "<br>" +
-      "<strong>Soal Terjawab:</strong> " + answeredCount + " dari " + totalSoal + " soal<br>" +
-      "<strong>Keluar Layar &amp; Potongan:</strong> " + violationCount + " kali (-" + totalPenaltyPoints + " poin)<br>" +
-      "<strong>Total Poin Akhir:</strong> " + score + "<br>" +
-      "<strong>Waktu Selesai:</strong> " + timestamp;
-  }
-
-  function copyStudentSummary() {
-    navigator.clipboard.writeText(lastSummaryText).then(() => alert("Rekap nilai berhasil disalin!"))
-      .catch(() => prompt("Salin rekap berikut:", lastSummaryText));
-  }
-
-  function downloadStudentSummary() {
-    const blob = new Blob([lastSummaryText], { type: "text/plain;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "rekap_" + (activeStudent.username || "siswa") + ".txt";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function loginStudent() {
-    const uname = document.getElementById("login-username").value.trim();
-    const pass = document.getElementById("login-password").value.trim();
-    const token = document.getElementById("login-token").value.trim();
-    const errEl = document.getElementById("student-login-error");
-
-    if (!uname || !pass || !token) { errEl.innerText = "Harap isi username, password, dan token!"; return; }
-    if (token.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { errEl.innerText = "Token kelas tidak valid!"; return; }
-    const found = STUDENTS_DATA.find(s => s.username.toLowerCase() === uname.toLowerCase() && s.password === pass);
-    if (!found) { errEl.innerText = "Username atau password siswa salah!"; return; }
-    if (!QUESTIONS_BANK.length) { errEl.innerText = "Belum ada soal tersedia."; return; }
-
-    errEl.innerText = "";
-    activeStudent = found;
-    currentIdx = 0;
-    score = 0;
-    violationCount = 0;
-    totalPenaltyPoints = 0;
-    isStudentQuizActive = true;
-    requestFullscreenMode();
-    activeSessionQuestions = buildStudentQuizSet(QUESTIONS_BANK);
-
-    document.getElementById("start-screen").style.display = "none";
-    document.getElementById("result-screen").style.display = "none";
-    document.getElementById("quiz-screen").style.display = "block";
-    document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName;
-    document.getElementById("violation-badge").innerText = "Keluar: 0 (-0 poin)";
-    loadQuestion();
-  }
-
-  function logoutStudent() {
-    isStudentQuizActive = false;
-    activeStudent = null;
-    activeSessionQuestions = [];
-    violationCount = 0;
-    totalPenaltyPoints = 0;
-    document.getElementById("login-username").value = "";
-    document.getElementById("login-password").value = "";
-    document.getElementById("login-token").value = "";
-    document.getElementById("result-screen").style.display = "none";
-    document.getElementById("start-screen").style.display = "block";
-  }
+];
+const QUIZ_TOTAL_QUESTIONS = 10;
+const TYPE_LABELS = { pg: "Pilihan Ganda", pg_kompleks: "Pilihan Ganda Kompleks", benar_salah: "Benar / Salah", setuju_tidak: "Setuju / Tidak Setuju", iya_tidak: "Iya / Tidak", essay: "Essay" };
+(function populateMapelSelect(){ const sel = document.getElementById("login-mapel"); const set = new Set(QUESTIONS_BANK.map(function(q){ return (q.mapel || "").trim(); }).filter(Boolean)); Array.from(set).sort().forEach(function(m){ const opt = document.createElement("option"); opt.value = m; opt.textContent = m; sel.appendChild(opt); }); })();
+let isStudentQuizActive = false, violationCount = 0, totalPenaltyPoints = 0, activeSessionQuestions = [], currentIdx = 0, score = 0, activeStudent = null, activeKelas = "", activeMapel = "", lastSummaryText = "", autoAdvanceTimer = null;
+function recordFocusViolation() { if (!isStudentQuizActive || !activeSessionQuestions.length) return; violationCount++; const p = Number((activeSessionQuestions[currentIdx] && activeSessionQuestions[currentIdx].poin) || 100); score -= p; totalPenaltyPoints += p; document.getElementById("score-display").innerText = "Poin: " + score; document.getElementById("violation-badge").innerText = "Keluar: " + violationCount + " (-" + totalPenaltyPoints + " poin)"; document.getElementById("overlay-last-penalty").innerText = "-" + p; document.getElementById("overlay-total-penalty").innerText = "-" + totalPenaltyPoints; document.getElementById("overlay-violation-count").innerText = violationCount; document.getElementById("focus-warning-overlay").classList.add("active"); }
+function dismissFocusWarning() { document.getElementById("focus-warning-overlay").classList.remove("active"); requestFullscreenMode(); }
+function requestFullscreenMode() { const el = document.documentElement; if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(function(){}); }
+function exitFullscreenMode() { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); }
+document.addEventListener("visibilitychange", function(){ if (document.hidden && isStudentQuizActive) recordFocusViolation(); });
+window.addEventListener("blur", function(){ if (isStudentQuizActive) recordFocusViolation(); });
+window.addEventListener("beforeunload", function(e){ if (isStudentQuizActive) { e.preventDefault(); e.returnValue = "Sesi kuis sedang berlangsung."; return e.returnValue; } });
+function shuffleArray(arr) { const c = arr.slice(); for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = c[i]; c[i] = c[j]; c[j] = t; } return c; }
+function filterBankByKelasAndMapel(bank, kelasInput, mapelInput) { const kNorm = String(kelasInput || "").trim().toLowerCase(); const mNorm = String(mapelInput || "").trim().toLowerCase(); const byKelas = bank.filter(function(q){ const qk = String(q.kelas || "semua").trim().toLowerCase(); return !kNorm || qk === "semua" || qk === kNorm; }); const poolKelas = byKelas.length ? byKelas : bank; if (!mNorm) return poolKelas; const byMapel = poolKelas.filter(function(q){ return String(q.mapel || "").trim().toLowerCase() === mNorm; }); return byMapel.length ? byMapel : poolKelas; }
+function prepareSingleQuestionForStudent(item) { const type = item.type || "pg"; const poin = Number(item.poin) || 100; const mapel = item.mapel || "Umum"; const kelas = item.kelas || "Semua"; if (type === "essay") return { type: "essay", kelas: kelas, mapel: mapel, q: item.q, essayKey: item.essayKey || "", poin: poin, userAnswer: "", answered: false, earnedScore: 0 }; if (type === "pg_kompleks") { const base = (item.options || []).filter(Boolean); const set = new Set(item.answers || []); const sh = shuffleArray(base.map(function(text, idx){ return { text: text, isCorrect: set.has(idx) }; })); return { type: "pg_kompleks", kelas: kelas, mapel: mapel, q: item.q, options: sh.map(function(o){ return o.text; }), answers: sh.map(function(o, i){ return o.isCorrect ? i : -1; }).filter(function(i){ return i !== -1; }), poin: poin, userAnswer: [], answered: false, earnedScore: 0 }; } let opts = (item.options && item.options.length) ? item.options.slice() : ["A", "B", "C", "D"]; const ansIdx = Number(item.answer) || 0; if (type === "benar_salah") opts = ["Benar", "Salah"]; else if (type === "setuju_tidak") opts = ["Setuju", "Tidak Setuju"]; else if (type === "iya_tidak") opts = ["Iya", "Tidak"]; const sh = shuffleArray(opts.map(function(text, idx){ return { text: text, isCorrect: idx === ansIdx }; })); return { type: type, kelas: kelas, mapel: mapel, q: item.q, options: sh.map(function(o){ return o.text; }), answer: sh.findIndex(function(o){ return o.isCorrect; }), poin: poin, userAnswer: null, answered: false, earnedScore: 0 }; }
+function buildStudentQuizSet(bank) { const limit = Math.min(QUIZ_TOTAL_QUESTIONS, bank.length); const sPool = shuffleArray(bank.filter(function(x){ return ["pg", "benar_salah", "setuju_tidak", "iya_tidak"].indexOf(x.type || "pg") !== -1; })); const cPool = shuffleArray(bank.filter(function(x){ return x.type === "pg_kompleks"; })); const ePool = shuffleArray(bank.filter(function(x){ return x.type === "essay"; })); const picked = []; const used = new Set(); function take(pool, cnt) { for (let i = 0; i < pool.length; i++) { if (picked.length >= limit || cnt <= 0) break; if (!used.has(pool[i])) { picked.push(pool[i]); used.add(pool[i]); cnt--; } } } take(sPool, 5); take(cPool, 3); take(ePool, 2); if (picked.length < limit) { const rem = shuffleArray(bank.filter(function(x){ return !used.has(x); })); for (let i = 0; i < rem.length; i++) { if (picked.length >= limit) break; picked.push(rem[i]); used.add(rem[i]); } } return shuffleArray(picked).map(prepareSingleQuestionForStudent); }
+function renderQuestionNav() { const grid = document.getElementById("question-nav-grid"); grid.innerHTML = ""; activeSessionQuestions.forEach(function(qItem, idx){ const btn = document.createElement("button"); btn.className = "q-num-btn" + (qItem.answered ? " answered" : "") + (idx === currentIdx ? " current" : ""); btn.innerText = String(idx + 1); btn.onclick = function(){ jumpToQuestion(idx); }; grid.appendChild(btn); }); }
+function jumpToQuestion(idx) { if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; } currentIdx = idx; loadQuestion(); }
+function recalculateTotalScore() { const sum = activeSessionQuestions.reduce(function(acc, q){ return acc + (q.earnedScore || 0); }, 0); score = sum - totalPenaltyPoints; document.getElementById("score-display").innerText = "Poin: " + score; }
+function scheduleNextQuestion() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); autoAdvanceTimer = setTimeout(function(){ if (!isStudentQuizActive) return; if (currentIdx < activeSessionQuestions.length - 1) { currentIdx++; loadQuestion(); } }, 550); }
+function loadQuestion() { const qObj = activeSessionQuestions[currentIdx]; renderQuestionNav(); recalculateTotalScore(); document.getElementById("mapel-badge").innerText = "Mapel: " + (qObj.mapel || activeMapel || "Umum"); document.getElementById("q-type-badge").innerText = (TYPE_LABELS[qObj.type] || "Soal") + " (" + qObj.poin + " poin)"; document.getElementById("q-counter").innerText = "Soal " + (currentIdx + 1) + "/" + activeSessionQuestions.length; document.getElementById("question-text").innerText = qObj.q; const area = document.getElementById("answer-area"); const statusEl = document.getElementById("status-poin"); area.innerHTML = ""; statusEl.innerText = qObj.answered ? "Sudah dijawab. Anda bisa mengganti atau memilih nomor soal lain." : ""; statusEl.style.color = qObj.answered ? "var(--success)" : "var(--muted)"; const labels = ["A", "B", "C", "D"]; if (qObj.type === "essay") { const ta = document.createElement("textarea"); ta.rows = 4; ta.placeholder = "Tulis jawaban uraian Anda di sini..."; ta.value = qObj.userAnswer || ""; const btn = document.createElement("button"); btn.className = "btn btn-primary"; btn.innerText = "Simpan Jawaban & Lanjut"; btn.onclick = function(){ submitEssayAnswer(ta.value); }; area.appendChild(ta); area.appendChild(btn); return; } if (qObj.type === "pg_kompleks") { const grid = document.createElement("div"); grid.className = "options-grid"; const sel = new Set(qObj.userAnswer || []); qObj.options.forEach(function(opt, idx){ const b = document.createElement("button"); b.className = "option-btn" + (sel.has(idx) ? " selected" : ""); b.innerText = (sel.has(idx) ? "[x] " : "[ ] ") + (labels[idx] || (idx + 1)) + ". " + opt; b.onclick = function(){ toggleComplexOption(idx); }; grid.appendChild(b); }); const cBtn = document.createElement("button"); cBtn.className = "btn btn-success"; cBtn.style.marginTop = "14px"; cBtn.innerText = "Konfirmasi Jawaban Kompleks & Lanjut"; cBtn.onclick = function(){ confirmComplexAnswer(); }; area.appendChild(grid); area.appendChild(cBtn); return; } const grid = document.createElement("div"); grid.className = "options-grid"; qObj.options.forEach(function(opt, idx){ const b = document.createElement("button"); b.className = "option-btn" + (qObj.answered && qObj.userAnswer === idx ? " selected" : ""); const pref = qObj.type === "pg" ? ((labels[idx] || (idx + 1)) + ". ") : ""; b.innerText = pref + opt; b.onclick = function(){ selectSingleAnswer(idx); }; grid.appendChild(b); }); area.appendChild(grid); }
+function selectSingleAnswer(idx) { const qObj = activeSessionQuestions[currentIdx]; qObj.userAnswer = idx; qObj.answered = true; qObj.earnedScore = (idx === qObj.answer) ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--success)"; st.innerText = "Jawaban tersimpan - mengarah ke soal berikutnya..."; scheduleNextQuestion(); }
+function toggleComplexOption(idx) { const qObj = activeSessionQuestions[currentIdx]; const s = new Set(qObj.userAnswer || []); if (s.has(idx)) s.delete(idx); else s.add(idx); qObj.userAnswer = Array.from(s).sort(function(a,b){ return a - b; }); loadQuestion(); }
+function confirmComplexAnswer() { const qObj = activeSessionQuestions[currentIdx]; const ch = (qObj.userAnswer || []).slice().sort(function(a,b){ return a - b; }); const ex = (qObj.answers || []).slice().sort(function(a,b){ return a - b; }); if (!ch.length) { alert("Pilih minimal satu jawaban."); return; } const ok = ch.length === ex.length && ch.every(function(v, i){ return v === ex[i]; }); qObj.answered = true; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--success)"; st.innerText = "Jawaban kompleks tersimpan - mengarah ke soal berikutnya..."; scheduleNextQuestion(); }
+function submitEssayAnswer(val) { const qObj = activeSessionQuestions[currentIdx]; const cl = String(val || "").trim(); if (!cl) { alert("Silakan isi jawaban essay."); return; } qObj.userAnswer = cl; qObj.answered = true; const kws = (qObj.essayKey || "").split(",").map(function(k){ return k.trim().toLowerCase(); }).filter(Boolean); if (kws.length) { const lo = cl.toLowerCase(); qObj.earnedScore = kws.some(function(kw){ return lo.indexOf(kw) !== -1; }) ? qObj.poin : 0; } else { qObj.earnedScore = cl.length >= 10 ? qObj.poin : 0; } recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--success)"; st.innerText = "Jawaban essay tersimpan - mengarah ke soal berikutnya..."; scheduleNextQuestion(); }
+function confirmFinishQuiz() { const unans = activeSessionQuestions.filter(function(q){ return !q.answered; }).length; const msg = unans > 0 ? ("Masih ada " + unans + " soal belum dijawab. Yakin ingin menyelesaikan kuis?") : "Yakin ingin menyelesaikan dan mengumpulkan hasil kuis?"; if (confirm(msg)) finishStudentQuiz(); }
+function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); isStudentQuizActive = false; document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; lastSummaryText = "REKAP HASIL KUIS SISWA\nNama: " + activeStudent.fullName + "\nKelas: " + activeKelas + "\nMapel: " + mapelLabel + "\nUsername: " + activeStudent.username + "\nTerjawab: " + ansCnt + "/" + tot + " soal\nTotal Poin Akhir: " + score + "\nKeluar Layar: " + violationCount + " kali (Potongan: -" + totalPenaltyPoints + " poin)\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " • @" + activeStudent.username + ")"; document.getElementById("final-score").innerText = score + " Poin"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Keluar Layar & Potongan:</strong> " + violationCount + " kali (-" + totalPenaltyPoints + " poin)<br><strong>Total Poin Akhir:</strong> " + score + "<br><strong>Waktu Selesai:</strong> " + ts; }
+function copyStudentSummary() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastSummaryText).then(function(){ alert("Rekap nilai berhasil disalin!"); }).catch(function(){ prompt("Salin rekap berikut:", lastSummaryText); }); else prompt("Salin rekap berikut:", lastSummaryText); }
+function downloadStudentSummary() { const blob = new Blob([lastSummaryText], { type: "text/plain;charset=utf-8;" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "rekap_" + (activeStudent.username || "siswa") + ".txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+function loginStudent() { const u = document.getElementById("login-username").value.trim(); const p = document.getElementById("login-password").value.trim(); const k = document.getElementById("login-kelas").value.trim(); const m = document.getElementById("login-mapel").value.trim(); const t = document.getElementById("login-token").value.trim(); const err = document.getElementById("student-login-error"); if (!u || !p || !k || !t) { err.innerText = "Harap isi username, password, kelas, dan token!"; return; } if (t.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { err.innerText = "Token kelas tidak valid!"; return; } const f = STUDENTS_DATA.find(function(s){ return s.username.toLowerCase() === u.toLowerCase() && s.password === p; }); if (!f) { err.innerText = "Username atau password siswa salah!"; return; } if (f.kelas && f.kelas.trim().toLowerCase() !== k.toLowerCase()) { err.innerText = "Kelas tidak sesuai dengan akun terdaftar (" + f.kelas + ")!"; return; } const filteredBank = filterBankByKelasAndMapel(QUESTIONS_BANK, k, m); if (!filteredBank.length) { err.innerText = "Belum ada soal tersedia."; return; } err.innerText = ""; activeStudent = f; activeKelas = f.kelas || k; activeMapel = m || "Semua Mapel"; currentIdx = 0; score = 0; violationCount = 0; totalPenaltyPoints = 0; isStudentQuizActive = true; requestFullscreenMode(); activeSessionQuestions = buildStudentQuizSet(filteredBank); document.getElementById("start-screen").style.display = "none"; document.getElementById("result-screen").style.display = "none"; document.getElementById("quiz-screen").style.display = "block"; document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName + " (" + activeKelas + ")"; document.getElementById("mapel-badge").innerText = "Mapel: " + activeMapel; document.getElementById("violation-badge").innerText = "Keluar: 0 (-0 poin)"; loadQuestion(); }
+function logoutStudent() { isStudentQuizActive = false; activeStudent = null; activeKelas = ""; activeMapel = ""; activeSessionQuestions = []; violationCount = 0; totalPenaltyPoints = 0; document.getElementById("login-username").value = ""; document.getElementById("login-password").value = ""; document.getElementById("login-kelas").value = ""; document.getElementById("login-token").value = ""; document.getElementById("result-screen").style.display = "none"; document.getElementById("start-screen").style.display = "block"; }
 </script>
 </body>
 </html>
