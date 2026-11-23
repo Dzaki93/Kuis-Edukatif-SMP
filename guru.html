@@ -33,7 +33,7 @@
 
     .container {
       width: 100%;
-      max-width: 940px;
+      max-width: 960px;
       background: var(--card);
       border-radius: 20px;
       box-shadow: 0 15px 35px rgba(15, 23, 42, 0.14);
@@ -151,6 +151,13 @@
       display: none;
     }
 
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+    @media (max-width: 720px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+
     .checkbox-group {
       display: flex;
       gap: 14px;
@@ -171,6 +178,22 @@
       margin: 0;
     }
 
+    .meta-pill {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .meta-pill-mapel {
+      background: #dcfce7;
+      color: #166534;
+    }
+
     .question-item {
       border: 1px solid #cbd5e1;
       padding: 14px;
@@ -179,7 +202,7 @@
       background: #f8fafc;
     }
 
-    .question-item h4 { margin: 0 0 6px; }
+    .question-item h4 { margin: 6px 0; }
     .question-actions { margin-top: 10px; display: flex; gap: 8px; }
 
     .item-card {
@@ -210,7 +233,7 @@
 <div class="container">
   <header>
     <h1>🛠️ Panel Guru — Manajemen Kuis SMP</h1>
-    <p>Halaman Khusus Guru • Unggah Semua Format File (PDF, Word, CSV, TXT, JSON) • Generate <code>index.html</code></p>
+    <p>Filter Kelas &amp; Mapel • Unggah Semua Format (PDF, Word, CSV, TXT, JSON) • Generate <code>index.html</code></p>
   </header>
 
   <div class="section">
@@ -235,21 +258,29 @@
       <div class="publish-banner">
         <div>
           <h4>📦 Siap Update Link Siswa Tanpa Ngoding?</h4>
-          <p>Unduh berkas <code>index.html</code> (halaman khusus siswa) yang sudah memuat soal, data siswa, dan token terbaru Anda.</p>
+          <p>Unduh berkas <code>index.html</code> (halaman khusus siswa) yang sudah memuat soal (per kelas &amp; mapel), data siswa, dan token terbaru.</p>
         </div>
         <button class="btn btn-success" onclick="downloadStudentIndexHTML()">⬇️ Unduh index.html (Khusus Siswa)</button>
       </div>
 
       <div id="panel-soal">
-        <!-- BAGIAN UNGGAH SEMUA FORMAT FILE (TERMASUK PDF & WORD) -->
         <div class="import-card">
-          <h4>📥 Unggah Berkas Soal &amp; Jawaban (Semua Format Diizinkan: PDF, Word, CSV, TXT, JSON, dll.)</h4>
+          <h4>📥 Unggah Berkas Soal &amp; Jawaban (Semua Format Diizinkan: PDF, Word, CSV, TXT, JSON)</h4>
           <p>
-            Semua berkas diizinkan dipilih. Format CSV/TXT terstruktur:
-            <code>tipe,pertanyaan,opsiA,opsiB,opsiC,opsiD,kunci,poin</code>
-            (Tipe: <code>pg</code>, <code>pg_kompleks</code>, <code>benar_salah</code>, <code>setuju_tidak</code>, <code>iya_tidak</code>, <code>essay</code>).
-            Untuk berkas <strong>PDF</strong> atau <strong>Word (.docx/.doc)</strong>, sistem akan mengekstrak teksnya agar bisa diproses menjadi soal atau disalin ke form di bawah.
+            Pilih <strong>Kelas</strong> dan <strong>Mapel</strong> default untuk soal yang diunggah (jika tidak diisi di kolom file).
+            Format CSV/TXT: <code>kelas,mapel,tipe,pertanyaan,opsiA,opsiB,opsiC,opsiD,kunci,poin</code>.
           </p>
+          <div class="grid-2">
+            <div>
+              <label>Kelas Default Unggahan:</label>
+              <input type="text" id="upload-default-kelas" value="VIII A" placeholder="Contoh: VII A, VIII A, IX B, atau Semua" />
+            </div>
+            <div>
+              <label>Mata Pelajaran (Mapel) Default Unggahan:</label>
+              <input type="text" id="upload-default-mapel" value="Bahasa Indonesia" placeholder="Contoh: Bahasa Indonesia, Matematika, IPA" />
+            </div>
+          </div>
+
           <input type="file" id="file-soal-input" accept="*" onchange="handleAnyQuestionFileSelected()" />
           <div id="selected-file-info" style="font-size: 0.86rem; color: #0f172a; margin-bottom: 10px; font-weight: 600;"></div>
 
@@ -271,7 +302,18 @@
         <h3 id="form-title">➕ Buat Soal Baru</h3>
         <input type="hidden" id="edit-index" value="-1" />
 
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+        <div class="grid-2">
+          <div>
+            <label>Kelas Sasaran Soal:</label>
+            <input type="text" id="input-kelas" value="VIII A" placeholder="Contoh: VIII A (atau Semua)" />
+          </div>
+          <div>
+            <label>Mata Pelajaran (Mapel):</label>
+            <input type="text" id="input-mapel" value="Bahasa Indonesia" placeholder="Contoh: Bahasa Indonesia, IPA, IPS" />
+          </div>
+        </div>
+
+        <div class="grid-2">
           <div>
             <label>Jenis / Tipe Soal:</label>
             <select id="input-type" onchange="handleTypeChange()">
@@ -292,7 +334,7 @@
         <label>Pertanyaan / Pernyataan:</label>
         <textarea id="input-q" rows="2" placeholder="Tulis pertanyaan atau pernyataan untuk siswa..."></textarea>
 
-        <div id="multi-options-box" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div id="multi-options-box" class="grid-2">
           <div>
             <label>Opsi A:</label>
             <input type="text" id="input-opt0" placeholder="Pilihan A" />
@@ -338,7 +380,14 @@
         </div>
 
         <hr style="margin: 24px 0; border: 0; border-top: 1px solid #cbd5e1;" />
-        <h4>📋 Bank Soal Aktif (<span id="total-q">0</span> soal)</h4>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+          <h4 style="margin: 0;">📋 Bank Soal Aktif (<span id="total-q">0</span> soal)</h4>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <input type="text" id="filter-q-kelas" style="width: 140px; margin: 0; padding: 6px 10px;" placeholder="Filter Kelas..." oninput="renderQuestionsList()" />
+            <input type="text" id="filter-q-mapel" style="width: 170px; margin: 0; padding: 6px 10px;" placeholder="Filter Mapel..." oninput="renderQuestionsList()" />
+          </div>
+        </div>
         <div id="questions-list"></div>
       </div>
 
@@ -357,7 +406,7 @@
 
         <div class="import-card">
           <h4>📥 Upload Berkas Data Siswa (Semua Format Diizinkan)</h4>
-          <p>Format CSV/TXT: <code>nama_lengkap_kelas,username,password</code>.</p>
+          <p>Format CSV/TXT: <code>nama_lengkap,kelas,username,password</code> (kompatibel juga dengan 3 kolom <code>nama_kelas,username,password</code>).</p>
           <input type="file" id="file-murid-input" accept="*" />
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button class="btn btn-success btn-sm" onclick="importStudents(false)">➕ Gabungkan ke Data Siswa</button>
@@ -367,10 +416,14 @@
         </div>
 
         <h3>➕ Tambah Akun Siswa Manual</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div class="grid-4">
           <div>
-            <label>Nama Lengkap / Kelas:</label>
-            <input type="text" id="stu-fullname" placeholder="Contoh: Ahmad - VIII A" />
+            <label>Nama Lengkap:</label>
+            <input type="text" id="stu-fullname" placeholder="Contoh: Ahmad" />
+          </div>
+          <div>
+            <label>Kelas Siswa:</label>
+            <input type="text" id="stu-kelas" placeholder="Contoh: VIII A" />
           </div>
           <div>
             <label>Username Login:</label>
@@ -383,8 +436,11 @@
         </div>
         <button class="btn btn-primary" onclick="addStudent()">Tambah Akun Siswa</button>
 
-        <h4 style="margin-top: 22px;">👥 Daftar Akun Siswa Terdaftar (<span id="total-students">0</span>)</h4>
-        <div id="students-list"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 22px;">
+          <h4 style="margin: 0;">👥 Daftar Akun Siswa Terdaftar (<span id="total-students">0</span>)</h4>
+          <input type="text" id="filter-stu-kelas" style="width: 170px; margin: 0; padding: 6px 10px;" placeholder="Filter Kelas Siswa..." oninput="renderStudentsAndToken()" />
+        </div>
+        <div id="students-list" style="margin-top: 10px;"></div>
       </div>
 
       <div id="panel-rekap" style="display: none;">
@@ -401,6 +457,8 @@
               <tr>
                 <th>No</th>
                 <th>Nama Siswa</th>
+                <th>Kelas</th>
+                <th>Mapel</th>
                 <th>Username</th>
                 <th>Terjawab</th>
                 <th>Poin Akhir</th>
@@ -423,26 +481,26 @@
   }
 
   const GURU_PASSWORD = "guru123";
-  const STORAGE_NAMESPACE = "smp_quiz_2link_v1";
+  const STORAGE_NAMESPACE = "smp_quiz_2link_v2";
 
   const DEFAULT_TOKEN = "SMP2026";
   const DEFAULT_STUDENTS = [
-    { fullName: "Budi Santoso - VIII A", username: "budi", password: "123" },
-    { fullName: "Siti Aminah - VIII A", username: "siti", password: "123" },
-    { fullName: "Andi Pratama - VIII B", username: "andi", password: "123" }
+    { fullName: "Budi Santoso", kelas: "VIII A", username: "budi", password: "123" },
+    { fullName: "Siti Aminah", kelas: "VIII A", username: "siti", password: "123" },
+    { fullName: "Andi Pratama", kelas: "VIII B", username: "andi", password: "123" }
   ];
   const DEFAULT_QUESTIONS = [
-    { type: "pg", q: "Bagian sel tumbuhan yang berfungsi sebagai tempat berlangsungnya fotosintesis adalah...", options: ["Mitokondria", "Kloroplas", "Ribosom", "Vakuola"], answer: 1, poin: 100 },
-    { type: "pg", q: "Majas yang membandingkan benda mati seolah-olah memiliki sifat seperti manusia disebut...", options: ["Hiperbola", "Metafora", "Personifikasi", "Simile"], answer: 2, poin: 100 },
-    { type: "benar_salah", q: "Air mendidih pada suhu 100°C di tekanan udara normal 1 atm.", options: ["Benar", "Salah"], answer: 0, poin: 100 },
-    { type: "setuju_tidak", q: "Membaca buku setiap hari dapat memperkaya kosakata dan pemahaman bacaan.", options: ["Setuju", "Tidak Setuju"], answer: 0, poin: 100 },
-    { type: "iya_tidak", q: "Apakah angka 17 termasuk bilangan prima?", options: ["Iya", "Tidak"], answer: 0, poin: 100 },
-    { type: "pg", q: "Jika 3x + 5 = 20, maka nilai x adalah...", options: ["3", "4", "5", "6"], answer: 2, poin: 100 },
-    { type: "pg_kompleks", q: "Manakah yang termasuk planet dalam tata surya kita? (Pilih lebih dari satu)", options: ["Merkurius", "Jupiter", "Venus", "Saturnus"], answers: [0, 2], poin: 120 },
-    { type: "pg_kompleks", q: "Pilihlah kalimat yang menggunakan huruf kapital dengan tepat:", options: ["Presiden sedang berkunjung ke Jember.", "Hari senin kami upacara bendera.", "Sungai Brantas mengalir di Jawa Timur.", "Adik membeli buku di Gramedia."], answers: [0, 2, 3], poin: 120 },
-    { type: "pg_kompleks", q: "Bilangan berikut yang merupakan kelipatan 4 adalah...", options: ["12", "18", "24", "30"], answers: [0, 2], poin: 120 },
-    { type: "essay", q: "Jelaskan secara singkat apa yang dimaksud dengan gagasan pokok dalam sebuah paragraf!", essayKey: "gagasan utama, inti, pikiran pokok", poin: 150 },
-    { type: "essay", q: "Sebutkan salah satu manfaat menjaga kebersihan lingkungan sekolah!", essayKey: "sehat, nyaman, bebas penyakit, bersih", poin: 150 }
+    { kelas: "VIII A", mapel: "IPA", type: "pg", q: "Bagian sel tumbuhan yang berfungsi sebagai tempat berlangsungnya fotosintesis adalah...", options: ["Mitokondria", "Kloroplas", "Ribosom", "Vakuola"], answer: 1, poin: 100 },
+    { kelas: "VIII A", mapel: "Bahasa Indonesia", type: "pg", q: "Majas yang membandingkan benda mati seolah-olah memiliki sifat seperti manusia disebut...", options: ["Hiperbola", "Metafora", "Personifikasi", "Simile"], answer: 2, poin: 100 },
+    { kelas: "VIII A", mapel: "IPA", type: "benar_salah", q: "Air mendidih pada suhu 100°C di tekanan udara normal 1 atm.", options: ["Benar", "Salah"], answer: 0, poin: 100 },
+    { kelas: "VIII A", mapel: "Bahasa Indonesia", type: "setuju_tidak", q: "Membaca buku setiap hari dapat memperkaya kosakata dan pemahaman bacaan.", options: ["Setuju", "Tidak Setuju"], answer: 0, poin: 100 },
+    { kelas: "VIII B", mapel: "Matematika", type: "iya_tidak", q: "Apakah angka 17 termasuk bilangan prima?", options: ["Iya", "Tidak"], answer: 0, poin: 100 },
+    { kelas: "VIII B", mapel: "Matematika", type: "pg", q: "Jika 3x + 5 = 20, maka nilai x adalah...", options: ["3", "4", "5", "6"], answer: 2, poin: 100 },
+    { kelas: "VIII A", mapel: "IPA", type: "pg_kompleks", q: "Manakah yang termasuk planet dalam tata surya kita? (Pilih lebih dari satu)", options: ["Merkurius", "Jupiter", "Venus", "Saturnus"], answers: [0, 2], poin: 120 },
+    { kelas: "VIII A", mapel: "Bahasa Indonesia", type: "pg_kompleks", q: "Pilihlah kalimat yang menggunakan huruf kapital dengan tepat:", options: ["Presiden sedang berkunjung ke Jember.", "Hari senin kami upacara bendera.", "Sungai Brantas mengalir di Jawa Timur.", "Adik membeli buku di Gramedia."], answers: [0, 2, 3], poin: 120 },
+    { kelas: "VIII B", mapel: "Matematika", type: "pg_kompleks", q: "Bilangan berikut yang merupakan kelipatan 4 adalah...", options: ["12", "18", "24", "30"], answers: [0, 2], poin: 120 },
+    { kelas: "VIII A", mapel: "Bahasa Indonesia", type: "essay", q: "Jelaskan secara singkat apa yang dimaksud dengan gagasan pokok dalam sebuah paragraf!", essayKey: "gagasan utama, inti, pikiran pokok", poin: 150 },
+    { kelas: "VIII B", mapel: "IPA", type: "essay", q: "Sebutkan salah satu manfaat menjaga kebersihan lingkungan sekolah!", essayKey: "sehat, nyaman, bebas penyakit, bersih", poin: 150 }
   ];
 
   let questions = JSON.parse(localStorage.getItem(STORAGE_NAMESPACE + "_q")) || [...DEFAULT_QUESTIONS];
@@ -543,16 +601,21 @@
     return await file.text();
   }
 
-  function parseQuestionsFromExtractedText(text, fileName) {
+  function parseQuestionsFromExtractedText(text, fileName, defaultKelas, defaultMapel) {
     const trimmed = String(text || "").trim();
     if (!trimmed) return [];
 
+    const kelasFallback = (defaultKelas || "Semua").trim() || "Semua";
+    const mapelFallback = (defaultMapel || "Umum").trim() || "Umum";
     const lowerName = (fileName || "").toLowerCase();
+
     if (lowerName.endsWith(".json") || trimmed.startsWith("[")) {
       const arr = JSON.parse(trimmed);
       if (Array.isArray(arr)) {
         return arr.filter(function(x){ return x && x.q; }).map(function(x){
           return {
+            kelas: String(x.kelas || kelasFallback).trim(),
+            mapel: String(x.mapel || mapelFallback).trim(),
             type: x.type || "pg",
             q: String(x.q).trim(),
             options: Array.isArray(x.options) ? x.options.map(function(o){ return String(o).trim(); }) : ["A", "B", "C", "D"],
@@ -576,23 +639,31 @@
     lines.forEach(function(line, idx){
       const cols = parseCSVLine(line, delim);
       const c0 = (cols[0] || "").toLowerCase();
-      if (idx === 0 && ["tipe", "type", "pertanyaan"].indexOf(c0) !== -1) return;
+      if (idx === 0 && (c0 === "kelas" || c0 === "tipe" || c0 === "type" || c0 === "pertanyaan")) return;
 
-      if (cols.length >= 6 && TYPE_LABELS[c0]) {
-        const q = cols[1] || "";
-        const opts = [cols[2] || "", cols[3] || "", cols[4] || "", cols[5] || ""];
-        const rawKey = cols[6] || "";
-        const poin = Number(cols[7]) || 100;
-        if (!q) return;
-        if (c0 === "essay") imported.push({ type: "essay", q: q, essayKey: rawKey, poin: poin });
-        else if (c0 === "pg_kompleks") imported.push({ type: "pg_kompleks", q: q, options: opts, answers: rawKey.split("|").map(parseSingleAns), poin: poin });
-        else if (c0 === "benar_salah") imported.push({ type: "benar_salah", q: q, options: ["Benar", "Salah"], answer: parseSingleAns(rawKey), poin: poin });
-        else if (c0 === "setuju_tidak") imported.push({ type: "setuju_tidak", q: q, options: ["Setuju", "Tidak Setuju"], answer: parseSingleAns(rawKey), poin: poin });
-        else if (c0 === "iya_tidak") imported.push({ type: "iya_tidak", q: q, options: ["Iya", "Tidak"], answer: parseSingleAns(rawKey), poin: poin });
-        else imported.push({ type: "pg", q: q, options: opts, answer: parseSingleAns(rawKey), poin: poin });
+      // Format baru 10 kolom: kelas,mapel,tipe,pertanyaan,opsiA,opsiB,opsiC,opsiD,kunci,poin
+      const hasKelasMapelPrefix = cols.length >= 9 && TYPE_LABELS[(cols[2] || "").toLowerCase()];
+      const kelasVal = hasKelasMapelPrefix ? (cols[0] || kelasFallback) : kelasFallback;
+      const mapelVal = hasKelasMapelPrefix ? (cols[1] || mapelFallback) : mapelFallback;
+      const rawType = hasKelasMapelPrefix ? (cols[2] || "").toLowerCase() : c0;
+      const qText = hasKelasMapelPrefix ? (cols[3] || "") : (TYPE_LABELS[c0] ? (cols[1] || "") : "");
+
+      if (qText && TYPE_LABELS[rawType]) {
+        const baseIdx = hasKelasMapelPrefix ? 4 : 2;
+        const opts = [cols[baseIdx] || "", cols[baseIdx + 1] || "", cols[baseIdx + 2] || "", cols[baseIdx + 3] || ""];
+        const rawKey = cols[baseIdx + 4] || "";
+        const poin = Number(cols[baseIdx + 5]) || 100;
+
+        if (rawType === "essay") imported.push({ kelas: kelasVal, mapel: mapelVal, type: "essay", q: qText, essayKey: rawKey, poin: poin });
+        else if (rawType === "pg_kompleks") imported.push({ kelas: kelasVal, mapel: mapelVal, type: "pg_kompleks", q: qText, options: opts, answers: rawKey.split("|").map(parseSingleAns), poin: poin });
+        else if (rawType === "benar_salah") imported.push({ kelas: kelasVal, mapel: mapelVal, type: "benar_salah", q: qText, options: ["Benar", "Salah"], answer: parseSingleAns(rawKey), poin: poin });
+        else if (rawType === "setuju_tidak") imported.push({ kelas: kelasVal, mapel: mapelVal, type: "setuju_tidak", q: qText, options: ["Setuju", "Tidak Setuju"], answer: parseSingleAns(rawKey), poin: poin });
+        else if (rawType === "iya_tidak") imported.push({ kelas: kelasVal, mapel: mapelVal, type: "iya_tidak", q: qText, options: ["Iya", "Tidak"], answer: parseSingleAns(rawKey), poin: poin });
+        else imported.push({ kelas: kelasVal, mapel: mapelVal, type: "pg", q: qText, options: opts, answer: parseSingleAns(rawKey), poin: poin });
       } else if (line.length >= 8) {
-        // Baris teks bebas (misalnya dari PDF atau Word): jadikan soal essay/uraian siap pakai
         imported.push({
+          kelas: kelasFallback,
+          mapel: mapelFallback,
           type: "essay",
           q: line,
           essayKey: "",
@@ -612,6 +683,9 @@
       return;
     }
 
+    const defaultKelas = document.getElementById("upload-default-kelas").value.trim() || "Semua";
+    const defaultMapel = document.getElementById("upload-default-mapel").value.trim() || "Umum";
+
     try {
       const extractedText = await extractTextFromAnyFile(file);
       const box = document.getElementById("extracted-text-box");
@@ -619,7 +693,7 @@
       box.style.display = "block";
       rawArea.value = extractedText || "(Tidak ada teks yang dapat dibaca langsung dari berkas ini; Anda dapat mengetik atau menempelkan teks secara manual di sini).";
 
-      const parsed = parseQuestionsFromExtractedText(extractedText, file.name);
+      const parsed = parseQuestionsFromExtractedText(extractedText, file.name, defaultKelas, defaultMapel);
       if (!parsed.length) {
         alert("Berkas diterima, namun teks soal belum terdeteksi otomatis. Silakan periksa hasil ekstraksi di kotak di bawah atau isi form manual.");
         return;
@@ -628,7 +702,7 @@
       questions = overwrite ? parsed : questions.concat(parsed);
       localStorage.setItem(STORAGE_NAMESPACE + "_q", JSON.stringify(questions));
       renderQuestionsList();
-      alert("Berkas '" + file.name + "' berhasil diproses (" + parsed.length + " soal ditambahkan/diperbarui)!");
+      alert("Berkas '" + file.name + "' berhasil diproses (" + parsed.length + " soal ditambahkan/diperbarui untuk Kelas: " + defaultKelas + ", Mapel: " + defaultMapel + ")!");
     } catch (err) {
       const box = document.getElementById("extracted-text-box");
       const rawArea = document.getElementById("extracted-raw-text");
@@ -645,7 +719,11 @@
       return;
     }
     document.getElementById("input-q").value = txt;
-    alert("Teks berhasil disalin ke kolom Pertanyaan!");
+    const defK = document.getElementById("upload-default-kelas").value.trim();
+    const defM = document.getElementById("upload-default-mapel").value.trim();
+    if (defK) document.getElementById("input-kelas").value = defK;
+    if (defM) document.getElementById("input-mapel").value = defM;
+    alert("Teks, kelas, dan mapel berhasil disalin ke form soal!");
   }
 
   function downloadStudentIndexHTML() {
@@ -654,13 +732,14 @@
     const safeQuestions = JSON.stringify(questions, null, 2).replace(/<\/script>/gi, "<\\/script>");
 
     const parts = [
-      '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>Portal Kuis Edukasi SMP - Halaman Siswa</title>\n  <style>\n    :root { --primary: #4f46e5; --primary-dark: #3730a3; --success: #10b981; --danger: #ef4444; --card: #ffffff; --text: #1e293b; --muted: #64748b; }\n    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }\n    body { margin: 0; background: linear-gradient(135deg, #e0e7ff 0%, #cffafe 100%); color: var(--text); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }\n    .container { width: 100%; max-width: 900px; background: var(--card); border-radius: 20px; box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15); overflow: hidden; }\n    header { background: var(--primary); color: white; padding: 20px; text-align: center; }\n    header h1 { margin: 0; font-size: 1.7rem; }\n    header p { margin: 6px 0 0; opacity: 0.92; font-size: 0.92rem; }\n    .section { padding: 25px; }\n    .btn { padding: 10px 16px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px; }\n    .btn-primary { background: var(--primary); color: white; }\n    .btn-success { background: var(--success); color: white; }\n    .btn-danger { background: var(--danger); color: white; }\n    .btn-secondary { background: #e2e8f0; color: var(--text); }\n    .btn-sm { padding: 6px 12px; font-size: 0.84rem; }\n    input[type="text"], input[type="password"], textarea { width: 100%; padding: 10px 12px; margin: 6px 0 14px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 0.96rem; }\n    .login-box { max-width: 440px; margin: 10px auto; padding: 24px; border: 2px solid #e2e8f0; border-radius: 16px; background: #f8fafc; }\n    .login-box h3 { margin-top: 0; text-align: center; }\n    .error-msg { color: var(--danger); font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; min-height: 20px; text-align: center; }\n    .focus-banner { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }\n    .lock-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.92); color: white; z-index: 9999; justify-content: center; align-items: center; padding: 20px; text-align: center; }\n    .lock-overlay.active { display: flex; }\n    .lock-modal { max-width: 460px; background: #1e293b; border: 2px solid #ef4444; border-radius: 16px; padding: 24px; }\n    .game-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; font-weight: bold; }\n    .badge { padding: 7px 14px; border-radius: 20px; background: #e0e7ff; color: var(--primary); font-size: 0.88rem; }\n    .badge-warn { background: #fee2e2; color: #991b1b; }\n    .badge-type { background: #cffafe; color: #0e7490; }\n    .q-nav-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 10px 12px; margin-bottom: 16px; }\n    .q-nav-title { font-size: 0.84rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }\n    .q-nav-grid { display: flex; flex-wrap: wrap; gap: 7px; }\n    .q-num-btn { width: 38px; height: 38px; border-radius: 9px; border: 2px solid #cbd5e1; background: white; color: var(--text); font-weight: bold; cursor: pointer; font-size: 0.9rem; }\n    .q-num-btn.answered { background: #d1fae5; border-color: var(--success); color: #065f46; }\n    .q-num-btn.current { background: var(--primary); border-color: var(--primary-dark); color: white; }\n    .question-box { font-size: 1.15rem; font-weight: 600; margin-bottom: 16px; line-height: 1.55; }\n    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }\n    @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }\n    .option-btn { padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; background: #f8fafc; text-align: left; font-size: 0.96rem; cursor: pointer; font-weight: 500; }\n    .option-btn.selected { border-color: var(--primary); background: #e0e7ff; color: var(--primary-dark); }\n    .status-poin { margin-top: 14px; font-weight: bold; min-height: 22px; }\n    .rekap-card { max-width: 540px; margin: 16px auto; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 14px; padding: 16px; text-align: left; font-size: 0.92rem; line-height: 1.65; }\n    .action-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }\n  </style>\n</head>\n<body>\n<div id="focus-warning-overlay" class="lock-overlay"><div class="lock-modal"><h3 style="margin-top:0;color:#fca5a5;">Pelanggaran Fokus Terdeteksi!</h3><p style="font-size:0.95rem;line-height:1.55;">Potongan poin kali ini: <strong id="overlay-last-penalty">0</strong><br>Total potongan poin: <strong id="overlay-total-penalty">0</strong><br>Jumlah keluar layar: <strong id="overlay-violation-count">0</strong></p><button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="dismissFocusWarning()">Kembali ke Soal Kuis</button></div></div>\n<div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>10 Soal Acak per Siswa - Navigasi Soal Bebas - Penalti Poin Keluar Layar</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key===\'Enter\') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis (10 Soal)</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif:</strong> Keluar layar memotong poin sesuai bobot soal aktif!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/10</span><span class="badge" id="score-display">Poin: 0</span><span class="badge badge-warn" id="violation-badge">Keluar: 0 (-0 poin)</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk mengerjakan soal yang mudah lebih dulu):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Kuis Selesai!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p>Total Poin Akhir:</p><h1 id="final-score" style="color:var(--primary);font-size:3rem;margin:10px 0 12px;">0</h1><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Rekap Nilai</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>\n<script>\n',
+      '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>Portal Kuis Edukasi SMP - Halaman Siswa</title>\n  <style>\n    :root { --primary: #4f46e5; --primary-dark: #3730a3; --success: #10b981; --danger: #ef4444; --card: #ffffff; --text: #1e293b; --muted: #64748b; }\n    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }\n    body { margin: 0; background: linear-gradient(135deg, #e0e7ff 0%, #cffafe 100%); color: var(--text); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }\n    .container { width: 100%; max-width: 900px; background: var(--card); border-radius: 20px; box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15); overflow: hidden; }\n    header { background: var(--primary); color: white; padding: 20px; text-align: center; }\n    header h1 { margin: 0; font-size: 1.7rem; }\n    header p { margin: 6px 0 0; opacity: 0.92; font-size: 0.92rem; }\n    .section { padding: 25px; }\n    .btn { padding: 10px 16px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px; }\n    .btn-primary { background: var(--primary); color: white; }\n    .btn-success { background: var(--success); color: white; }\n    .btn-danger { background: var(--danger); color: white; }\n    .btn-secondary { background: #e2e8f0; color: var(--text); }\n    .btn-sm { padding: 6px 12px; font-size: 0.84rem; }\n    input[type="text"], input[type="password"], select, textarea { width: 100%; padding: 10px 12px; margin: 6px 0 14px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 0.96rem; }\n    .login-box { max-width: 440px; margin: 10px auto; padding: 24px; border: 2px solid #e2e8f0; border-radius: 16px; background: #f8fafc; }\n    .login-box h3 { margin-top: 0; text-align: center; }\n    .error-msg { color: var(--danger); font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; min-height: 20px; text-align: center; }\n    .focus-banner { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }\n    .lock-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.92); color: white; z-index: 9999; justify-content: center; align-items: center; padding: 20px; text-align: center; }\n    .lock-overlay.active { display: flex; }\n    .lock-modal { max-width: 460px; background: #1e293b; border: 2px solid #ef4444; border-radius: 16px; padding: 24px; }\n    .game-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; font-weight: bold; }\n    .badge { padding: 7px 14px; border-radius: 20px; background: #e0e7ff; color: var(--primary); font-size: 0.88rem; }\n    .badge-warn { background: #fee2e2; color: #991b1b; }\n    .badge-type { background: #cffafe; color: #0e7490; }\n    .badge-mapel { background: #dcfce7; color: #166534; }\n    .q-nav-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 10px 12px; margin-bottom: 16px; }\n    .q-nav-title { font-size: 0.84rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }\n    .q-nav-grid { display: flex; flex-wrap: wrap; gap: 7px; }\n    .q-num-btn { width: 38px; height: 38px; border-radius: 9px; border: 2px solid #cbd5e1; background: white; color: var(--text); font-weight: bold; cursor: pointer; font-size: 0.9rem; }\n    .q-num-btn.answered { background: #d1fae5; border-color: var(--success); color: #065f46; }\n    .q-num-btn.current { background: var(--primary); border-color: var(--primary-dark); color: white; }\n    .question-box { font-size: 1.15rem; font-weight: 600; margin-bottom: 16px; line-height: 1.55; }\n    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }\n    @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }\n    .option-btn { padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; background: #f8fafc; text-align: left; font-size: 0.96rem; cursor: pointer; font-weight: 500; }\n    .option-btn.selected { border-color: var(--primary); background: #e0e7ff; color: var(--primary-dark); }\n    .status-poin { margin-top: 14px; font-weight: bold; min-height: 22px; }\n    .rekap-card { max-width: 540px; margin: 16px auto; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 14px; padding: 16px; text-align: left; font-size: 0.92rem; line-height: 1.65; }\n    .action-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }\n  </style>\n</head>\n<body>\n<div id="focus-warning-overlay" class="lock-overlay"><div class="lock-modal"><h3 style="margin-top:0;color:#fca5a5;">Pelanggaran Fokus Terdeteksi!</h3><p style="font-size:0.95rem;line-height:1.55;">Potongan poin kali ini: <strong id="overlay-last-penalty">0</strong><br>Total potongan poin: <strong id="overlay-total-penalty">0</strong><br>Jumlah keluar layar: <strong id="overlay-violation-count">0</strong></p><button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="dismissFocusWarning()">Kembali ke Soal Kuis</button></div></div>\n<div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Soal Sesuai Kelas & Mapel - Navigasi Soal Bebas - Penalti Poin Keluar Layar</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas:</label><input type="text" id="login-kelas" placeholder="Contoh: VIII A" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key===\'Enter\') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif:</strong> Keluar layar memotong poin sesuai bobot soal aktif!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/10</span><span class="badge" id="score-display">Poin: 0</span><span class="badge badge-warn" id="violation-badge">Keluar: 0 (-0 poin)</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk mengerjakan soal yang mudah lebih dulu):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Kuis Selesai!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p>Total Poin Akhir:</p><h1 id="final-score" style="color:var(--primary);font-size:3rem;margin:10px 0 12px;">0</h1><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Rekap Nilai</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>\n<script>\n',
       'const ACTIVE_TOKEN = ' + safeToken + ';\n',
       'const STUDENTS_DATA = ' + safeStudents + ';\n',
       'const QUESTIONS_BANK = ' + safeQuestions + ';\n',
       'const QUIZ_TOTAL_QUESTIONS = 10;\n',
       'const TYPE_LABELS = { pg: "Pilihan Ganda", pg_kompleks: "Pilihan Ganda Kompleks", benar_salah: "Benar / Salah", setuju_tidak: "Setuju / Tidak Setuju", iya_tidak: "Iya / Tidak", essay: "Essay" };\n',
-      'let isStudentQuizActive = false, violationCount = 0, totalPenaltyPoints = 0, activeSessionQuestions = [], currentIdx = 0, score = 0, activeStudent = null, lastSummaryText = "", autoAdvanceTimer = null;\n',
+      '(function populateMapelSelect(){ const sel = document.getElementById("login-mapel"); const set = new Set(QUESTIONS_BANK.map(function(q){ return (q.mapel || "").trim(); }).filter(Boolean)); Array.from(set).sort().forEach(function(m){ const opt = document.createElement("option"); opt.value = m; opt.textContent = m; sel.appendChild(opt); }); })();\n',
+      'let isStudentQuizActive = false, violationCount = 0, totalPenaltyPoints = 0, activeSessionQuestions = [], currentIdx = 0, score = 0, activeStudent = null, activeKelas = "", activeMapel = "", lastSummaryText = "", autoAdvanceTimer = null;\n',
       'function recordFocusViolation() { if (!isStudentQuizActive || !activeSessionQuestions.length) return; violationCount++; const p = Number((activeSessionQuestions[currentIdx] && activeSessionQuestions[currentIdx].poin) || 100); score -= p; totalPenaltyPoints += p; document.getElementById("score-display").innerText = "Poin: " + score; document.getElementById("violation-badge").innerText = "Keluar: " + violationCount + " (-" + totalPenaltyPoints + " poin)"; document.getElementById("overlay-last-penalty").innerText = "-" + p; document.getElementById("overlay-total-penalty").innerText = "-" + totalPenaltyPoints; document.getElementById("overlay-violation-count").innerText = violationCount; document.getElementById("focus-warning-overlay").classList.add("active"); }\n',
       'function dismissFocusWarning() { document.getElementById("focus-warning-overlay").classList.remove("active"); requestFullscreenMode(); }\n',
       'function requestFullscreenMode() { const el = document.documentElement; if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(function(){}); }\n',
@@ -669,28 +748,29 @@
       'window.addEventListener("blur", function(){ if (isStudentQuizActive) recordFocusViolation(); });\n',
       'window.addEventListener("beforeunload", function(e){ if (isStudentQuizActive) { e.preventDefault(); e.returnValue = "Sesi kuis sedang berlangsung."; return e.returnValue; } });\n',
       'function shuffleArray(arr) { const c = arr.slice(); for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = c[i]; c[i] = c[j]; c[j] = t; } return c; }\n',
-      'function prepareSingleQuestionForStudent(item) { const type = item.type || "pg"; const poin = Number(item.poin) || 100; if (type === "essay") return { type: "essay", q: item.q, essayKey: item.essayKey || "", poin: poin, userAnswer: "", answered: false, earnedScore: 0 }; if (type === "pg_kompleks") { const base = (item.options || []).filter(Boolean); const set = new Set(item.answers || []); const sh = shuffleArray(base.map(function(text, idx){ return { text: text, isCorrect: set.has(idx) }; })); return { type: "pg_kompleks", q: item.q, options: sh.map(function(o){ return o.text; }), answers: sh.map(function(o, i){ return o.isCorrect ? i : -1; }).filter(function(i){ return i !== -1; }), poin: poin, userAnswer: [], answered: false, earnedScore: 0 }; } let opts = (item.options && item.options.length) ? item.options.slice() : ["A", "B", "C", "D"]; const ansIdx = Number(item.answer) || 0; if (type === "benar_salah") opts = ["Benar", "Salah"]; else if (type === "setuju_tidak") opts = ["Setuju", "Tidak Setuju"]; else if (type === "iya_tidak") opts = ["Iya", "Tidak"]; const sh = shuffleArray(opts.map(function(text, idx){ return { text: text, isCorrect: idx === ansIdx }; })); return { type: type, q: item.q, options: sh.map(function(o){ return o.text; }), answer: sh.findIndex(function(o){ return o.isCorrect; }), poin: poin, userAnswer: null, answered: false, earnedScore: 0 }; }\n',
-      'function buildStudentQuizSet(bank) { const sPool = shuffleArray(bank.filter(function(x){ return ["pg", "benar_salah", "setuju_tidak", "iya_tidak"].indexOf(x.type || "pg") !== -1; })); const cPool = shuffleArray(bank.filter(function(x){ return x.type === "pg_kompleks"; })); const ePool = shuffleArray(bank.filter(function(x){ return x.type === "essay"; })); const picked = []; const used = new Set(); function take(pool, cnt) { for (let i = 0; i < pool.length; i++) { if (picked.length >= QUIZ_TOTAL_QUESTIONS || cnt <= 0) break; if (!used.has(pool[i])) { picked.push(pool[i]); used.add(pool[i]); cnt--; } } } take(sPool, 5); take(cPool, 3); take(ePool, 2); if (picked.length < QUIZ_TOTAL_QUESTIONS) { const rem = shuffleArray(bank.filter(function(x){ return !used.has(x); })); for (let i = 0; i < rem.length; i++) { if (picked.length >= QUIZ_TOTAL_QUESTIONS) break; picked.push(rem[i]); used.add(rem[i]); } } return shuffleArray(picked).map(prepareSingleQuestionForStudent); }\n',
+      'function filterBankByKelasAndMapel(bank, kelasInput, mapelInput) { const kNorm = String(kelasInput || "").trim().toLowerCase(); const mNorm = String(mapelInput || "").trim().toLowerCase(); const byKelas = bank.filter(function(q){ const qk = String(q.kelas || "semua").trim().toLowerCase(); return !kNorm || qk === "semua" || qk === kNorm; }); const poolKelas = byKelas.length ? byKelas : bank; if (!mNorm) return poolKelas; const byMapel = poolKelas.filter(function(q){ return String(q.mapel || "").trim().toLowerCase() === mNorm; }); return byMapel.length ? byMapel : poolKelas; }\n',
+      'function prepareSingleQuestionForStudent(item) { const type = item.type || "pg"; const poin = Number(item.poin) || 100; const mapel = item.mapel || "Umum"; const kelas = item.kelas || "Semua"; if (type === "essay") return { type: "essay", kelas: kelas, mapel: mapel, q: item.q, essayKey: item.essayKey || "", poin: poin, userAnswer: "", answered: false, earnedScore: 0 }; if (type === "pg_kompleks") { const base = (item.options || []).filter(Boolean); const set = new Set(item.answers || []); const sh = shuffleArray(base.map(function(text, idx){ return { text: text, isCorrect: set.has(idx) }; })); return { type: "pg_kompleks", kelas: kelas, mapel: mapel, q: item.q, options: sh.map(function(o){ return o.text; }), answers: sh.map(function(o, i){ return o.isCorrect ? i : -1; }).filter(function(i){ return i !== -1; }), poin: poin, userAnswer: [], answered: false, earnedScore: 0 }; } let opts = (item.options && item.options.length) ? item.options.slice() : ["A", "B", "C", "D"]; const ansIdx = Number(item.answer) || 0; if (type === "benar_salah") opts = ["Benar", "Salah"]; else if (type === "setuju_tidak") opts = ["Setuju", "Tidak Setuju"]; else if (type === "iya_tidak") opts = ["Iya", "Tidak"]; const sh = shuffleArray(opts.map(function(text, idx){ return { text: text, isCorrect: idx === ansIdx }; })); return { type: type, kelas: kelas, mapel: mapel, q: item.q, options: sh.map(function(o){ return o.text; }), answer: sh.findIndex(function(o){ return o.isCorrect; }), poin: poin, userAnswer: null, answered: false, earnedScore: 0 }; }\n',
+      'function buildStudentQuizSet(bank) { const limit = Math.min(QUIZ_TOTAL_QUESTIONS, bank.length); const sPool = shuffleArray(bank.filter(function(x){ return ["pg", "benar_salah", "setuju_tidak", "iya_tidak"].indexOf(x.type || "pg") !== -1; })); const cPool = shuffleArray(bank.filter(function(x){ return x.type === "pg_kompleks"; })); const ePool = shuffleArray(bank.filter(function(x){ return x.type === "essay"; })); const picked = []; const used = new Set(); function take(pool, cnt) { for (let i = 0; i < pool.length; i++) { if (picked.length >= limit || cnt <= 0) break; if (!used.has(pool[i])) { picked.push(pool[i]); used.add(pool[i]); cnt--; } } } take(sPool, 5); take(cPool, 3); take(ePool, 2); if (picked.length < limit) { const rem = shuffleArray(bank.filter(function(x){ return !used.has(x); })); for (let i = 0; i < rem.length; i++) { if (picked.length >= limit) break; picked.push(rem[i]); used.add(rem[i]); } } return shuffleArray(picked).map(prepareSingleQuestionForStudent); }\n',
       'function renderQuestionNav() { const grid = document.getElementById("question-nav-grid"); grid.innerHTML = ""; activeSessionQuestions.forEach(function(qItem, idx){ const btn = document.createElement("button"); btn.className = "q-num-btn" + (qItem.answered ? " answered" : "") + (idx === currentIdx ? " current" : ""); btn.innerText = String(idx + 1); btn.onclick = function(){ jumpToQuestion(idx); }; grid.appendChild(btn); }); }\n',
       'function jumpToQuestion(idx) { if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; } currentIdx = idx; loadQuestion(); }\n',
       'function recalculateTotalScore() { const sum = activeSessionQuestions.reduce(function(acc, q){ return acc + (q.earnedScore || 0); }, 0); score = sum - totalPenaltyPoints; document.getElementById("score-display").innerText = "Poin: " + score; }\n',
       'function scheduleNextQuestion() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); autoAdvanceTimer = setTimeout(function(){ if (!isStudentQuizActive) return; if (currentIdx < activeSessionQuestions.length - 1) { currentIdx++; loadQuestion(); } }, 550); }\n',
-      'function loadQuestion() { const qObj = activeSessionQuestions[currentIdx]; renderQuestionNav(); recalculateTotalScore(); document.getElementById("q-type-badge").innerText = (TYPE_LABELS[qObj.type] || "Soal") + " (" + qObj.poin + " poin)"; document.getElementById("q-counter").innerText = "Soal " + (currentIdx + 1) + "/" + activeSessionQuestions.length; document.getElementById("question-text").innerText = qObj.q; const area = document.getElementById("answer-area"); const statusEl = document.getElementById("status-poin"); area.innerHTML = ""; statusEl.innerText = qObj.answered ? "Sudah dijawab. Anda bisa mengganti atau memilih nomor soal lain." : ""; statusEl.style.color = qObj.answered ? "var(--success)" : "var(--muted)"; const labels = ["A", "B", "C", "D"]; if (qObj.type === "essay") { const ta = document.createElement("textarea"); ta.rows = 4; ta.placeholder = "Tulis jawaban uraian Anda di sini..."; ta.value = qObj.userAnswer || ""; const btn = document.createElement("button"); btn.className = "btn btn-primary"; btn.innerText = "Simpan Jawaban & Lanjut"; btn.onclick = function(){ submitEssayAnswer(ta.value); }; area.appendChild(ta); area.appendChild(btn); return; } if (qObj.type === "pg_kompleks") { const grid = document.createElement("div"); grid.className = "options-grid"; const sel = new Set(qObj.userAnswer || []); qObj.options.forEach(function(opt, idx){ const b = document.createElement("button"); b.className = "option-btn" + (sel.has(idx) ? " selected" : ""); b.innerText = (sel.has(idx) ? "[x] " : "[ ] ") + (labels[idx] || (idx + 1)) + ". " + opt; b.onclick = function(){ toggleComplexOption(idx); }; grid.appendChild(b); }); const cBtn = document.createElement("button"); cBtn.className = "btn btn-success"; cBtn.style.marginTop = "14px"; cBtn.innerText = "Konfirmasi Jawaban Kompleks & Lanjut"; cBtn.onclick = function(){ confirmComplexAnswer(); }; area.appendChild(grid); area.appendChild(cBtn); return; } const grid = document.createElement("div"); grid.className = "options-grid"; qObj.options.forEach(function(opt, idx){ const b = document.createElement("button"); b.className = "option-btn" + (qObj.answered && qObj.userAnswer === idx ? " selected" : ""); const pref = qObj.type === "pg" ? ((labels[idx] || (idx + 1)) + ". ") : ""; b.innerText = pref + opt; b.onclick = function(){ selectSingleAnswer(idx); }; grid.appendChild(b); }); area.appendChild(grid); }\n',
+      'function loadQuestion() { const qObj = activeSessionQuestions[currentIdx]; renderQuestionNav(); recalculateTotalScore(); document.getElementById("mapel-badge").innerText = "Mapel: " + (qObj.mapel || activeMapel || "Umum"); document.getElementById("q-type-badge").innerText = (TYPE_LABELS[qObj.type] || "Soal") + " (" + qObj.poin + " poin)"; document.getElementById("q-counter").innerText = "Soal " + (currentIdx + 1) + "/" + activeSessionQuestions.length; document.getElementById("question-text").innerText = qObj.q; const area = document.getElementById("answer-area"); const statusEl = document.getElementById("status-poin"); area.innerHTML = ""; statusEl.innerText = qObj.answered ? "Sudah dijawab. Anda bisa mengganti atau memilih nomor soal lain." : ""; statusEl.style.color = qObj.answered ? "var(--success)" : "var(--muted)"; const labels = ["A", "B", "C", "D"]; if (qObj.type === "essay") { const ta = document.createElement("textarea"); ta.rows = 4; ta.placeholder = "Tulis jawaban uraian Anda di sini..."; ta.value = qObj.userAnswer || ""; const btn = document.createElement("button"); btn.className = "btn btn-primary"; btn.innerText = "Simpan Jawaban & Lanjut"; btn.onclick = function(){ submitEssayAnswer(ta.value); }; area.appendChild(ta); area.appendChild(btn); return; } if (qObj.type === "pg_kompleks") { const grid = document.createElement("div"); grid.className = "options-grid"; const sel = new Set(qObj.userAnswer || []); qObj.options.forEach(function(opt, idx){ const b = document.createElement("button"); b.className = "option-btn" + (sel.has(idx) ? " selected" : ""); b.innerText = (sel.has(idx) ? "[x] " : "[ ] ") + (labels[idx] || (idx + 1)) + ". " + opt; b.onclick = function(){ toggleComplexOption(idx); }; grid.appendChild(b); }); const cBtn = document.createElement("button"); cBtn.className = "btn btn-success"; cBtn.style.marginTop = "14px"; cBtn.innerText = "Konfirmasi Jawaban Kompleks & Lanjut"; cBtn.onclick = function(){ confirmComplexAnswer(); }; area.appendChild(grid); area.appendChild(cBtn); return; } const grid = document.createElement("div"); grid.className = "options-grid"; qObj.options.forEach(function(opt, idx){ const b = document.createElement("button"); b.className = "option-btn" + (qObj.answered && qObj.userAnswer === idx ? " selected" : ""); const pref = qObj.type === "pg" ? ((labels[idx] || (idx + 1)) + ". ") : ""; b.innerText = pref + opt; b.onclick = function(){ selectSingleAnswer(idx); }; grid.appendChild(b); }); area.appendChild(grid); }\n',
       'function selectSingleAnswer(idx) { const qObj = activeSessionQuestions[currentIdx]; qObj.userAnswer = idx; qObj.answered = true; qObj.earnedScore = (idx === qObj.answer) ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--success)"; st.innerText = "Jawaban tersimpan - mengarah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
       'function toggleComplexOption(idx) { const qObj = activeSessionQuestions[currentIdx]; const s = new Set(qObj.userAnswer || []); if (s.has(idx)) s.delete(idx); else s.add(idx); qObj.userAnswer = Array.from(s).sort(function(a,b){ return a - b; }); loadQuestion(); }\n',
       'function confirmComplexAnswer() { const qObj = activeSessionQuestions[currentIdx]; const ch = (qObj.userAnswer || []).slice().sort(function(a,b){ return a - b; }); const ex = (qObj.answers || []).slice().sort(function(a,b){ return a - b; }); if (!ch.length) { alert("Pilih minimal satu jawaban."); return; } const ok = ch.length === ex.length && ch.every(function(v, i){ return v === ex[i]; }); qObj.answered = true; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--success)"; st.innerText = "Jawaban kompleks tersimpan - mengarah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
       'function submitEssayAnswer(val) { const qObj = activeSessionQuestions[currentIdx]; const cl = String(val || "").trim(); if (!cl) { alert("Silakan isi jawaban essay."); return; } qObj.userAnswer = cl; qObj.answered = true; const kws = (qObj.essayKey || "").split(",").map(function(k){ return k.trim().toLowerCase(); }).filter(Boolean); if (kws.length) { const lo = cl.toLowerCase(); qObj.earnedScore = kws.some(function(kw){ return lo.indexOf(kw) !== -1; }) ? qObj.poin : 0; } else { qObj.earnedScore = cl.length >= 10 ? qObj.poin : 0; } recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--success)"; st.innerText = "Jawaban essay tersimpan - mengarah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
       'function confirmFinishQuiz() { const unans = activeSessionQuestions.filter(function(q){ return !q.answered; }).length; const msg = unans > 0 ? ("Masih ada " + unans + " soal belum dijawab. Yakin ingin menyelesaikan kuis?") : "Yakin ingin menyelesaikan dan mengumpulkan hasil kuis?"; if (confirm(msg)) finishStudentQuiz(); }\n',
-      'function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); isStudentQuizActive = false; document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const ts = new Date().toLocaleString("id-ID"); lastSummaryText = "REKAP HASIL KUIS SISWA\\nNama: " + activeStudent.fullName + "\\nUsername: " + activeStudent.username + "\\nTerjawab: " + ansCnt + "/" + tot + " soal\\nTotal Poin Akhir: " + score + "\\nKeluar Layar: " + violationCount + " kali (Potongan: -" + totalPenaltyPoints + " poin)\\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (@" + activeStudent.username + ")"; document.getElementById("final-score").innerText = score + " Poin"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Keluar Layar & Potongan:</strong> " + violationCount + " kali (-" + totalPenaltyPoints + " poin)<br><strong>Total Poin Akhir:</strong> " + score + "<br><strong>Waktu Selesai:</strong> " + ts; }\n',
+      'function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); isStudentQuizActive = false; document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; lastSummaryText = "REKAP HASIL KUIS SISWA\\nNama: " + activeStudent.fullName + "\\nKelas: " + activeKelas + "\\nMapel: " + mapelLabel + "\\nUsername: " + activeStudent.username + "\\nTerjawab: " + ansCnt + "/" + tot + " soal\\nTotal Poin Akhir: " + score + "\\nKeluar Layar: " + violationCount + " kali (Potongan: -" + totalPenaltyPoints + " poin)\\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " • @" + activeStudent.username + ")"; document.getElementById("final-score").innerText = score + " Poin"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Keluar Layar & Potongan:</strong> " + violationCount + " kali (-" + totalPenaltyPoints + " poin)<br><strong>Total Poin Akhir:</strong> " + score + "<br><strong>Waktu Selesai:</strong> " + ts; }\n',
       'function copyStudentSummary() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastSummaryText).then(function(){ alert("Rekap nilai berhasil disalin!"); }).catch(function(){ prompt("Salin rekap berikut:", lastSummaryText); }); else prompt("Salin rekap berikut:", lastSummaryText); }\n',
       'function downloadStudentSummary() { const blob = new Blob([lastSummaryText], { type: "text/plain;charset=utf-8;" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "rekap_" + (activeStudent.username || "siswa") + ".txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }\n',
-      'function loginStudent() { const u = document.getElementById("login-username").value.trim(); const p = document.getElementById("login-password").value.trim(); const t = document.getElementById("login-token").value.trim(); const err = document.getElementById("student-login-error"); if (!u || !p || !t) { err.innerText = "Harap isi username, password, dan token!"; return; } if (t.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { err.innerText = "Token kelas tidak valid!"; return; } const f = STUDENTS_DATA.find(function(s){ return s.username.toLowerCase() === u.toLowerCase() && s.password === p; }); if (!f) { err.innerText = "Username atau password siswa salah!"; return; } if (!QUESTIONS_BANK.length) { err.innerText = "Belum ada soal tersedia."; return; } err.innerText = ""; activeStudent = f; currentIdx = 0; score = 0; violationCount = 0; totalPenaltyPoints = 0; isStudentQuizActive = true; requestFullscreenMode(); activeSessionQuestions = buildStudentQuizSet(QUESTIONS_BANK); document.getElementById("start-screen").style.display = "none"; document.getElementById("result-screen").style.display = "none"; document.getElementById("quiz-screen").style.display = "block"; document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName; document.getElementById("violation-badge").innerText = "Keluar: 0 (-0 poin)"; loadQuestion(); }\n',
-      'function logoutStudent() { isStudentQuizActive = false; activeStudent = null; activeSessionQuestions = []; violationCount = 0; totalPenaltyPoints = 0; document.getElementById("login-username").value = ""; document.getElementById("login-password").value = ""; document.getElementById("login-token").value = ""; document.getElementById("result-screen").style.display = "none"; document.getElementById("start-screen").style.display = "block"; }\n',
+      'function loginStudent() { const u = document.getElementById("login-username").value.trim(); const p = document.getElementById("login-password").value.trim(); const k = document.getElementById("login-kelas").value.trim(); const m = document.getElementById("login-mapel").value.trim(); const t = document.getElementById("login-token").value.trim(); const err = document.getElementById("student-login-error"); if (!u || !p || !k || !t) { err.innerText = "Harap isi username, password, kelas, dan token!"; return; } if (t.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { err.innerText = "Token kelas tidak valid!"; return; } const f = STUDENTS_DATA.find(function(s){ return s.username.toLowerCase() === u.toLowerCase() && s.password === p; }); if (!f) { err.innerText = "Username atau password siswa salah!"; return; } if (f.kelas && f.kelas.trim().toLowerCase() !== k.toLowerCase()) { err.innerText = "Kelas tidak sesuai dengan akun terdaftar (" + f.kelas + ")!"; return; } const filteredBank = filterBankByKelasAndMapel(QUESTIONS_BANK, k, m); if (!filteredBank.length) { err.innerText = "Belum ada soal tersedia."; return; } err.innerText = ""; activeStudent = f; activeKelas = f.kelas || k; activeMapel = m || "Semua Mapel"; currentIdx = 0; score = 0; violationCount = 0; totalPenaltyPoints = 0; isStudentQuizActive = true; requestFullscreenMode(); activeSessionQuestions = buildStudentQuizSet(filteredBank); document.getElementById("start-screen").style.display = "none"; document.getElementById("result-screen").style.display = "none"; document.getElementById("quiz-screen").style.display = "block"; document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName + " (" + activeKelas + ")"; document.getElementById("mapel-badge").innerText = "Mapel: " + activeMapel; document.getElementById("violation-badge").innerText = "Keluar: 0 (-0 poin)"; loadQuestion(); }\n',
+      'function logoutStudent() { isStudentQuizActive = false; activeStudent = null; activeKelas = ""; activeMapel = ""; activeSessionQuestions = []; violationCount = 0; totalPenaltyPoints = 0; document.getElementById("login-username").value = ""; document.getElementById("login-password").value = ""; document.getElementById("login-kelas").value = ""; document.getElementById("login-token").value = ""; document.getElementById("result-screen").style.display = "none"; document.getElementById("start-screen").style.display = "block"; }\n',
       '</' + 'script>\n</body>\n</html>'
     ];
 
     triggerDownload("index.html", parts.join(""), "text/html;charset=utf-8;");
-    alert("Berkas 'index.html' (khusus siswa) berhasil diunduh! Silakan unggah ke GitHub untuk memperbarui tautan siswa.");
+    alert("Berkas 'index.html' (khusus siswa dengan filter kelas & mapel) berhasil diunduh! Silakan unggah ke GitHub.");
   }
 
   function getSingleChoicesForType(type) {
@@ -734,13 +814,15 @@
   }
 
   function saveQuestion() {
+    const kelas = document.getElementById("input-kelas").value.trim() || "Semua";
+    const mapel = document.getElementById("input-mapel").value.trim() || "Umum";
     const type = document.getElementById("input-type").value;
     const q = document.getElementById("input-q").value.trim();
     const poin = parseInt(document.getElementById("input-poin").value, 10) || 100;
     const editIdx = parseInt(document.getElementById("edit-index").value, 10);
 
     if (!q) { alert("Harap isi pertanyaan atau pernyataan!"); return; }
-    const item = { type: type, q: q, poin: poin };
+    const item = { kelas: kelas, mapel: mapel, type: type, q: q, poin: poin };
 
     if (type === "essay") {
       item.essayKey = document.getElementById("input-essay-key").value.trim();
@@ -767,7 +849,7 @@
     localStorage.setItem(STORAGE_NAMESPACE + "_q", JSON.stringify(questions));
     clearForm();
     renderQuestionsList();
-    alert("Soal berhasil disimpan!");
+    alert("Soal berhasil disimpan untuk Kelas " + kelas + " (" + mapel + ")!");
   }
 
   function editQuestion(idx) {
@@ -776,6 +858,8 @@
     clearForm();
     document.getElementById("form-title").innerText = "Edit Soal #" + (idx + 1);
     document.getElementById("edit-index").value = String(idx);
+    document.getElementById("input-kelas").value = item.kelas || "Semua";
+    document.getElementById("input-mapel").value = item.mapel || "Umum";
     document.getElementById("input-type").value = type;
     document.getElementById("input-poin").value = String(item.poin || 100);
     document.getElementById("input-q").value = item.q;
@@ -809,6 +893,8 @@
   function clearForm() {
     document.getElementById("form-title").innerText = "Buat Soal Baru";
     document.getElementById("edit-index").value = "-1";
+    document.getElementById("input-kelas").value = document.getElementById("upload-default-kelas").value.trim() || "VIII A";
+    document.getElementById("input-mapel").value = document.getElementById("upload-default-mapel").value.trim() || "Bahasa Indonesia";
     document.getElementById("input-type").value = "pg";
     document.getElementById("input-poin").value = "100";
     document.getElementById("input-q").value = "";
@@ -829,12 +915,25 @@
   }
 
   function renderQuestionsList() {
-    document.getElementById("total-q").innerText = String(questions.length);
+    const fKelas = (document.getElementById("filter-q-kelas").value || "").trim().toLowerCase();
+    const fMapel = (document.getElementById("filter-q-mapel").value || "").trim().toLowerCase();
+
+    const filtered = questions.map(function(item, origIdx){
+      return { item: item, origIdx: origIdx };
+    }).filter(function(entry){
+      const kOk = !fKelas || String(entry.item.kelas || "semua").toLowerCase().indexOf(fKelas) !== -1;
+      const mOk = !fMapel || String(entry.item.mapel || "umum").toLowerCase().indexOf(fMapel) !== -1;
+      return kOk && mOk;
+    });
+
+    document.getElementById("total-q").innerText = filtered.length + "/" + questions.length;
     const container = document.getElementById("questions-list");
     container.innerHTML = "";
     const labels = ["A", "B", "C", "D"];
 
-    questions.forEach(function(item, idx){
+    filtered.forEach(function(entry, showIdx){
+      const item = entry.item;
+      const idx = entry.origIdx;
       const type = item.type || "pg";
       let kunciText = "";
       if (type === "essay") {
@@ -851,7 +950,8 @@
       const div = document.createElement("div");
       div.className = "question-item";
       div.innerHTML =
-        "<h4>" + (idx + 1) + ". [" + (TYPE_LABELS[type] || type) + "] " + item.q + "</h4>" +
+        '<div><span class="meta-pill">Kelas: ' + (item.kelas || "Semua") + '</span><span class="meta-pill meta-pill-mapel">Mapel: ' + (item.mapel || "Umum") + '</span></div>' +
+        "<h4>" + (showIdx + 1) + ". [" + (TYPE_LABELS[type] || type) + "] " + item.q + "</h4>" +
         "<small>" + kunciText + " | Bobot & Penalti: <strong>" + (item.poin || 100) + " poin</strong></small>" +
         '<div class="question-actions">' +
           '<button class="btn btn-warning btn-sm" onclick="editQuestion(' + idx + ')">Edit</button>' +
@@ -906,6 +1006,7 @@
           parsed = arr.filter(function(s){ return s && s.username && s.password; }).map(function(s){
             return {
               fullName: String(s.fullName || s.nama || s.username).trim(),
+              kelas: String(s.kelas || s.class || "Umum").trim(),
               username: String(s.username).trim(),
               password: String(s.password).trim()
             };
@@ -918,8 +1019,10 @@
           lines.forEach(function(line, idx){
             const cols = parseCSVLine(line, delim);
             if (idx === 0 && (cols[0] || "").toLowerCase().indexOf("nama") !== -1) return;
-            if (cols.length >= 3 && cols[0] && cols[1] && cols[2]) {
-              parsed.push({ fullName: cols[0], username: cols[1], password: cols[2] });
+            if (cols.length >= 4 && cols[0] && cols[2] && cols[3]) {
+              parsed.push({ fullName: cols[0], kelas: cols[1] || "Umum", username: cols[2], password: cols[3] });
+            } else if (cols.length >= 3 && cols[0] && cols[1] && cols[2]) {
+              parsed.push({ fullName: cols[0], kelas: "Umum", username: cols[1], password: cols[2] });
             }
           });
         }
@@ -958,35 +1061,44 @@
 
   function downloadQuestionTemplate() {
     const csv =
-      "tipe,pertanyaan,opsiA,opsiB,opsiC,opsiD,kunci,poin\n" +
-      'pg,"Ibu kota Jawa Timur adalah...","Surabaya","Malang","Jember","Madiun","A",100\n' +
-      'pg_kompleks,"Pilih bilangan genap:","2","3","4","5","A|C",120\n' +
-      'benar_salah,"Matahari terbit dari timur.","","","","Benar",100\n' +
-      'setuju_tidak,"Belajar kelompok membantu bertukar pikiran.","","","","Setuju",100\n' +
-      'iya_tidak,"Apakah 9 bilangan prima?","","","","Tidak",100\n' +
-      'essay,"Sebutkan satu fungsi daun!","","","","fotosintesis, bernapas",150';
-    triggerDownload("template_soal_multitipe.csv", csv);
+      "kelas,mapel,tipe,pertanyaan,opsiA,opsiB,opsiC,opsiD,kunci,poin\n" +
+      '"VIII A","Bahasa Indonesia","pg","Ibu kota Jawa Timur adalah...","Surabaya","Malang","Jember","Madiun","A",100\n' +
+      '"VIII A","Matematika","pg_kompleks","Pilih bilangan genap:","2","3","4","5","A|C",120\n' +
+      '"VIII B","IPA","benar_salah","Matahari terbit dari timur.","","","","Benar",100\n' +
+      '"VIII B","Bahasa Indonesia","setuju_tidak","Belajar kelompok membantu bertukar pikiran.","","","","Setuju",100\n' +
+      '"VIII A","Matematika","iya_tidak","Apakah 9 bilangan prima?","","","","Tidak",100\n' +
+      '"VIII B","IPA","essay","Sebutkan satu fungsi daun!","","","","fotosintesis, bernapas",150';
+    triggerDownload("template_soal_kelas_mapel.csv", csv);
   }
 
   function downloadStudentTemplate() {
     const csv =
-      "nama_lengkap_kelas,username,password\n" +
-      '"Dewi Lestari - VIII A","dewi8a","pass123"\n' +
-      '"Rizky Ramadhan - VIII A","rizky8a","pass123"';
-    triggerDownload("template_data_siswa.csv", csv);
+      "nama_lengkap,kelas,username,password\n" +
+      '"Dewi Lestari","VIII A","dewi8a","pass123"\n' +
+      '"Rizky Ramadhan","VIII B","rizky8b","pass123"';
+    triggerDownload("template_data_siswa_kelas.csv", csv);
   }
 
   function renderStudentsAndToken() {
     document.getElementById("input-token-aktif").value = activeToken;
     document.getElementById("current-token-label").innerText = activeToken;
-    document.getElementById("total-students").innerText = String(students.length);
+    const fKelas = (document.getElementById("filter-stu-kelas").value || "").trim().toLowerCase();
+    const filtered = students.map(function(stu, origIdx){
+      return { stu: stu, origIdx: origIdx };
+    }).filter(function(entry){
+      return !fKelas || String(entry.stu.kelas || "").toLowerCase().indexOf(fKelas) !== -1;
+    });
+
+    document.getElementById("total-students").innerText = filtered.length + "/" + students.length;
     const list = document.getElementById("students-list");
     list.innerHTML = "";
-    students.forEach(function(stu, idx){
+    filtered.forEach(function(entry){
+      const stu = entry.stu;
+      const idx = entry.origIdx;
       const div = document.createElement("div");
       div.className = "item-card";
       div.innerHTML =
-        "<div><strong>" + stu.fullName + "</strong><br><small>Username: <code>" + stu.username + "</code> | Password: <code>" + stu.password + "</code></small></div>" +
+        '<div><span class="meta-pill">Kelas: ' + (stu.kelas || "Umum") + '</span> <strong>' + stu.fullName + "</strong><br><small>Username: <code>" + stu.username + "</code> | Password: <code>" + stu.password + "</code></small></div>" +
         '<button class="btn btn-danger btn-sm" onclick="deleteStudent(' + idx + ')">Hapus</button>';
       list.appendChild(div);
     });
@@ -1011,13 +1123,15 @@
 
   function addStudent() {
     const fullName = document.getElementById("stu-fullname").value.trim();
+    const kelas = document.getElementById("stu-kelas").value.trim() || "Umum";
     const username = document.getElementById("stu-username").value.trim();
     const password = document.getElementById("stu-password").value.trim();
-    if (!fullName || !username || !password) { alert("Lengkapi semua kolom siswa!"); return; }
+    if (!fullName || !username || !password) { alert("Lengkapi nama, username, dan password siswa!"); return; }
     if (students.some(function(s){ return s.username.toLowerCase() === username.toLowerCase(); })) { alert("Username sudah ada!"); return; }
-    students.push({ fullName: fullName, username: username, password: password });
+    students.push({ fullName: fullName, kelas: kelas, username: username, password: password });
     localStorage.setItem(STORAGE_NAMESPACE + "_stu", JSON.stringify(students));
     document.getElementById("stu-fullname").value = "";
+    document.getElementById("stu-kelas").value = "";
     document.getElementById("stu-username").value = "";
     document.getElementById("stu-password").value = "";
     renderStudentsAndToken();
@@ -1034,19 +1148,19 @@
   function renderResultsTable() {
     const tbody = document.getElementById("results-tbody");
     if (!results.length) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);">Belum ada rekap nilai tersimpan di perangkat ini.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);">Belum ada rekap nilai tersimpan di perangkat ini.</td></tr>';
       return;
     }
     tbody.innerHTML = results.map(function(r, i){
-      return "<tr><td>" + (i + 1) + "</td><td>" + r.fullName + "</td><td><code>" + r.username + "</code></td><td>" + r.answered + "/" + r.total + "</td><td><strong>" + r.score + "</strong></td><td>" + (r.violations || 0) + "x (-" + (r.penalty || 0) + ")</td><td>" + r.time + "</td></tr>";
+      return "<tr><td>" + (i + 1) + "</td><td>" + r.fullName + "</td><td>" + (r.kelas || "-") + "</td><td>" + (r.mapel || "-") + "</td><td><code>" + r.username + "</code></td><td>" + r.answered + "/" + r.total + "</td><td><strong>" + r.score + "</strong></td><td>" + (r.violations || 0) + "x (-" + (r.penalty || 0) + ")</td><td>" + r.time + "</td></tr>";
     }).join("");
   }
 
   function downloadResultsCSV() {
     if (!results.length) { alert("Belum ada data rekap."); return; }
-    const header = "no,nama_siswa,username,terjawab,total_soal,poin_akhir,keluar_layar,potongan_poin,waktu\n";
+    const header = "no,nama_siswa,kelas,mapel,username,terjawab,total_soal,poin_akhir,keluar_layar,potongan_poin,waktu\n";
     const rows = results.map(function(r, i){
-      return (i + 1) + ',"' + String(r.fullName).replace(/"/g, '""') + '","' + String(r.username).replace(/"/g, '""') + '",' + r.answered + "," + r.total + "," + r.score + "," + (r.violations || 0) + "," + (r.penalty || 0) + ',"' + String(r.time).replace(/"/g, '""') + '"';
+      return (i + 1) + ',"' + String(r.fullName).replace(/"/g, '""') + '","' + String(r.kelas || "-").replace(/"/g, '""') + '","' + String(r.mapel || "-").replace(/"/g, '""') + '","' + String(r.username).replace(/"/g, '""') + '",' + r.answered + "," + r.total + "," + r.score + "," + (r.violations || 0) + "," + (r.penalty || 0) + ',"' + String(r.time).replace(/"/g, '""') + '"';
     }).join("\n");
     triggerDownload("rekap_nilai_siswa.csv", header + rows);
   }
