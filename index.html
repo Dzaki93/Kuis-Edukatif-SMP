@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Kuis Edukasi SMP - Tanpa Ngoding</title>
+  <title>Portal Kuis Edukasi SMP - Mode Fokus Sesi Siswa</title>
   <style>
     :root {
       --primary: #4f46e5;
@@ -31,7 +31,7 @@
 
     .container {
       width: 100%;
-      max-width: 880px;
+      max-width: 900px;
       background: var(--card);
       border-radius: 20px;
       box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15);
@@ -85,6 +85,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      text-decoration: none;
     }
     .btn:active { transform: scale(0.97); }
     .btn-primary { background: var(--primary); color: white; }
@@ -131,7 +132,44 @@
     .login-box h3 { margin-top: 0; text-align: center; }
     .error-msg { color: var(--danger); font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; min-height: 20px; text-align: center; }
 
-    /* Mode Siswa */
+    /* Mode Fokus Siswa */
+    .focus-banner {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      color: #92400e;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .lock-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.92);
+      color: white;
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+    .lock-overlay.active { display: flex; }
+
+    .lock-modal {
+      max-width: 440px;
+      background: #1e293b;
+      border: 2px solid #ef4444;
+      border-radius: 16px;
+      padding: 24px;
+    }
+
     .game-header {
       display: flex;
       justify-content: space-between;
@@ -148,6 +186,11 @@
       background: #e0e7ff;
       color: var(--primary);
       font-size: 0.9rem;
+    }
+
+    .badge-warn {
+      background: #fee2e2;
+      color: #991b1b;
     }
 
     .question-box {
@@ -191,6 +234,26 @@
       margin-top: 14px;
       font-weight: bold;
       min-height: 22px;
+    }
+
+    .rekap-card {
+      max-width: 520px;
+      margin: 16px auto;
+      background: #f8fafc;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 16px;
+      text-align: left;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
     }
 
     /* Panel Guru */
@@ -262,25 +325,52 @@
 
     .question-item h4 { margin: 0 0 6px; }
     .question-actions { margin-top: 10px; display: flex; gap: 8px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 10px;
+      text-align: left;
+    }
+    th { background: #eef2ff; color: var(--primary-dark); }
   </style>
 </head>
 <body>
 
+<!-- OVERLAY PERINGATAN SAAT SISWA KELUAR TAB / PINDAH APLIKASI -->
+<div id="focus-warning-overlay" class="lock-overlay">
+  <div class="lock-modal">
+    <h3 style="margin-top: 0; color: #fca5a5;">⚠️ Sesi Terkunci Sementara!</h3>
+    <p style="font-size: 0.95rem; line-height: 1.5;">
+      Terdeteksi perpindahan tab, keluar layar, atau upaya membuka halaman lain saat kuis sedang berlangsung.
+      Jumlah keluar layar tercatat: <strong id="overlay-violation-count">0</strong> kali.
+    </p>
+    <button class="btn btn-danger" style="width: 100%; justify-content: center;" onclick="dismissFocusWarning()">
+      Kembali ke Soal Kuis
+    </button>
+  </div>
+</div>
+
 <div class="container">
   <header>
-    <h1>?? Portal Kuis Edukasi SMP</h1>
-    <p>Upload Berkas Soal &amp; Data Siswa Tanpa Ngoding • Acak Soal &amp; Jawaban Otomatis</p>
+    <h1>🎓 Portal Kuis Edukasi SMP</h1>
+    <p>Mode Fokus Sesi Siswa • Pengacakan Soal &amp; Jawaban • Rekap Hasil</p>
   </header>
 
-  <div class="nav-tabs">
-    <button class="tab-btn active" id="btn-tab-play" onclick="switchTab('play')">?? Masuk Siswa</button>
-    <button class="tab-btn" id="btn-tab-editor" onclick="switchTab('editor')">?? Panel Guru</button>
+  <div class="nav-tabs" id="main-nav-tabs">
+    <button class="tab-btn active" id="btn-tab-play" onclick="switchTab('play')">🎮 Masuk Siswa</button>
+    <button class="tab-btn" id="btn-tab-editor" onclick="switchTab('editor')">🔒 Panel Guru</button>
   </div>
 
   <!-- ================= MODE SISWA ================= -->
   <div id="tab-play" class="section active">
     <div id="start-screen" class="login-box">
-      <h3>?? Login Siswa</h3>
+      <h3>🔑 Login Siswa</h3>
       <label>Username:</label>
       <input type="text" id="login-username" placeholder="Masukkan username siswa" />
 
@@ -291,35 +381,51 @@
       <input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key==='Enter') loginStudent()" />
 
       <div class="error-msg" id="student-login-error"></div>
-      <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="loginStudent()">Masuk &amp; Mulai Soal ??</button>
+      <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="loginStudent()">Masuk &amp; Mulai Soal ▶️</button>
     </div>
 
     <div id="quiz-screen" style="display: none;">
+      <div class="focus-banner">
+        <span>🔒 <strong>Mode Fokus Aktif:</strong> Jangan membuka tab/situs lain atau keluar layar hingga kuis selesai.</span>
+        <button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">⛶ Layar Penuh</button>
+      </div>
+
       <div class="game-header">
         <span class="badge" id="student-badge">Siswa: -</span>
         <span class="badge" id="q-counter">Soal 1/4</span>
         <span class="badge" id="score-display">Poin: 0</span>
+        <span class="badge badge-warn" id="violation-badge">Keluar Layar: 0</span>
       </div>
       <div class="question-box" id="question-text">Memuat soal...</div>
       <div class="options-grid" id="options-container"></div>
       <div class="status-poin" id="status-poin"></div>
-      <button class="btn btn-primary" id="next-btn" style="display: none; margin-top: 15px;" onclick="nextQuestion()">Soal Berikutnya ??</button>
+      <button class="btn btn-primary" id="next-btn" style="display: none; margin-top: 15px;" onclick="nextQuestion()">Soal Berikutnya ➡️</button>
     </div>
 
     <div id="result-screen" style="display: none; text-align: center;">
-      <h2>?? Kuis Selesai!</h2>
+      <h2>🎉 Kuis Selesai!</h2>
       <p id="final-player" style="font-size: 1.15rem; font-weight: bold;"></p>
       <p>Total Poin yang Diperoleh:</p>
-      <h1 id="final-score" style="color: var(--primary); font-size: 3rem; margin: 10px 0 24px;">0</h1>
-      <button class="btn btn-primary" onclick="logoutStudent()">Keluar / Kembali ke Login ??</button>
+      <h1 id="final-score" style="color: var(--primary); font-size: 3rem; margin: 10px 0 12px;">0</h1>
+
+      <div class="rekap-card" id="student-summary-box"></div>
+
+      <div class="action-row">
+        <button class="btn btn-success" onclick="copyStudentSummary()">📋 Salin Rekap Nilai</button>
+        <button class="btn btn-secondary" onclick="downloadStudentSummary()">⬇️ Unduh Bukti (.TXT)</button>
+      </div>
+
+      <div class="action-row" style="margin-top: 22px;">
+        <button class="btn btn-primary" onclick="logoutStudent()">Selesai &amp; Kembali ke Login 🔄</button>
+      </div>
     </div>
   </div>
 
   <!-- ================= PANEL GURU ================= -->
   <div id="tab-editor" class="section">
     <div id="editor-lock" class="login-box" style="text-align: center;">
-      <h3>?? Masukkan Sandi Guru</h3>
-      <p style="color: var(--muted); font-size: 0.9rem;">Area ini khusus untuk mengunggah soal, data siswa, dan token.</p>
+      <h3>🔐 Masukkan Sandi Guru</h3>
+      <p style="color: var(--muted); font-size: 0.9rem;">Area ini khusus untuk mengunggah soal, data siswa, token, dan melihat rekap.</p>
       <input type="password" id="editor-password-input" placeholder="Ketik sandi guru..." onkeydown="if(event.key==='Enter') unlockEditor()" />
       <div class="error-msg" id="password-error"></div>
       <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="unlockEditor()">Buka Panel Guru</button>
@@ -328,38 +434,37 @@
     <div id="editor-panel" style="display: none;">
       <div class="editor-topbar">
         <div class="sub-tabs" style="margin: 0;">
-          <button class="btn btn-primary btn-sm" id="sub-btn-soal" onclick="switchSubTab('soal')">?? Soal &amp; Jawaban</button>
-          <button class="btn btn-secondary btn-sm" id="sub-btn-siswa" onclick="switchSubTab('siswa')">?? Data Siswa &amp; Token</button>
+          <button class="btn btn-primary btn-sm" id="sub-btn-soal" onclick="switchSubTab('soal')">📝 Soal &amp; Jawaban</button>
+          <button class="btn btn-secondary btn-sm" id="sub-btn-siswa" onclick="switchSubTab('siswa')">👥 Data Siswa &amp; Token</button>
+          <button class="btn btn-secondary btn-sm" id="sub-btn-rekap" onclick="switchSubTab('rekap')">📊 Rekap Nilai</button>
         </div>
-        <button class="btn btn-secondary btn-sm" onclick="lockEditor()">?? Kunci Kembali</button>
+        <button class="btn btn-secondary btn-sm" onclick="lockEditor()">🔒 Kunci Kembali</button>
       </div>
 
-      <!-- BANNER UNDUH FILE WEB SIAP ONLINE TANPA NGODING -->
       <div class="publish-banner">
         <div>
-          <h4>?? Siap Dibagikan ke HP Semua Siswa Tanpa Ngoding?</h4>
+          <h4>🚀 Siap Dibagikan ke HP Semua Siswa Tanpa Ngoding?</h4>
           <p>Unduh paket <code>index.html</code> yang sudah memuat seluruh soal, data murid, dan token terbaru Anda.</p>
         </div>
-        <button class="btn btn-dark" onclick="exportStandaloneHTML()">?? Unduh File Web (index.html)</button>
+        <button class="btn btn-dark" onclick="exportStandaloneHTML()">📦 Unduh File Web (index.html)</button>
       </div>
 
       <!-- SUB-PANEL 1: KELOLA SOAL -->
       <div id="sub-panel-soal">
         <div class="import-card">
-          <h4>?? Upload Berkas Soal &amp; Jawaban (.CSV / .TXT / .JSON)</h4>
+          <h4>📥 Upload Berkas Soal &amp; Jawaban (.CSV / .TXT / .JSON)</h4>
           <p>
             Format CSV/TXT: <code>pertanyaan,opsiA,opsiB,opsiC,opsiD,kunci(A/B/C/D atau 0-3),poin</code>.
-            Klik tombol unduh template di bawah jika ingin mengisinya di Excel/Spreadsheet.
           </p>
           <input type="file" id="file-soal-input" accept=".csv,.txt,.json" />
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-success btn-sm" onclick="importQuestionsFromFile(false)">? Gabungkan ke Soal Ada</button>
-            <button class="btn btn-warning btn-sm" onclick="importQuestionsFromFile(true)">?? Ganti Semua Soal</button>
-            <button class="btn btn-info btn-sm" onclick="downloadQuestionTemplate()">?? Unduh Template Soal (.CSV)</button>
+            <button class="btn btn-success btn-sm" onclick="importQuestionsFromFile(false)">➕ Gabungkan ke Soal Ada</button>
+            <button class="btn btn-warning btn-sm" onclick="importQuestionsFromFile(true)">♻️ Ganti Semua Soal</button>
+            <button class="btn btn-info btn-sm" onclick="downloadQuestionTemplate()">⬇️ Unduh Template Soal (.CSV)</button>
           </div>
         </div>
 
-        <h3 id="form-title">? Tambah Soal Manual</h3>
+        <h3 id="form-title">➕ Tambah Soal Manual</h3>
         <input type="hidden" id="edit-index" value="-1" />
 
         <label>Pertanyaan:</label>
@@ -401,23 +506,23 @@
         </div>
 
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button class="btn btn-success" onclick="saveQuestion()">?? Simpan Soal</button>
+          <button class="btn btn-success" onclick="saveQuestion()">💾 Simpan Soal</button>
           <button class="btn btn-secondary" onclick="clearForm()">Bersihkan Form</button>
-          <button class="btn btn-danger" onclick="resetDefaultQuestions()">?? Reset Soal Awal</button>
+          <button class="btn btn-danger" onclick="resetDefaultQuestions()">🔄 Reset Soal Awal</button>
         </div>
 
         <hr style="margin: 24px 0; border: 0; border-top: 1px solid #cbd5e1;" />
-        <h4>?? Daftar Soal Aktif (<span id="total-q">0</span>)</h4>
+        <h4>📋 Daftar Soal Aktif (<span id="total-q">0</span>)</h4>
         <div id="questions-list"></div>
       </div>
 
       <!-- SUB-PANEL 2: AKUN SISWA & TOKEN -->
       <div id="sub-panel-siswa" style="display: none;">
-        <h3>?? Pengaturan Token Ujian</h3>
+        <h3>🔑 Pengaturan Token Ujian</h3>
         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
           <input type="text" id="input-token-aktif" style="max-width: 260px; margin: 0;" placeholder="Contoh: SMP2026" />
           <button class="btn btn-success" onclick="saveToken()">Simpan Token</button>
-          <button class="btn btn-secondary" onclick="generateRandomToken()">?? Acak Token</button>
+          <button class="btn btn-secondary" onclick="generateRandomToken()">🎲 Acak Token</button>
         </div>
         <p style="font-size: 0.88rem; color: var(--muted); margin-top: 6px;">
           Token aktif saat ini: <strong id="current-token-label" style="color: var(--primary);"></strong>
@@ -426,20 +531,19 @@
         <hr style="margin: 22px 0; border: 0; border-top: 1px solid #cbd5e1;" />
 
         <div class="import-card">
-          <h4>?? Upload Berkas Data Siswa (.CSV / .TXT / .JSON)</h4>
+          <h4>📥 Upload Berkas Data Siswa (.CSV / .TXT / .JSON)</h4>
           <p>
             Format CSV/TXT: <code>nama_lengkap_kelas,username,password</code>.
-            Username yang sudah ada otomatis dilewati agar tidak ganda.
           </p>
           <input type="file" id="file-murid-input" accept=".csv,.txt,.json" />
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-success btn-sm" onclick="importStudentsFromFile(false)">? Gabungkan ke Data Siswa</button>
-            <button class="btn btn-warning btn-sm" onclick="importStudentsFromFile(true)">?? Ganti Semua Data Siswa</button>
-            <button class="btn btn-info btn-sm" onclick="downloadStudentTemplate()">?? Unduh Template Siswa (.CSV)</button>
+            <button class="btn btn-success btn-sm" onclick="importStudentsFromFile(false)">➕ Gabungkan ke Data Siswa</button>
+            <button class="btn btn-warning btn-sm" onclick="importStudentsFromFile(true)">♻️ Ganti Semua Data Siswa</button>
+            <button class="btn btn-info btn-sm" onclick="downloadStudentTemplate()">⬇️ Unduh Template Siswa (.CSV)</button>
           </div>
         </div>
 
-        <h3>? Tambah Akun Siswa Manual</h3>
+        <h3>➕ Tambah Akun Siswa Manual</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
           <div>
             <label>Nama Lengkap / Kelas:</label>
@@ -456,17 +560,43 @@
         </div>
         <button class="btn btn-primary" onclick="addStudent()">Tambah Akun Siswa</button>
 
-        <h4 style="margin-top: 22px;">?? Daftar Akun Siswa Terdaftar (<span id="total-students">0</span>)</h4>
+        <h4 style="margin-top: 22px;">👥 Daftar Akun Siswa Terdaftar (<span id="total-students">0</span>)</h4>
         <div id="students-list"></div>
+      </div>
+
+      <!-- SUB-PANEL 3: REKAP NILAI -->
+      <div id="sub-panel-rekap" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <h3 style="margin: 0;">📊 Rekap Hasil Pengerjaan (Perangkat Ini)</h3>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-success btn-sm" onclick="downloadResultsCSV()">⬇️ Unduh Rekap (.CSV)</button>
+            <button class="btn btn-danger btn-sm" onclick="clearResults()">🗑️ Hapus Rekap</button>
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Siswa</th>
+                <th>Username</th>
+                <th>Benar</th>
+                <th>Total Poin</th>
+                <th>Keluar Layar</th>
+                <th>Waktu</th>
+              </tr>
+            </thead>
+            <tbody id="results-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  // ================= KONFIGURASI AWAL =================
   const EDITOR_PASSWORD = "guru123";
-  const STORAGE_NAMESPACE = "smp_quiz_nocode_v1";
+  const STORAGE_NAMESPACE = "smp_quiz_focus_v1";
 
   /*EMBEDDED_DATA_START*/
   const EMBEDDED_TOKEN = "SMP2026";
@@ -511,14 +641,71 @@
   let questions = JSON.parse(localStorage.getItem(STORAGE_NAMESPACE + "_q")) || [...EMBEDDED_QUESTIONS];
   let students = JSON.parse(localStorage.getItem(STORAGE_NAMESPACE + "_stu")) || [...EMBEDDED_STUDENTS];
   let activeToken = localStorage.getItem(STORAGE_NAMESPACE + "_token") || EMBEDDED_TOKEN;
+  let results = JSON.parse(localStorage.getItem(STORAGE_NAMESPACE + "_res")) || [];
 
   let isEditorUnlocked = false;
+  let isStudentQuizActive = false;
+  let violationCount = 0;
   let activeSessionQuestions = [];
   let currentIdx = 0;
   let score = 0;
+  let correctCount = 0;
   let activeStudent = null;
+  let lastSummaryText = "";
 
-  // ================= EXPORT FILE HTML SIAP PAKAI TANPA NGODING =================
+  // ================= PENGUNCIAN & DETEKSI KELUAR LAYAR =================
+  function setStudentLockUI(locked) {
+    const navTabs = document.getElementById("main-nav-tabs");
+    navTabs.style.display = locked ? "none" : "flex";
+  }
+
+  function recordFocusViolation() {
+    if (!isStudentQuizActive) return;
+    violationCount++;
+    document.getElementById("violation-badge").innerText = `Keluar Layar: ${violationCount}`;
+    document.getElementById("overlay-violation-count").innerText = violationCount;
+    document.getElementById("focus-warning-overlay").classList.add("active");
+  }
+
+  function dismissFocusWarning() {
+    document.getElementById("focus-warning-overlay").classList.remove("active");
+    requestFullscreenMode();
+  }
+
+  function requestFullscreenMode() {
+    const el = document.documentElement;
+    if (!document.fullscreenElement && el.requestFullscreen) {
+      el.requestFullscreen().catch(() => {});
+    }
+  }
+
+  function exitFullscreenMode() {
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden && isStudentQuizActive) {
+      recordFocusViolation();
+    }
+  });
+
+  window.addEventListener("blur", function() {
+    if (isStudentQuizActive) {
+      recordFocusViolation();
+    }
+  });
+
+  window.addEventListener("beforeunload", function(e) {
+    if (isStudentQuizActive) {
+      e.preventDefault();
+      e.returnValue = "Sesi kuis sedang berlangsung. Yakin ingin keluar atau membuka halaman lain?";
+      return e.returnValue;
+    }
+  });
+
+  // ================= EXPORT FILE HTML SIAP PAKAI =================
   function escapeScriptJSON(obj) {
     return JSON.stringify(obj, null, 2).replace(/<\/script>/gi, "<\\/script>");
   }
@@ -557,12 +744,7 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    alert(
-      "File 'index.html' berhasil diunduh!\n\n" +
-      "File ini sudah memuat " + questions.length + " soal, " +
-      students.length + " akun siswa, dan token '" + activeToken + "'. " +
-      "Anda bisa langsung mengunggahnya ke Netlify Drop, GitHub Pages, atau menyematkannya di Google Sites."
-    );
+    alert("File 'index.html' berhasil diunduh dengan data soal, murid, dan token terbaru!");
   }
 
   // ================= PARSER CSV & FILE =================
@@ -707,10 +889,9 @@
       try {
         const parsedQuestions = parseQuestionsText(e.target.result, file.name);
         if (parsedQuestions.length === 0) {
-          alert("Tidak ada data soal valid yang terbaca. Periksa format kolom berkas Anda.");
+          alert("Tidak ada data soal valid yang terbaca.");
           return;
         }
-
         questions = overwrite ? parsedQuestions : [...questions, ...parsedQuestions];
         localStorage.setItem(STORAGE_NAMESPACE + "_q", JSON.stringify(questions));
         renderEditorList();
@@ -736,7 +917,7 @@
       try {
         const parsedStudents = parseStudentsText(e.target.result, file.name);
         if (parsedStudents.length === 0) {
-          alert("Tidak ada data siswa valid yang terbaca. Pastikan format: nama_kelas,username,password");
+          alert("Tidak ada data siswa valid yang terbaca.");
           return;
         }
 
@@ -775,8 +956,8 @@
     reader.readAsText(file);
   }
 
-  function triggerDownload(filename, content) {
-    const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+  function triggerDownload(filename, content, mimeType = "text/csv;charset=utf-8;") {
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -803,7 +984,6 @@
     triggerDownload("template_data_siswa.csv", sampleCSV);
   }
 
-  // ================= PENGACAK SOAL & JAWABAN =================
   function shuffleArray(arr) {
     const copy = [...arr];
     for (let i = copy.length - 1; i > 0; i--) {
@@ -830,8 +1010,9 @@
     });
   }
 
-  // ================= NAVIGASI =================
   function switchTab(tab) {
+    if (isStudentQuizActive && tab === "editor") return;
+
     document.getElementById('btn-tab-play').classList.toggle('active', tab === 'play');
     document.getElementById('btn-tab-editor').classList.toggle('active', tab === 'editor');
     document.getElementById('tab-play').classList.toggle('active', tab === 'play');
@@ -845,18 +1026,17 @@
   function switchSubTab(sub) {
     document.getElementById('sub-panel-soal').style.display = sub === 'soal' ? 'block' : 'none';
     document.getElementById('sub-panel-siswa').style.display = sub === 'siswa' ? 'block' : 'none';
+    document.getElementById('sub-panel-rekap').style.display = sub === 'rekap' ? 'block' : 'none';
 
     document.getElementById('sub-btn-soal').className = sub === 'soal' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
     document.getElementById('sub-btn-siswa').className = sub === 'siswa' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+    document.getElementById('sub-btn-rekap').className = sub === 'rekap' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
 
-    if (sub === 'siswa') {
-      renderStudentsAndToken();
-    } else {
-      renderEditorList();
-    }
+    if (sub === 'siswa') renderStudentsAndToken();
+    else if (sub === 'rekap') renderResultsTable();
+    else renderEditorList();
   }
 
-  // ================= LOGIN & KUIS SISWA =================
   function loginStudent() {
     const uname = document.getElementById('login-username').value.trim();
     const pass = document.getElementById('login-password').value.trim();
@@ -891,12 +1071,19 @@
     activeStudent = foundStudent;
     currentIdx = 0;
     score = 0;
+    correctCount = 0;
+    violationCount = 0;
+    isStudentQuizActive = true;
+    setStudentLockUI(true);
+    requestFullscreenMode();
+
     activeSessionQuestions = buildRandomizedQuiz(questions);
 
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'none';
     document.getElementById('quiz-screen').style.display = 'block';
     document.getElementById('student-badge').innerText = `Siswa: ${activeStudent.fullName}`;
+    document.getElementById('violation-badge').innerText = `Keluar Layar: 0`;
 
     loadQuestion();
   }
@@ -931,6 +1118,7 @@
     if (selectedIdx === qObj.answer) {
       btnElement.classList.add('correct');
       score += qObj.poin;
+      correctCount++;
       statusEl.style.color = 'var(--success)';
       statusEl.innerText = `Jawaban Benar (+${qObj.poin} poin)`;
     } else {
@@ -949,16 +1137,73 @@
     if (currentIdx < activeSessionQuestions.length) {
       loadQuestion();
     } else {
-      document.getElementById('quiz-screen').style.display = 'none';
-      document.getElementById('result-screen').style.display = 'block';
-      document.getElementById('final-player').innerText = `${activeStudent.fullName} (@${activeStudent.username})`;
-      document.getElementById('final-score').innerText = `${score} Poin`;
+      finishStudentQuiz();
     }
   }
 
+  function finishStudentQuiz() {
+    isStudentQuizActive = false;
+    setStudentLockUI(false);
+    document.getElementById("focus-warning-overlay").classList.remove("active");
+    exitFullscreenMode();
+
+    const timestamp = new Date().toLocaleString("id-ID");
+    const totalSoal = activeSessionQuestions.length;
+
+    const record = {
+      fullName: activeStudent.fullName,
+      username: activeStudent.username,
+      correct: correctCount,
+      total: totalSoal,
+      score: score,
+      violations: violationCount,
+      time: timestamp
+    };
+
+    results.push(record);
+    localStorage.setItem(STORAGE_NAMESPACE + "_res", JSON.stringify(results));
+
+    lastSummaryText =
+      `REKAP HASIL KUIS SISWA\n` +
+      `Nama: ${activeStudent.fullName}\n` +
+      `Username: ${activeStudent.username}\n` +
+      `Benar: ${correctCount}/${totalSoal} soal\n` +
+      `Total Poin: ${score}\n` +
+      `Keluar Layar: ${violationCount} kali\n` +
+      `Waktu: ${timestamp}`;
+
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-player').innerText = `${activeStudent.fullName} (@${activeStudent.username})`;
+    document.getElementById('final-score').innerText = `${score} Poin`;
+    document.getElementById('student-summary-box').innerHTML =
+      `<strong>Nama:</strong> ${activeStudent.fullName}<br>` +
+      `<strong>Username:</strong> ${activeStudent.username}<br>` +
+      `<strong>Jawaban Benar:</strong> ${correctCount} dari ${totalSoal} soal<br>` +
+      `<strong>Total Poin:</strong> ${score}<br>` +
+      `<strong>Catatan Keluar Layar:</strong> ${violationCount} kali<br>` +
+      `<strong>Waktu Selesai:</strong> ${timestamp}`;
+  }
+
+  function copyStudentSummary() {
+    navigator.clipboard.writeText(lastSummaryText).then(() => {
+      alert("Rekap nilai berhasil disalin!");
+    }).catch(() => {
+      prompt("Salin teks rekap berikut:", lastSummaryText);
+    });
+  }
+
+  function downloadStudentSummary() {
+    const safeName = (activeStudent.username || "siswa").replace(/[^a-zA-Z0-9_-]/g, "_");
+    triggerDownload(`rekap_${safeName}.txt`, lastSummaryText, "text/plain;charset=utf-8;");
+  }
+
   function logoutStudent() {
+    isStudentQuizActive = false;
+    setStudentLockUI(false);
     activeStudent = null;
     activeSessionQuestions = [];
+    violationCount = 0;
     document.getElementById('login-username').value = '';
     document.getElementById('login-password').value = '';
     document.getElementById('login-token').value = '';
@@ -966,7 +1211,6 @@
     document.getElementById('start-screen').style.display = 'block';
   }
 
-  // ================= KEAMANAN PANEL GURU =================
   function unlockEditor() {
     const passInput = document.getElementById('editor-password-input').value;
     const errEl = document.getElementById('password-error');
@@ -993,10 +1237,10 @@
     if (isEditorUnlocked) {
       renderEditorList();
       renderStudentsAndToken();
+      renderResultsTable();
     }
   }
 
-  // ================= KELOLA SOAL =================
   function renderEditorList() {
     document.getElementById('total-q').innerText = questions.length;
     const container = document.getElementById('questions-list');
@@ -1010,8 +1254,8 @@
         <h4>${idx + 1}. ${item.q}</h4>
         <small>Kunci: <strong>${labels[item.answer]}. ${item.options[item.answer]}</strong> | Poin: <strong>${item.poin || 100}</strong></small>
         <div class="question-actions">
-          <button class="btn btn-warning btn-sm" onclick="editQuestion(${idx})">?? Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteQuestion(${idx})">??? Hapus</button>
+          <button class="btn btn-warning btn-sm" onclick="editQuestion(${idx})">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteQuestion(${idx})">🗑️ Hapus</button>
         </div>
       `;
       container.appendChild(div);
@@ -1036,11 +1280,8 @@
     }
 
     const newItem = { q, options: opts, answer: ans, poin };
-    if (editIdx === -1) {
-      questions.push(newItem);
-    } else {
-      questions[editIdx] = newItem;
-    }
+    if (editIdx === -1) questions.push(newItem);
+    else questions[editIdx] = newItem;
 
     localStorage.setItem(STORAGE_NAMESPACE + "_q", JSON.stringify(questions));
     clearForm();
@@ -1050,7 +1291,7 @@
 
   function editQuestion(idx) {
     const item = questions[idx];
-    document.getElementById('form-title').innerText = `?? Edit Soal #${idx + 1}`;
+    document.getElementById('form-title').innerText = `✏️ Edit Soal #${idx + 1}`;
     document.getElementById('edit-index').value = idx;
     document.getElementById('input-q').value = item.q;
     document.getElementById('input-opt0').value = item.options[0];
@@ -1070,7 +1311,7 @@
   }
 
   function clearForm() {
-    document.getElementById('form-title').innerText = "? Tambah Soal Manual";
+    document.getElementById('form-title').innerText = "➕ Tambah Soal Manual";
     document.getElementById('edit-index').value = -1;
     document.getElementById('input-q').value = '';
     document.getElementById('input-opt0').value = '';
@@ -1089,7 +1330,6 @@
     }
   }
 
-  // ================= KELOLA AKUN SISWA & TOKEN =================
   function renderStudentsAndToken() {
     document.getElementById('input-token-aktif').value = activeToken;
     document.getElementById('current-token-label').innerText = activeToken;
@@ -1165,7 +1405,47 @@
       renderStudentsAndToken();
     }
   }
+
+  function renderResultsTable() {
+    const tbody = document.getElementById("results-tbody");
+    if (!results || results.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--muted);">Belum ada rekap nilai tersimpan di perangkat ini.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = results.map((r, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${r.fullName}</td>
+        <td><code>${r.username}</code></td>
+        <td>${r.correct}/${r.total}</td>
+        <td><strong>${r.score}</strong></td>
+        <td>${r.violations || 0}x</td>
+        <td>${r.time}</td>
+      </tr>
+    `).join("");
+  }
+
+  function downloadResultsCSV() {
+    if (!results.length) {
+      alert("Belum ada data rekap untuk diunduh.");
+      return;
+    }
+    const header = "no,nama_siswa,username,benar,total_soal,poin,keluar_layar,waktu\n";
+    const rows = results.map((r, i) =>
+      `${i + 1},"${String(r.fullName).replace(/"/g, '""')}","${String(r.username).replace(/"/g, '""')}",${r.correct},${r.total},${r.score},${r.violations || 0},"${String(r.time).replace(/"/g, '""')}"`
+    ).join("\n");
+    triggerDownload("rekap_nilai_siswa.csv", header + rows);
+  }
+
+  function clearResults() {
+    if (confirm("Hapus semua data rekap nilai di perangkat ini?")) {
+      results = [];
+      localStorage.setItem(STORAGE_NAMESPACE + "_res", JSON.stringify(results));
+      renderResultsTable();
+    }
+  }
 </script>
 
 </body>
-</html>	
+</html>
