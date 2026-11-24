@@ -54,8 +54,9 @@
 <div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Mode Ujian Terproteksi - Soal Sesuai Kelas & Mapel - Penilaian Diproses Guru</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas:</label><input type="text" id="login-kelas" placeholder="Contoh: VIII A" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key==='Enter') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif:</strong> Keluar layar atau tindakan ilegal dicatat sebagai pelanggaran!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/10</span><span class="badge badge-warn" id="violation-badge">Pelanggaran: 0</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk berpindah soal):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Jawaban Telah Dikirim!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p style="color:var(--muted);">Hasil pengerjaan Anda telah terekam ke panel guru. Nilai tidak ditampilkan kepada siswa.</p><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Bukti Pengerjaan</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>
 <script>
 const STORAGE_NAMESPACE = "smp_quiz_2link_v4_blind";
+const REKAP_WEBHOOK_URL = "";
 const ACTIVE_TOKEN = "PEGAISTIMEWA";
-const SESSION_SALT = "sec_mwu6vbzp_hc7igc";
+const SESSION_SALT = "sec_mwu9nsj7_6v826r";
 const STUDENTS_DATA = [
   {
     "fullName": "Adiliya Nopitasari",
@@ -260,22 +261,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Akhirnya, 40 karung sampah berhasil terkumpul.",
-        "tokenHash": "847c977a654890fb"
+        "tokenHash": "d38dc4e684bb4aa1"
       },
       {
         "text": "Aku pulang dengan lelah, tetapi bangga.",
-        "tokenHash": "bfaef30420045275"
+        "tokenHash": "f2ab56685d068b3f"
       },
       {
         "text": "Kelompokku memilah sampah plastik hingga siang.",
-        "tokenHash": "a87553643a43ff59"
+        "tokenHash": "f4867eb0da1471b3"
       },
       {
         "text": "Kami tiba pukul 06.30, lalu dibagi menjadi tiga kelompok.",
-        "tokenHash": "6647291974e07962"
+        "tokenHash": "92fceed58b216510"
       }
     ],
-    "correctHash": "bfaef30420045275"
+    "correctHash": "f2ab56685d068b3f"
   },
   {
     "type": "pg",
@@ -286,22 +287,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Liburan semester lalu, aku mendaki Gunung Penanggungan bersama tiga sepupuku.",
-        "tokenHash": "d89c347eb8b46f79"
+        "tokenHash": "6c8e00321de7f30f"
       },
       {
         "text": "Mendaki gunung adalah kegiatan yang menantang dan menyehatkan badan.",
-        "tokenHash": "417b7c8459b65518"
+        "tokenHash": "ff5c39a00ccdd22a"
       },
       {
         "text": "Gunung Penanggungan terletak di wilayah Kabupaten Mojokerto, Jawa Timur.",
-        "tokenHash": "21e027571f54376f"
+        "tokenHash": "cf4804333f7aaee5"
       },
       {
         "text": "Setiap pendaki wajib membawa perbekalan dan perlengkapan yang memadai.",
-        "tokenHash": "3bf9bd1a437cf97e"
+        "tokenHash": "4fb4f9d6cbb895a4"
       }
     ],
-    "correctHash": "d89c347eb8b46f79"
+    "correctHash": "6c8e00321de7f30f"
   },
   {
     "type": "pg",
@@ -312,22 +313,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "(1) dan (2)",
-        "tokenHash": "18c390a23ca8f9c9"
+        "tokenHash": "9284f8ae95e3fdc7"
       },
       {
         "text": "(1) dan (3)",
-        "tokenHash": "d26ae9df6b00a3ae"
+        "tokenHash": "ef5e0f6b50fd8250"
       },
       {
         "text": "(2) dan (4)",
-        "tokenHash": "bbd974919528d4f4"
+        "tokenHash": "8a311905a9eeb886"
       },
       {
         "text": "(3) dan (4)",
-        "tokenHash": "297c70611e9a4ce0"
+        "tokenHash": "0f5ea99d6efc4f9e"
       }
     ],
-    "correctHash": "bbd974919528d4f4"
+    "correctHash": "8a311905a9eeb886"
   },
   {
     "type": "pg",
@@ -338,22 +339,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "(2)-(1)-(4)-(3)",
-        "tokenHash": "0b0353259b3bc2d1"
+        "tokenHash": "31d92a917e5adedb"
       },
       {
         "text": "(4)-(2)-(1)-(3)",
-        "tokenHash": "39b0f1c0e2a25810"
+        "tokenHash": "db34b7fc78b0997a"
       },
       {
         "text": "(2)-(4)-(3)-(1)",
-        "tokenHash": "04c77d531321d8b7"
+        "tokenHash": "2a05e98f4b9fb905"
       },
       {
         "text": "(2)-(4)-(1)-(3)",
-        "tokenHash": "0f9cbd0b9cd9686c"
+        "tokenHash": "b3dc662f5a2430a6"
       }
     ],
-    "correctHash": "0f9cbd0b9cd9686c"
+    "correctHash": "b3dc662f5a2430a6"
   },
   {
     "type": "pg",
@@ -364,22 +365,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Rekon pribadi, karena penulis menceritakan pengalaman yang ia alami sendiri",
-        "tokenHash": "c7b3310d7b4b2fae"
+        "tokenHash": "efc9d2c164dd1e4c"
       },
       {
         "text": "Rekon imajinatif, karena penulis mengembangkan peristiwa dari daya khayalnya",
-        "tokenHash": "9ac6d1489c87d099"
+        "tokenHash": "28e5876cab8876cb"
       },
       {
         "text": "Rekon faktual, karena menceritakan peristiwa nyata beserta tokoh dan waktunya",
-        "tokenHash": "d36328a0ba9895cd"
+        "tokenHash": "9d1a342c5e6484cf"
       },
       {
         "text": "Rekon pribadi, karena peristiwa diceritakan secara berurutan menurut waktu",
-        "tokenHash": "8427e51e8137a23f"
+        "tokenHash": "a6191f0222f430f5"
       }
     ],
-    "correctHash": "d36328a0ba9895cd"
+    "correctHash": "9d1a342c5e6484cf"
   },
   {
     "type": "pg",
@@ -390,22 +391,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Kalimat siswa 2 tepat sebagai orientasi karena memuat pelaku, waktu, tempat, dan kegiatan",
-        "tokenHash": "ece3ec53f7aed005"
+        "tokenHash": "cdc8153700937deb"
       },
       {
         "text": "Kalimat siswa 2 kurang tepat sebagai orientasi karena memakai kata ganti orang pertama",
-        "tokenHash": "39b780fb92e2e535"
+        "tokenHash": "f594e9b7e561c083"
       },
       {
         "text": "Kalimat siswa 1 tepat sebagai orientasi karena menjelaskan keunggulan pasar secara umum",
-        "tokenHash": "1503a8e842e501b0"
+        "tokenHash": "ec8ca6e4366a11ee"
       },
       {
         "text": "Kalimat siswa 1 tepat sebagai orientasi karena memuat fakta yang dapat dibuktikan",
-        "tokenHash": "971d0aad1f9e4f4f"
+        "tokenHash": "aa5e7c99079d43b1"
       }
     ],
-    "correctHash": "ece3ec53f7aed005"
+    "correctHash": "cdc8153700937deb"
   },
   {
     "type": "pg",
@@ -416,22 +417,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "penambahan dan syarat",
-        "tokenHash": "6e87e4d323c19778"
+        "tokenHash": "5a81b50f35c97db6"
       },
       {
         "text": "sebab dan temporal",
-        "tokenHash": "f015caf67cafed19"
+        "tokenHash": "2d80b65271c0b90f"
       },
       {
         "text": "tujuan dan pertentangan",
-        "tokenHash": "74c3baa526277c8a"
+        "tokenHash": "6254f6111da2499c"
       },
       {
         "text": "temporal dan pertentangan",
-        "tokenHash": "058109ad7407e659"
+        "tokenHash": "511a4021cf5a4133"
       }
     ],
-    "correctHash": "058109ad7407e659"
+    "correctHash": "511a4021cf5a4133"
   },
   {
     "type": "pg",
@@ -442,22 +443,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Menambahkan kata sifat pada kata bunga, misalnya bunga yang sangat indah",
-        "tokenHash": "c94d1e99631c415c"
+        "tokenHash": "d0d88615721a356a"
       },
       {
         "text": "Mengganti setiap sore dengan keterangan waktu tertentu, misalnya kemarin sore",
-        "tokenHash": "b81a83691c040dd4"
+        "tokenHash": "c9d9f2fd050dbdd6"
       },
       {
         "text": "Mengganti menyiram dengan kata kerja pasif, misalnya disiram oleh Pak Hasan",
-        "tokenHash": "14838bb7542cd19e"
+        "tokenHash": "b9f1ca83f7999f90"
       },
       {
         "text": "Menambahkan kata hubung sebab, misalnya sebab Pak Hasan menyiram bunga",
-        "tokenHash": "e7828cfa59251bcd"
+        "tokenHash": "4022d626fd8c964b"
       }
     ],
-    "correctHash": "b81a83691c040dd4"
+    "correctHash": "c9d9f2fd050dbdd6"
   },
   {
     "type": "pg",
@@ -468,22 +469,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Kejujuran, karena mengembalikan barang temuan tanpa mengharapkan imbalan",
-        "tokenHash": "2a24937ef00a22f8"
+        "tokenHash": "ed62863204978d22"
       },
       {
         "text": "Kehati-hatian, karena menjaga barang bawaan selama berada di perjalanan",
-        "tokenHash": "9b29098486a2a639"
+        "tokenHash": "cdeb2ba05c2720d3"
       },
       {
         "text": "Keberanian, karena bertindak sendiri tanpa meminta bantuan orang lain",
-        "tokenHash": "7b8db45734ccdfa2"
+        "tokenHash": "9dd6f6337941b650"
       },
       {
         "text": "Kedermawanan, karena memberikan uang kepada orang yang membutuhkan",
-        "tokenHash": "95a74a1a20637d03"
+        "tokenHash": "1e43ebd6789cab29"
       }
     ],
-    "correctHash": "2a24937ef00a22f8"
+    "correctHash": "ed62863204978d22"
   },
   {
     "type": "pg",
@@ -494,22 +495,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Penonton memberi dukungan lebih keras pada babak kedua",
-        "tokenHash": "3da14a379317d22b"
+        "tokenHash": "996cd3ebeb1ef411"
       },
       {
         "text": "Pelatih mengubah strategi tim saat waktu jeda pertandingan",
-        "tokenHash": "04e882b7b1821f30"
+        "tokenHash": "2f066b23bfe70032"
       },
       {
         "text": "Lawan kehilangan satu pemain karena mendapat kartu merah",
-        "tokenHash": "f26add19933e5135"
+        "tokenHash": "b96d6e1d99ff0927"
       },
       {
         "text": "Wasit memberi tambahan waktu pada babak kedua pertandingan",
-        "tokenHash": "34990764e7ecd934"
+        "tokenHash": "5faa0c984a5912b6"
       }
     ],
-    "correctHash": "04e882b7b1821f30"
+    "correctHash": "2f066b23bfe70032"
   },
   {
     "type": "pg",
@@ -520,22 +521,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Pada hari Minggu, aku dan adikku pergi ke taman kota kemudian setelah itu pulang.",
-        "tokenHash": "e8228a2fcbbb15e9"
+        "tokenHash": "b1aa012b17ac26b7"
       },
       {
         "text": "Pada hari Minggu, aku dan adikku pergi ke taman kota lalu kemudian pulang ke rumah.",
-        "tokenHash": "2e9774f2d254e7da"
+        "tokenHash": "d9c8386e24fb5a3c"
       },
       {
         "text": "Pada hari Minggu, aku dan adikku pergi ke taman kota, lalu pulang ke rumah.",
-        "tokenHash": "bf9276d636076566"
+        "tokenHash": "352a5a8a8a736f8c"
       },
       {
         "text": "Pada hari Minggu, aku dan adikku pergi ke taman kota, setelah itu lalu pulang.",
-        "tokenHash": "fcfc6f1c1240d160"
+        "tokenHash": "e60dced81bb79f1e"
       }
     ],
-    "correctHash": "bf9276d636076566"
+    "correctHash": "352a5a8a8a736f8c"
   },
   {
     "type": "pg",
@@ -546,22 +547,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Teks 1 berupa teks eksplanasi, sedangkan teks 2 berupa teks rekon",
-        "tokenHash": "3d2b99f4b3ce61d3"
+        "tokenHash": "b21cfa38e904e005"
       },
       {
         "text": "Teks 1 dan teks 2 sama-sama berupa teks rekon peristiwa",
-        "tokenHash": "a560b1e9d78bcd12"
+        "tokenHash": "0be05bbd870d68dc"
       },
       {
         "text": "Teks 1 berupa teks prosedur, sedangkan teks 2 berupa teks laporan",
-        "tokenHash": "c2a35d8a44a7db19"
+        "tokenHash": "6b1af2ce199f37e7"
       },
       {
         "text": "Teks 1 berupa teks rekon, sedangkan teks 2 berupa teks eksplanasi",
-        "tokenHash": "2da5003453943260"
+        "tokenHash": "4d2bf7f01755967e"
       }
     ],
-    "correctHash": "2da5003453943260"
+    "correctHash": "4d2bf7f01755967e"
   },
   {
     "type": "pg_kompleks",
@@ -572,24 +573,24 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Kalimat terakhir merupakan salah satu peristiwa utama dalam rangkaian kejadian",
-        "tokenHash": "a7fab01228f3dd6e"
+        "tokenHash": "0ba6ac36880acb50"
       },
       {
         "text": "Kalimat pertama memuat orientasi berupa waktu, pelaku, tempat, dan kegiatan",
-        "tokenHash": "3c9d1f5cc1d6eee8"
+        "tokenHash": "5d0b1d18958b8c92"
       },
       {
         "text": "Teks tersebut termasuk rekon imajinatif karena tokoh dan tempatnya rekaan",
-        "tokenHash": "a1f19b3c6c81f718"
+        "tokenHash": "07086980b731c0c6"
       },
       {
         "text": "Kata pertama dan lalu menandai urutan peristiwa secara kronologis",
-        "tokenHash": "5dfa5ab6b8de6156"
+        "tokenHash": "15456152dea4ab4c"
       }
     ],
     "expectedHashes": [
-      "3c9d1f5cc1d6eee8",
-      "5dfa5ab6b8de6156"
+      "5d0b1d18958b8c92",
+      "15456152dea4ab4c"
     ]
   },
   {
@@ -601,25 +602,25 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Menggunakan kata kerja aksi, misalnya berangkat, menyusuri, dan menemui",
-        "tokenHash": "3610fa4e5bff1948"
+        "tokenHash": "63551f02065b467e"
       },
       {
         "text": "Menggunakan kalimat perintah, misalnya potonglah, aduklah, dan masukkan",
-        "tokenHash": "2051d6b43216998e"
+        "tokenHash": "acae17904b030ca4"
       },
       {
         "text": "Menggunakan keterangan waktu dan tempat, misalnya pagi itu dan di stasiun",
-        "tokenHash": "a2eec7f4ffc7e6ca"
+        "tokenHash": "2adf50081948ee6c"
       },
       {
         "text": "Menggunakan konjungsi temporal, misalnya kemudian, setelah itu, dan akhirnya",
-        "tokenHash": "5f7374e731811c0f"
+        "tokenHash": "de214e3b79e82a1d"
       }
     ],
     "expectedHashes": [
-      "3610fa4e5bff1948",
-      "a2eec7f4ffc7e6ca",
-      "5f7374e731811c0f"
+      "63551f02065b467e",
+      "2adf50081948ee6c",
+      "de214e3b79e82a1d"
     ]
   },
   {
@@ -631,24 +632,24 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Kalimat ketiga menyimpang dari alur karena memuat pernyataan umum, bukan peristiwa",
-        "tokenHash": "54fa1768f77e5687"
+        "tokenHash": "3636d71c6fd23941"
       },
       {
         "text": "Kalimat kedua perlu dihapus karena waktu keberangkatan tidak penting untuk ditulis",
-        "tokenHash": "958797e6c7e9f191"
+        "tokenHash": "d4f629d27cc90aa7"
       },
       {
         "text": "Teks belum memiliki reorientasi yang berisi kesan atau penutup pengalaman",
-        "tokenHash": "e05e69e278336e45"
+        "tokenHash": "9f9a4176a428d70b"
       },
       {
         "text": "Kata sesampainya perlu diganti karena bukan penanda urutan waktu",
-        "tokenHash": "b68051b0342079b7"
+        "tokenHash": "b325f6fca6afc701"
       }
     ],
     "expectedHashes": [
-      "54fa1768f77e5687",
-      "e05e69e278336e45"
+      "3636d71c6fd23941",
+      "9f9a4176a428d70b"
     ]
   },
   {
@@ -660,24 +661,24 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Kutipan (1) cocok untuk rekon pribadi karena memuat peristiwa nyata yang besar",
-        "tokenHash": "cbf4e62acdccb3fc"
+        "tokenHash": "90dbdfd6b6dbe90e"
       },
       {
         "text": "Kutipan (1) cocok untuk rekon faktual karena memuat peristiwa nyata bersifat umum",
-        "tokenHash": "936f8f9459a03362"
+        "tokenHash": "a6958af8dc30f754"
       },
       {
         "text": "Kutipan (2) cocok untuk rekon pribadi karena memuat pengalaman penulis sendiri",
-        "tokenHash": "72164db9e937a295"
+        "tokenHash": "1a74dc4da7c182df"
       },
       {
         "text": "Kutipan (2) cocok untuk rekon faktual karena memuat tokoh dan waktu tertentu",
-        "tokenHash": "f0a0f4896bebb1e5"
+        "tokenHash": "bcd0b405a92fa82f"
       }
     ],
     "expectedHashes": [
-      "936f8f9459a03362",
-      "72164db9e937a295"
+      "a6958af8dc30f754",
+      "1a74dc4da7c182df"
     ]
   },
   {
@@ -689,14 +690,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Benar",
-        "tokenHash": "84fbc2307c644b1f"
+        "tokenHash": "78f415c4b0fb5b69"
       },
       {
         "text": "Salah",
-        "tokenHash": "bcfd87626d26c482"
+        "tokenHash": "33a2b3be8bdc6e2c"
       }
     ],
-    "correctHash": "bcfd87626d26c482"
+    "correctHash": "33a2b3be8bdc6e2c"
   },
   {
     "type": "benar_salah",
@@ -707,14 +708,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Benar",
-        "tokenHash": "4e050dacec4057c1"
+        "tokenHash": "104cdf4890fc989b"
       },
       {
         "text": "Salah",
-        "tokenHash": "a7cd8382d41e20ff"
+        "tokenHash": "7cb54206b0257985"
       }
     ],
-    "correctHash": "4e050dacec4057c1"
+    "correctHash": "104cdf4890fc989b"
   },
   {
     "type": "setuju_tidak",
@@ -725,14 +726,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Setuju",
-        "tokenHash": "3e7e3c83966225fe"
+        "tokenHash": "910a657f15f6cdc0"
       },
       {
         "text": "Tidak Setuju",
-        "tokenHash": "fc3bf15bcc329e16"
+        "tokenHash": "6960f37febe333ac"
       }
     ],
-    "correctHash": "fc3bf15bcc329e16"
+    "correctHash": "6960f37febe333ac"
   },
   {
     "type": "setuju_tidak",
@@ -743,14 +744,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Setuju",
-        "tokenHash": "d2b518be18bd21b2"
+        "tokenHash": "a06008ba05a624e0"
       },
       {
         "text": "Tidak Setuju",
-        "tokenHash": "e2e914c4d7540970"
+        "tokenHash": "823c2128666d6036"
       }
     ],
-    "correctHash": "d2b518be18bd21b2"
+    "correctHash": "a06008ba05a624e0"
   },
   {
     "type": "iya_tidak",
@@ -761,14 +762,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Iya",
-        "tokenHash": "10df0760c9f87246"
+        "tokenHash": "4c3fc0e4a9d4d6d0"
       },
       {
         "text": "Tidak",
-        "tokenHash": "90a2bfde752741b0"
+        "tokenHash": "e821541a3c943f5a"
       }
     ],
-    "correctHash": "10df0760c9f87246"
+    "correctHash": "4c3fc0e4a9d4d6d0"
   },
   {
     "type": "iya_tidak",
@@ -779,14 +780,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Iya",
-        "tokenHash": "57ff98ebd530c74f"
+        "tokenHash": "37ff523771aa2395"
       },
       {
         "text": "Tidak",
-        "tokenHash": "9a37b223a9d523f0"
+        "tokenHash": "75f75ab77b9d18ca"
       }
     ],
-    "correctHash": "9a37b223a9d523f0"
+    "correctHash": "75f75ab77b9d18ca"
   },
   {
     "type": "essay",
@@ -795,10 +796,10 @@ const QUESTIONS_BANK = [
     "q": "Tulislah satu paragraf orientasi (2-3 kalimat) untuk teks rekon tentang pengalamanmu mengikuti upacara bendera pertama kali di SMP! Pastikan paragraf memuat pelaku, waktu, tempat, dan kegiatan.",
     "poin": 10,
     "keyHashes": [
-      "ae6371af5833bd29",
-      "1cc22aafe41d150e",
-      "77560788e758c62e",
-      "c5aca20966ca6182"
+      "974da783d88e83ff",
+      "91f171ebfd50b688",
+      "9fa550548ae32500",
+      "2f8a419589df2cf4"
     ],
     "minLen": 0
   },
@@ -809,10 +810,10 @@ const QUESTIONS_BANK = [
     "q": "Sebuah teks rekon hanya berisi: Aku mengikuti lomba menyanyi. Aku menyanyi. Aku menang. Jelaskan dua kelemahan teks tersebut dan sebutkan bagian apa yang perlu ditambahkan untuk memperbaikinya!",
     "poin": 10,
     "keyHashes": [
-      "3d38bc824ca476af",
-      "e0d99080a2dee369",
-      "52b728da718c80aa",
-      "e96febe9ad69c1dd"
+      "a2bf156e66e05d0d",
+      "1cb940543767cd33",
+      "c2fc77ae1825f068",
+      "1d835c5dd600603f"
     ],
     "minLen": 0
   },
@@ -823,10 +824,10 @@ const QUESTIONS_BANK = [
     "q": "Mengapa teks rekon biografi tokoh lebih tepat memakai sudut pandang orang ketiga, sedangkan rekon pengalaman pribadi lebih tepat memakai sudut pandang orang pertama? Jelaskan dengan alasanmu!",
     "poin": 10,
     "keyHashes": [
-      "0b31a1cc258dd5f8",
-      "af08dd356cd0da3d",
-      "b735b247df370581",
-      "13d27ae5b233ebf0"
+      "c3be3c7875f081da",
+      "1c1acec16d779827",
+      "abc05e7b4bb16fdf",
+      "7ff94e3987f5fb92"
     ],
     "minLen": 0
   }
@@ -862,7 +863,7 @@ function selectSingleAnswer(idx) { const qObj = activeSessionQuestions[currentId
 function toggleComplexOption(idx) { const qObj = activeSessionQuestions[currentIdx]; const s = new Set(qObj.userAnswer || []); if (s.has(idx)) s.delete(idx); else s.add(idx); qObj.userAnswer = Array.from(s).sort(function(a,b){ return a - b; }); loadQuestion(); }
 function confirmComplexAnswer() { const qObj = activeSessionQuestions[currentIdx]; const chIdx = (qObj.userAnswer || []).slice().sort(function(a,b){ return a - b; }); if (!chIdx.length) { alert("Pilih minimal satu jawaban."); return; } const chHashes = chIdx.map(function(i){ return qObj.entries[i] ? qObj.entries[i].tokenHash : ""; }).sort(); const exHashes = (qObj.expectedHashes || []).slice().sort(); const ok = chHashes.length === exHashes.length && chHashes.every(function(v, i){ return v === exHashes[i]; }); qObj.answered = true; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }
 function submitEssayAnswer(val) { const qObj = activeSessionQuestions[currentIdx]; const cl = String(val || "").trim(); if (!cl) { alert("Silakan isi jawaban essay."); return; } qObj.userAnswer = cl; qObj.answered = true; const kHashes = qObj.keyHashes || []; if (kHashes.length) { const words = cl.toLowerCase().split(/[^a-z0-9À-ɏ]+/i).filter(Boolean); const fullLower = cl.toLowerCase(); const matched = kHashes.some(function(h){ return h === hashDigestSync(qObj.qSalt + "::" + fullLower) || words.some(function(w){ return h === hashDigestSync(qObj.qSalt + "::" + w); }); }); qObj.earnedScore = matched ? qObj.poin : 0; } else { qObj.earnedScore = cl.length >= (qObj.minLen || 10) ? qObj.poin : 0; } recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }
-function saveResultToGuruStorage(record) { try { const key = STORAGE_NAMESPACE + "_res"; const existing = JSON.parse(localStorage.getItem(key)) || []; existing.unshift(record); localStorage.setItem(key, JSON.stringify(existing)); } catch (e) {} }
+function saveResultToGuruStorage(record) { try { const key = STORAGE_NAMESPACE + "_res"; const existing = JSON.parse(localStorage.getItem(key)) || []; existing.unshift(record); localStorage.setItem(key, JSON.stringify(existing)); } catch (e) {} if (typeof REKAP_WEBHOOK_URL === "string" && REKAP_WEBHOOK_URL.startsWith("https://")) { fetch(REKAP_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(record) }).catch(function(){}); } }
 function confirmFinishQuiz() { const unans = activeSessionQuestions.filter(function(q){ return !q.answered; }).length; const msg = unans > 0 ? ("Masih ada " + unans + " soal belum dijawab. Yakin ingin menyelesaikan kuis?") : "Yakin ingin menyelesaikan dan mengumpulkan hasil kuis?"; if (confirm(msg)) finishStudentQuiz(); }
 function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); isStudentQuizActive = false; setQuizLockVisual(false); document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; saveResultToGuruStorage({ fullName: activeStudent.fullName, kelas: activeKelas, mapel: mapelLabel, username: activeStudent.username, answered: ansCnt, total: tot, score: score, violations: violationCount, penalty: totalPenaltyPoints, time: ts }); lastSummaryText = "BUKTI PENGERJAAN KUIS SISWA\nNama: " + activeStudent.fullName + "\nKelas: " + activeKelas + "\nMapel: " + mapelLabel + "\nUsername: " + activeStudent.username + "\nTerjawab: " + ansCnt + "/" + tot + " soal\nPelanggaran: " + violationCount + " kali\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " • @" + activeStudent.username + ")"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Pelanggaran:</strong> " + violationCount + " kali<br><strong>Waktu Kirim:</strong> " + ts + "<br><strong>Status Nilai:</strong> Disimpan untuk penilaian guru"; }
 function copyStudentSummary() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastSummaryText).then(function(){ alert("Bukti pengerjaan berhasil disalin!"); }).catch(function(){ prompt("Salin bukti berikut:", lastSummaryText); }); else prompt("Salin bukti berikut:", lastSummaryText); }
