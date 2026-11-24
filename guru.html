@@ -33,7 +33,7 @@
 
     .container {
       width: 100%;
-      max-width: 960px;
+      max-width: 1020px;
       background: var(--card);
       border-radius: 20px;
       box-shadow: 0 15px 35px rgba(15, 23, 42, 0.14);
@@ -223,8 +223,45 @@
       margin-top: 12px;
       font-size: 0.88rem;
     }
-    th, td { border: 1px solid #cbd5e1; padding: 9px; text-align: left; }
+    th, td { border: 1px solid #cbd5e1; padding: 9px; text-align: left; vertical-align: top; }
     th { background: #eef2ff; color: #3730a3; }
+
+    .status-benar {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+    .status-salah {
+      display: inline-block;
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+    .status-kosong {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+
+    .detail-panel {
+      margin-top: 18px;
+      border: 2px solid #c7d2fe;
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 16px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -232,7 +269,7 @@
 <div class="container">
   <header>
     <h1>🛠️ Panel Guru — Manajemen Kuis SMP</h1>
-    <p>Rekap Otomatis ke Guru • Nilai &amp; Status Benar/Salah Disembunyikan dari Siswa • Filter Kelas &amp; Mapel</p>
+    <p>Rekap Otomatis ke Guru • Detail Benar/Salah Tiap Soal • Nilai &amp; Status Benar/Salah Disembunyikan dari Siswa</p>
   </header>
 
   <div class="section">
@@ -256,8 +293,8 @@
 
       <div class="publish-banner">
         <div>
-          <h4>📦 Generate <code>index.html</code> (Mode Blind Grading &amp; Rekap ke Guru)</h4>
-          <p>Siswa tidak melihat benar/salah maupun skor akhir; hasil pengerjaan otomatis terekap ke tab <strong>Rekap Nilai</strong> di panel guru.</p>
+          <h4>📦 Generate <code>index.html</code> (Mode Blind Grading &amp; Rekap Per Soal ke Guru)</h4>
+          <p>Siswa tidak melihat benar/salah maupun skor akhir; hasil &amp; detail benar/salah tiap soal otomatis terkirim ke guru.</p>
         </div>
         <button class="btn btn-success" onclick="downloadStudentIndexHTML()">⬇️ Unduh index.html Terbaru</button>
       </div>
@@ -460,14 +497,37 @@
                 <th>Kelas</th>
                 <th>Mapel</th>
                 <th>Username</th>
-                <th>Terjawab</th>
+                <th>Benar / Salah</th>
                 <th>Poin Akhir</th>
                 <th>Pelanggaran</th>
                 <th>Waktu</th>
+                <th>Detail Soal</th>
               </tr>
             </thead>
             <tbody id="results-tbody"></tbody>
           </table>
+        </div>
+
+        <div id="student-detail-panel" class="detail-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <h4 id="detail-panel-title" style="margin: 0; color: #1e293b;">📝 Rincian Jawaban Per Soal</h4>
+            <button class="btn btn-secondary btn-sm" onclick="closeStudentDetail()">✖ Tutup Detail</button>
+          </div>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Tipe</th>
+                  <th>Pertanyaan</th>
+                  <th>Jawaban Siswa</th>
+                  <th>Status</th>
+                  <th>Poin</th>
+                </tr>
+              </thead>
+              <tbody id="detail-panel-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -481,8 +541,7 @@
   }
 
   const GURU_PASSWORD = "guru123";
-  const STORAGE_NAMESPACE = "smp_quiz_2link_v4_blind";
-  // Isi URL Web App Google Apps Script jika ingin rekap lintas HP/email otomatis masuk ke tabel guru
+  const STORAGE_NAMESPACE = "smp_quiz_2link_v5_detail";
   const REKAP_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxIBYUWVF56qo0ogQ06gSm19hHoNcEIgkTbtcRro3pl7iAX-ztZ1uSp5rogtgBpmtHL/exec";
 
   const DEFAULT_TOKEN = "SMP2026";
@@ -520,6 +579,14 @@
     iya_tidak: "Iya / Tidak",
     essay: "Essay"
   };
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
 
   function hashDigestSync(str) {
     let h1 = 0x811c9dc5;
@@ -569,6 +636,7 @@
 
   function lockGuru() {
     clearForm();
+    closeStudentDetail();
     document.getElementById("guru-panel").style.display = "none";
     document.getElementById("lock-view").style.display = "block";
   }
@@ -871,20 +939,20 @@
       'window.addEventListener("beforeunload", function(e){ if (isStudentQuizActive) { e.preventDefault(); e.returnValue = "Sesi kuis sedang berlangsung."; return e.returnValue; } });\n',
       'function shuffleArray(arr) { const c = arr.slice(); for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = c[i]; c[i] = c[j]; c[j] = t; } return c; }\n',
       'function filterBankByKelasAndMapel(bank, kelasInput, mapelInput) { const kNorm = String(kelasInput || "").trim().toLowerCase(); const mNorm = String(mapelInput || "").trim().toLowerCase(); const byKelas = bank.filter(function(q){ const qk = String(q.kelas || "semua").trim().toLowerCase(); return !kNorm || qk === "semua" || qk === kNorm; }); const poolKelas = byKelas.length ? byKelas : bank; if (!mNorm) return poolKelas; const byMapel = poolKelas.filter(function(q){ return String(q.mapel || "").trim().toLowerCase() === mNorm; }); return byMapel.length ? byMapel : poolKelas; }\n',
-      'function prepareSingleQuestionForStudent(item, bankIdx) { const type = item.type || "pg"; const poin = Number(item.poin) || 100; const mapel = item.mapel || "Umum"; const kelas = item.kelas || "Semua"; const qSalt = SESSION_SALT + ":" + bankIdx + ":" + String(item.q || ""); if (type === "essay") return { type: "essay", kelas: kelas, mapel: mapel, q: item.q, qSalt: qSalt, keyHashes: item.keyHashes || [], minLen: item.minLen || 0, poin: poin, userAnswer: "", answered: false, earnedScore: 0 }; const shEntries = shuffleArray(item.entries || []); if (type === "pg_kompleks") return { type: "pg_kompleks", kelas: kelas, mapel: mapel, q: item.q, entries: shEntries, expectedHashes: item.expectedHashes || [], poin: poin, userAnswer: [], answered: false, earnedScore: 0 }; return { type: type, kelas: kelas, mapel: mapel, q: item.q, entries: shEntries, correctHash: item.correctHash || "", poin: poin, userAnswer: null, answered: false, earnedScore: 0 }; }\n',
+      'function prepareSingleQuestionForStudent(item, bankIdx) { const type = item.type || "pg"; const poin = Number(item.poin) || 100; const mapel = item.mapel || "Umum"; const kelas = item.kelas || "Semua"; const qSalt = SESSION_SALT + ":" + bankIdx + ":" + String(item.q || ""); if (type === "essay") return { type: "essay", kelas: kelas, mapel: mapel, q: item.q, qSalt: qSalt, keyHashes: item.keyHashes || [], minLen: item.minLen || 0, poin: poin, userAnswer: "", answerLabel: "", answered: false, isCorrect: false, earnedScore: 0 }; const shEntries = shuffleArray(item.entries || []); if (type === "pg_kompleks") return { type: "pg_kompleks", kelas: kelas, mapel: mapel, q: item.q, entries: shEntries, expectedHashes: item.expectedHashes || [], poin: poin, userAnswer: [], answerLabel: "", answered: false, isCorrect: false, earnedScore: 0 }; return { type: type, kelas: kelas, mapel: mapel, q: item.q, entries: shEntries, correctHash: item.correctHash || "", poin: poin, userAnswer: null, answerLabel: "", answered: false, isCorrect: false, earnedScore: 0 }; }\n',
       'function buildStudentQuizSet(bank) { const indexed = bank.map(function(q, idx){ return { q: q, idx: idx }; }); const limit = Math.min(QUIZ_TOTAL_QUESTIONS, indexed.length); const sPool = shuffleArray(indexed.filter(function(x){ return ["pg", "benar_salah", "setuju_tidak", "iya_tidak"].indexOf(x.q.type || "pg") !== -1; })); const cPool = shuffleArray(indexed.filter(function(x){ return x.q.type === "pg_kompleks"; })); const ePool = shuffleArray(indexed.filter(function(x){ return x.q.type === "essay"; })); const picked = []; const used = new Set(); function take(pool, cnt) { for (let i = 0; i < pool.length; i++) { if (picked.length >= limit || cnt <= 0) break; if (!used.has(pool[i].idx)) { picked.push(pool[i]); used.add(pool[i].idx); cnt--; } } } take(sPool, 5); take(cPool, 3); take(ePool, 2); if (picked.length < limit) { const rem = shuffleArray(indexed.filter(function(x){ return !used.has(x.idx); })); for (let i = 0; i < rem.length; i++) { if (picked.length >= limit) break; picked.push(rem[i]); used.add(rem[i].idx); } } return shuffleArray(picked).map(function(entry){ return prepareSingleQuestionForStudent(entry.q, entry.idx); }); }\n',
       'function renderQuestionNav() { const grid = document.getElementById("question-nav-grid"); grid.innerHTML = ""; activeSessionQuestions.forEach(function(qItem, idx){ const btn = document.createElement("button"); btn.className = "q-num-btn" + (qItem.answered ? " answered" : "") + (idx === currentIdx ? " current" : ""); btn.innerText = String(idx + 1); btn.onclick = function(){ jumpToQuestion(idx); }; grid.appendChild(btn); }); }\n',
       'function jumpToQuestion(idx) { if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; } currentIdx = idx; loadQuestion(); }\n',
       'function recalculateTotalScore() { const sum = activeSessionQuestions.reduce(function(acc, q){ return acc + (q.earnedScore || 0); }, 0); score = sum - totalPenaltyPoints; }\n',
       'function scheduleNextQuestion() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); autoAdvanceTimer = setTimeout(function(){ if (!isStudentQuizActive) return; if (currentIdx < activeSessionQuestions.length - 1) { currentIdx++; loadQuestion(); } }, 450); }\n',
       'function loadQuestion() { const qObj = activeSessionQuestions[currentIdx]; renderQuestionNav(); recalculateTotalScore(); document.getElementById("mapel-badge").innerText = "Mapel: " + (qObj.mapel || activeMapel || "Umum"); document.getElementById("q-type-badge").innerText = TYPE_LABELS[qObj.type] || "Soal"; document.getElementById("q-counter").innerText = "Soal " + (currentIdx + 1) + "/" + activeSessionQuestions.length; document.getElementById("question-text").innerText = qObj.q; const area = document.getElementById("answer-area"); const statusEl = document.getElementById("status-poin"); area.innerHTML = ""; statusEl.innerText = qObj.answered ? "Jawaban sudah tercatat (dapat diubah sebelum selesai)." : ""; statusEl.style.color = "var(--muted)"; const labels = ["A", "B", "C", "D"]; if (qObj.type === "essay") { const ta = document.createElement("textarea"); ta.rows = 4; ta.placeholder = "Tulis jawaban uraian Anda di sini..."; ta.value = qObj.userAnswer || ""; const btn = document.createElement("button"); btn.className = "btn btn-primary"; btn.innerText = "Catat Jawaban & Lanjut"; btn.onclick = function(){ submitEssayAnswer(ta.value); }; area.appendChild(ta); area.appendChild(btn); return; } if (qObj.type === "pg_kompleks") { const grid = document.createElement("div"); grid.className = "options-grid"; const sel = new Set(qObj.userAnswer || []); (qObj.entries || []).forEach(function(ent, idx){ const b = document.createElement("button"); b.className = "option-btn" + (sel.has(idx) ? " selected" : ""); b.innerText = (sel.has(idx) ? "[x] " : "[ ] ") + (labels[idx] || (idx + 1)) + ". " + ent.text; b.onclick = function(){ toggleComplexOption(idx); }; grid.appendChild(b); }); const cBtn = document.createElement("button"); cBtn.className = "btn btn-success"; cBtn.style.marginTop = "14px"; cBtn.innerText = "Catat Jawaban & Lanjut"; cBtn.onclick = function(){ confirmComplexAnswer(); }; area.appendChild(grid); area.appendChild(cBtn); return; } const grid = document.createElement("div"); grid.className = "options-grid"; (qObj.entries || []).forEach(function(ent, idx){ const b = document.createElement("button"); b.className = "option-btn" + (qObj.answered && qObj.userAnswer === idx ? " selected" : ""); const pref = qObj.type === "pg" ? ((labels[idx] || (idx + 1)) + ". ") : ""; b.innerText = pref + ent.text; b.onclick = function(){ selectSingleAnswer(idx); }; grid.appendChild(b); }); area.appendChild(grid); }\n',
-      'function selectSingleAnswer(idx) { const qObj = activeSessionQuestions[currentIdx]; const chosen = qObj.entries && qObj.entries[idx]; qObj.userAnswer = idx; qObj.answered = true; qObj.earnedScore = (chosen && chosen.tokenHash === qObj.correctHash) ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
+      'function selectSingleAnswer(idx) { const qObj = activeSessionQuestions[currentIdx]; const chosen = qObj.entries && qObj.entries[idx]; const ok = !!(chosen && chosen.tokenHash === qObj.correctHash); qObj.userAnswer = idx; qObj.answerLabel = chosen ? chosen.text : ""; qObj.answered = true; qObj.isCorrect = ok; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
       'function toggleComplexOption(idx) { const qObj = activeSessionQuestions[currentIdx]; const s = new Set(qObj.userAnswer || []); if (s.has(idx)) s.delete(idx); else s.add(idx); qObj.userAnswer = Array.from(s).sort(function(a,b){ return a - b; }); loadQuestion(); }\n',
-      'function confirmComplexAnswer() { const qObj = activeSessionQuestions[currentIdx]; const chIdx = (qObj.userAnswer || []).slice().sort(function(a,b){ return a - b; }); if (!chIdx.length) { alert("Pilih minimal satu jawaban."); return; } const chHashes = chIdx.map(function(i){ return qObj.entries[i] ? qObj.entries[i].tokenHash : ""; }).sort(); const exHashes = (qObj.expectedHashes || []).slice().sort(); const ok = chHashes.length === exHashes.length && chHashes.every(function(v, i){ return v === exHashes[i]; }); qObj.answered = true; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
-      'function submitEssayAnswer(val) { const qObj = activeSessionQuestions[currentIdx]; const cl = String(val || "").trim(); if (!cl) { alert("Silakan isi jawaban essay."); return; } qObj.userAnswer = cl; qObj.answered = true; const kHashes = qObj.keyHashes || []; if (kHashes.length) { const words = cl.toLowerCase().split(/[^a-z0-9\u00c0-\u024f]+/i).filter(Boolean); const fullLower = cl.toLowerCase(); const matched = kHashes.some(function(h){ return h === hashDigestSync(qObj.qSalt + "::" + fullLower) || words.some(function(w){ return h === hashDigestSync(qObj.qSalt + "::" + w); }); }); qObj.earnedScore = matched ? qObj.poin : 0; } else { qObj.earnedScore = cl.length >= (qObj.minLen || 10) ? qObj.poin : 0; } recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
+      'function confirmComplexAnswer() { const qObj = activeSessionQuestions[currentIdx]; const chIdx = (qObj.userAnswer || []).slice().sort(function(a,b){ return a - b; }); if (!chIdx.length) { alert("Pilih minimal satu jawaban."); return; } const chHashes = chIdx.map(function(i){ return qObj.entries[i] ? qObj.entries[i].tokenHash : ""; }).sort(); const exHashes = (qObj.expectedHashes || []).slice().sort(); const ok = chHashes.length === exHashes.length && chHashes.every(function(v, i){ return v === exHashes[i]; }); qObj.answerLabel = chIdx.map(function(i){ return qObj.entries[i] ? qObj.entries[i].text : ""; }).filter(Boolean).join(", "); qObj.answered = true; qObj.isCorrect = ok; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
+      'function submitEssayAnswer(val) { const qObj = activeSessionQuestions[currentIdx]; const cl = String(val || "").trim(); if (!cl) { alert("Silakan isi jawaban essay."); return; } qObj.userAnswer = cl; qObj.answerLabel = cl; qObj.answered = true; const kHashes = qObj.keyHashes || []; let ok = false; if (kHashes.length) { const words = cl.toLowerCase().split(/[^a-z0-9\u00c0-\u024f]+/i).filter(Boolean); const fullLower = cl.toLowerCase(); ok = kHashes.some(function(h){ return h === hashDigestSync(qObj.qSalt + "::" + fullLower) || words.some(function(w){ return h === hashDigestSync(qObj.qSalt + "::" + w); }); }); } else { ok = cl.length >= (qObj.minLen || 10); } qObj.isCorrect = ok; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
       'function saveResultToGuruStorage(record) { try { const key = STORAGE_NAMESPACE + "_res"; const existing = JSON.parse(localStorage.getItem(key)) || []; existing.unshift(record); localStorage.setItem(key, JSON.stringify(existing)); } catch (e) {} if (typeof REKAP_WEBHOOK_URL === "string" && REKAP_WEBHOOK_URL.startsWith("https://")) { fetch(REKAP_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(record) }).catch(function(){}); } }\n',
       'function confirmFinishQuiz() { const unans = activeSessionQuestions.filter(function(q){ return !q.answered; }).length; const msg = unans > 0 ? ("Masih ada " + unans + " soal belum dijawab. Yakin ingin menyelesaikan kuis?") : "Yakin ingin menyelesaikan dan mengumpulkan hasil kuis?"; if (confirm(msg)) finishStudentQuiz(); }\n',
-      'function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); isStudentQuizActive = false; setQuizLockVisual(false); document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; saveResultToGuruStorage({ fullName: activeStudent.fullName, kelas: activeKelas, mapel: mapelLabel, username: activeStudent.username, answered: ansCnt, total: tot, score: score, violations: violationCount, penalty: totalPenaltyPoints, time: ts }); lastSummaryText = "BUKTI PENGERJAAN KUIS SISWA\\nNama: " + activeStudent.fullName + "\\nKelas: " + activeKelas + "\\nMapel: " + mapelLabel + "\\nUsername: " + activeStudent.username + "\\nTerjawab: " + ansCnt + "/" + tot + " soal\\nPelanggaran: " + violationCount + " kali\\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " • @" + activeStudent.username + ")"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Pelanggaran:</strong> " + violationCount + " kali<br><strong>Waktu Kirim:</strong> " + ts + "<br><strong>Status Nilai:</strong> Disimpan untuk penilaian guru"; }\n',
+      'function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); isStudentQuizActive = false; setQuizLockVisual(false); document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const correctCnt = activeSessionQuestions.filter(function(q){ return q.answered && q.isCorrect; }).length; const wrongCnt = activeSessionQuestions.filter(function(q){ return q.answered && !q.isCorrect; }).length; const details = activeSessionQuestions.map(function(q, idx){ return { no: idx + 1, typeLabel: TYPE_LABELS[q.type] || q.type || "Soal", q: q.q, answer: q.answered ? (q.answerLabel || String(q.userAnswer || "")) : "(Belum dijawab)", answered: !!q.answered, isCorrect: !!(q.answered && q.isCorrect), earnedScore: Number(q.earnedScore || 0) }; }); const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; saveResultToGuruStorage({ fullName: activeStudent.fullName, kelas: activeKelas, mapel: mapelLabel, username: activeStudent.username, answered: ansCnt, total: tot, correctCount: correctCnt, wrongCount: wrongCnt, score: score, violations: violationCount, penalty: totalPenaltyPoints, time: ts, questionDetails: details }); lastSummaryText = "BUKTI PENGERJAAN KUIS SISWA\\nNama: " + activeStudent.fullName + "\\nKelas: " + activeKelas + "\\nMapel: " + mapelLabel + "\\nUsername: " + activeStudent.username + "\\nTerjawab: " + ansCnt + "/" + tot + " soal\\nPelanggaran: " + violationCount + " kali\\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " • @" + activeStudent.username + ")"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Pelanggaran:</strong> " + violationCount + " kali<br><strong>Waktu Kirim:</strong> " + ts + "<br><strong>Status Nilai:</strong> Disimpan untuk penilaian guru"; }\n',
       'function copyStudentSummary() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastSummaryText).then(function(){ alert("Bukti pengerjaan berhasil disalin!"); }).catch(function(){ prompt("Salin bukti berikut:", lastSummaryText); }); else prompt("Salin bukti berikut:", lastSummaryText); }\n',
       'function downloadStudentSummary() { const blob = new Blob([lastSummaryText], { type: "text/plain;charset=utf-8;" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "bukti_" + (activeStudent.username || "siswa") + ".txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }\n',
       'function loginStudent() { const u = document.getElementById("login-username").value.trim(); const p = document.getElementById("login-password").value.trim(); const k = document.getElementById("login-kelas").value.trim(); const m = document.getElementById("login-mapel").value.trim(); const t = document.getElementById("login-token").value.trim(); const err = document.getElementById("student-login-error"); if (!u || !p || !k || !t) { err.innerText = "Harap isi username, password, kelas, dan token!"; return; } if (t.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { err.innerText = "Token kelas tidak valid!"; return; } const f = STUDENTS_DATA.find(function(s){ return s.username.toLowerCase() === u.toLowerCase() && s.password === p; }); if (!f) { err.innerText = "Username atau password siswa salah!"; return; } if (f.kelas && f.kelas.trim().toLowerCase() !== k.toLowerCase()) { err.innerText = "Kelas tidak sesuai dengan akun terdaftar (" + f.kelas + ")!"; return; } const filteredBank = filterBankByKelasAndMapel(QUESTIONS_BANK, k, m); if (!filteredBank.length) { err.innerText = "Belum ada soal tersedia."; return; } err.innerText = ""; activeStudent = f; activeKelas = f.kelas || k; activeMapel = m || "Semua Mapel"; currentIdx = 0; score = 0; violationCount = 0; totalPenaltyPoints = 0; lastViolationAt = 0; isStudentQuizActive = true; setQuizLockVisual(true); requestFullscreenMode(); activeSessionQuestions = buildStudentQuizSet(filteredBank); document.getElementById("start-screen").style.display = "none"; document.getElementById("result-screen").style.display = "none"; document.getElementById("quiz-screen").style.display = "block"; document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName + " (" + activeKelas + ")"; document.getElementById("mapel-badge").innerText = "Mapel: " + activeMapel; document.getElementById("violation-badge").innerText = "Pelanggaran: 0"; loadQuestion(); }\n',
@@ -1073,8 +1141,8 @@
       const div = document.createElement("div");
       div.className = "question-item";
       div.innerHTML =
-        '<div><span class="meta-pill">Kelas: ' + (item.kelas || "Semua") + '</span><span class="meta-pill meta-pill-mapel">Mapel: ' + (item.mapel || "Umum") + '</span></div>' +
-        "<h4>" + (showIdx + 1) + ". [" + (TYPE_LABELS[type] || type) + "] " + item.q + "</h4>" +
+        '<div><span class="meta-pill">Kelas: ' + escapeHtml(item.kelas || "Semua") + '</span><span class="meta-pill meta-pill-mapel">Mapel: ' + escapeHtml(item.mapel || "Umum") + '</span></div>' +
+        "<h4>" + (showIdx + 1) + ". [" + escapeHtml(TYPE_LABELS[type] || type) + "] " + escapeHtml(item.q) + "</h4>" +
         "<small>" + kunciText + " | Bobot & Penalti: <strong>" + (item.poin || 100) + " poin</strong></small>" +
         '<div class="question-actions">' +
           '<button class="btn btn-warning btn-sm" onclick="editQuestion(' + idx + ')">Edit</button>' +
@@ -1221,7 +1289,7 @@
       const div = document.createElement("div");
       div.className = "item-card";
       div.innerHTML =
-        '<div><span class="meta-pill">Kelas: ' + (stu.kelas || "Umum") + '</span> <strong>' + stu.fullName + "</strong><br><small>Username: <code>" + stu.username + "</code> | Password: <code>" + stu.password + "</code></small></div>" +
+        '<div><span class="meta-pill">Kelas: ' + escapeHtml(stu.kelas || "Umum") + '</span> <strong>' + escapeHtml(stu.fullName) + "</strong><br><small>Username: <code>" + escapeHtml(stu.username) + "</code> | Password: <code>" + escapeHtml(stu.password) + "</code></small></div>" +
         '<button class="btn btn-danger btn-sm" onclick="deleteStudent(' + idx + ')">Hapus</button>';
       list.appendChild(div);
     });
@@ -1293,31 +1361,127 @@
     renderResultsTable();
   }
 
+  function computeCorrectWrongCounts(r) {
+    const details = Array.isArray(r.questionDetails) ? r.questionDetails : [];
+    if (details.length) {
+      const benar = details.filter(function(d){ return d && d.answered && d.isCorrect; }).length;
+      const salah = details.filter(function(d){ return d && d.answered && !d.isCorrect; }).length;
+      return { benar: benar, salah: salah, hasDetail: true };
+    }
+    const benar = Number(r.correctCount || 0);
+    const salah = Number(r.wrongCount || 0);
+    return { benar: benar, salah: salah, hasDetail: (benar > 0 || salah > 0) };
+  }
+
   function renderResultsTable() {
     const tbody = document.getElementById("results-tbody");
     if (!results.length) {
-      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);">Belum ada rekap nilai tersimpan.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--muted);">Belum ada rekap nilai tersimpan.</td></tr>';
       return;
     }
     tbody.innerHTML = results.map(function(r, i){
-      return "<tr><td>" + (i + 1) + "</td><td>" + r.fullName + "</td><td>" + (r.kelas || "-") + "</td><td>" + (r.mapel || "-") + "</td><td><code>" + r.username + "</code></td><td>" + r.answered + "/" + r.total + "</td><td><strong>" + r.score + "</strong></td><td>" + (r.violations || 0) + "x (-" + (r.penalty || 0) + ")</td><td>" + r.time + "</td></tr>";
+      const counts = computeCorrectWrongCounts(r);
+      const bsText = counts.hasDetail
+        ? '<span class="status-benar">' + counts.benar + ' Benar</span> <span class="status-salah">' + counts.salah + ' Salah</span>'
+        : '<span style="color:var(--muted);">Terjawab ' + (r.answered || 0) + '/' + (r.total || 0) + '</span>';
+
+      return (
+        "<tr>" +
+          "<td>" + (i + 1) + "</td>" +
+          "<td>" + escapeHtml(r.fullName) + "</td>" +
+          "<td>" + escapeHtml(r.kelas || "-") + "</td>" +
+          "<td>" + escapeHtml(r.mapel || "-") + "</td>" +
+          "<td><code>" + escapeHtml(r.username) + "</code></td>" +
+          "<td>" + bsText + "</td>" +
+          "<td><strong>" + (r.score ?? 0) + "</strong></td>" +
+          "<td>" + (r.violations || 0) + "x (-" + (r.penalty || 0) + ")</td>" +
+          "<td>" + escapeHtml(r.time) + "</td>" +
+          '<td><button class="btn btn-info btn-sm" onclick="openStudentDetail(' + i + ')">Detail Soal</button></td>' +
+        "</tr>"
+      );
     }).join("");
+  }
+
+  function openStudentDetail(idx) {
+    const r = results[idx];
+    if (!r) return;
+    const panel = document.getElementById("student-detail-panel");
+    const title = document.getElementById("detail-panel-title");
+    const tbody = document.getElementById("detail-panel-tbody");
+    const details = Array.isArray(r.questionDetails) ? r.questionDetails : [];
+
+    title.innerText = "📝 Rincian Jawaban Per Soal — " + (r.fullName || "-") + " (" + (r.kelas || "-") + " • " + (r.mapel || "-") + ")";
+    panel.style.display = "block";
+
+    if (!details.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);">Rincian per soal belum tersedia untuk data lama ini. Silakan unduh ulang index.html terbaru lalu uji coba pengerjaan baru.</td></tr>';
+      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return;
+    }
+
+    tbody.innerHTML = details.map(function(d, idxSoal){
+      let badgeHtml = '<span class="status-kosong">Belum Dijawab</span>';
+      if (d.answered) {
+        badgeHtml = d.isCorrect
+          ? '<span class="status-benar">Benar</span>'
+          : '<span class="status-salah">Salah</span>';
+      }
+      return (
+        "<tr>" +
+          "<td>" + (d.no || (idxSoal + 1)) + "</td>" +
+          "<td>" + escapeHtml(d.typeLabel || "Soal") + "</td>" +
+          "<td>" + escapeHtml(d.q || "-") + "</td>" +
+          "<td>" + escapeHtml(d.answer || "-") + "</td>" +
+          "<td>" + badgeHtml + "</td>" +
+          "<td><strong>" + (d.earnedScore ?? 0) + "</strong></td>" +
+        "</tr>"
+      );
+    }).join("");
+
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function closeStudentDetail() {
+    document.getElementById("student-detail-panel").style.display = "none";
   }
 
   function downloadResultsCSV() {
     refreshResultsFromStorage();
     if (!results.length) { alert("Belum ada data rekap."); return; }
-    const header = "no,nama_siswa,kelas,mapel,username,terjawab,total_soal,poin_akhir,keluar_layar,potongan_poin,waktu\n";
+    const header = "no,nama_siswa,kelas,mapel,username,benar,salah,terjawab,total_soal,poin_akhir,keluar_layar,potongan_poin,waktu,rincian_soal\n";
     const rows = results.map(function(r, i){
-      return (i + 1) + ',"' + String(r.fullName).replace(/"/g, '""') + '","' + String(r.kelas || "-").replace(/"/g, '""') + '","' + String(r.mapel || "-").replace(/"/g, '""') + '","' + String(r.username).replace(/"/g, '""') + '",' + r.answered + "," + r.total + "," + r.score + "," + (r.violations || 0) + "," + (r.penalty || 0) + ',"' + String(r.time).replace(/"/g, '""') + '"';
+      const counts = computeCorrectWrongCounts(r);
+      const details = Array.isArray(r.questionDetails) ? r.questionDetails : [];
+      const ringkasDetail = details.map(function(d){
+        const st = !d.answered ? "Kosong" : (d.isCorrect ? "Benar" : "Salah");
+        return "#" + (d.no || "") + " [" + st + ": " + String(d.answer || "").replace(/\s+/g, " ") + "]";
+      }).join(" | ");
+
+      return (
+        (i + 1) + ',"' +
+        String(r.fullName).replace(/"/g, '""') + '","' +
+        String(r.kelas || "-").replace(/"/g, '""') + '","' +
+        String(r.mapel || "-").replace(/"/g, '""') + '","' +
+        String(r.username).replace(/"/g, '""') + '",' +
+        counts.benar + "," +
+        counts.salah + "," +
+        (r.answered || 0) + "," +
+        (r.total || 0) + "," +
+        (r.score ?? 0) + "," +
+        (r.violations || 0) + "," +
+        (r.penalty || 0) + ',"' +
+        String(r.time).replace(/"/g, '""') + '","' +
+        ringkasDetail.replace(/"/g, '""') + '"'
+      );
     }).join("\n");
-    triggerDownload("rekap_nilai_siswa.csv", header + rows);
+    triggerDownload("rekap_nilai_detail_soal.csv", header + rows);
   }
 
   function clearResults() {
     if (confirm("Hapus semua rekap nilai?")) {
       results = [];
       localStorage.setItem(STORAGE_NAMESPACE + "_res", JSON.stringify(results));
+      closeStudentDetail();
       renderResultsTable();
     }
   }
