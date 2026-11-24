@@ -52,173 +52,534 @@
 <div id="focus-warning-overlay" class="lock-overlay"><div class="lock-modal"><h3 style="margin-top:0;color:#fca5a5;">Pelanggaran Fokus Terdeteksi!</h3><p style="font-size:0.95rem;line-height:1.55;">Potongan poin kali ini: <strong id="overlay-last-penalty">0</strong><br>Total potongan poin: <strong id="overlay-total-penalty">0</strong><br>Jumlah keluar layar: <strong id="overlay-violation-count">0</strong></p><button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="dismissFocusWarning()">Kembali ke Soal Kuis</button></div></div>
 <div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Soal Sesuai Kelas & Mapel - Navigasi Soal Bebas - Penalti Poin Keluar Layar</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas:</label><input type="text" id="login-kelas" placeholder="Contoh: VIII A" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key==='Enter') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif:</strong> Keluar layar memotong poin sesuai bobot soal aktif!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/10</span><span class="badge" id="score-display">Poin: 0</span><span class="badge badge-warn" id="violation-badge">Keluar: 0 (-0 poin)</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk mengerjakan soal yang mudah lebih dulu):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Kuis Selesai!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p>Total Poin Akhir:</p><h1 id="final-score" style="color:var(--primary);font-size:3rem;margin:10px 0 12px;">0</h1><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Rekap Nilai</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>
 <script>
-const ACTIVE_TOKEN = "SMP2026";
+const ACTIVE_TOKEN = "PEGAISTIMEWA";
 const STUDENTS_DATA = [
   {
-    "fullName": "Budi Santoso",
-    "kelas": "VIII A",
-    "username": "budi",
-    "password": "123"
+    "fullName": "Adiliya Nopitasari",
+    "kelas": "IX D",
+    "username": "10516",
+    "password": "1"
   },
   {
-    "fullName": "Siti Aminah",
-    "kelas": "VIII A",
-    "username": "siti",
-    "password": "123"
+    "fullName": "Ahmad Abyyan Setya Wahyuda",
+    "kelas": "IX D",
+    "username": "10353",
+    "password": "2"
   },
   {
-    "fullName": "Andi Pratama",
-    "kelas": "VIII B",
-    "username": "andi",
-    "password": "123"
+    "fullName": "Aksan Kurniawan",
+    "kelas": "IX D",
+    "username": "10388",
+    "password": "3"
+  },
+  {
+    "fullName": "Anya Nirwashyta Tyaga",
+    "kelas": "IX D",
+    "username": "10625",
+    "password": "4"
+  },
+  {
+    "fullName": "Aqil Falah Ferdyanto",
+    "kelas": "IX D",
+    "username": "10626",
+    "password": "5"
+  },
+  {
+    "fullName": "Ardhani Radithya Tyaga",
+    "kelas": "IX D",
+    "username": "10551",
+    "password": "6"
+  },
+  {
+    "fullName": "Ayka Queenza Azzahra",
+    "kelas": "IX D",
+    "username": "10488",
+    "password": "7"
+  },
+  {
+    "fullName": "Daffa Dzakir Khafadi",
+    "kelas": "IX D",
+    "username": "10459",
+    "password": "8"
+  },
+  {
+    "fullName": "Eka Satria Alviansyah",
+    "kelas": "IX D",
+    "username": "10422",
+    "password": "9"
+  },
+  {
+    "fullName": "Eva Julia Putri",
+    "kelas": "IX D",
+    "username": "10397",
+    "password": "10"
+  },
+  {
+    "fullName": "Evan Keandre Zavier Hidayat",
+    "kelas": "IX D",
+    "username": "10491",
+    "password": "11"
+  },
+  {
+    "fullName": "Ezra Ferdinand Pranaja",
+    "kelas": "IX D",
+    "username": "10520",
+    "password": "12"
+  },
+  {
+    "fullName": "Jabriel Faishal Listio Daniswara",
+    "kelas": "IX D",
+    "username": "10597",
+    "password": "13"
+  },
+  {
+    "fullName": "Jihan Rania Ufaira",
+    "kelas": "IX D",
+    "username": "10464",
+    "password": "14"
+  },
+  {
+    "fullName": "Kania Zhafirah Putri",
+    "kelas": "IX D",
+    "username": "10430",
+    "password": "15"
+  },
+  {
+    "fullName": "Kayla Andini Widiyanto",
+    "kelas": "IX D",
+    "username": "10366",
+    "password": "16"
+  },
+  {
+    "fullName": "Kinanthi Eka Yudha",
+    "kelas": "IX D",
+    "username": "10403",
+    "password": "17"
+  },
+  {
+    "fullName": "Ksatria Lintang Dewantara",
+    "kelas": "IX D",
+    "username": "10566",
+    "password": "18"
+  },
+  {
+    "fullName": "Laudya Aisha Marizka Khanani",
+    "kelas": "IX D",
+    "username": "10500",
+    "password": "19"
+  },
+  {
+    "fullName": "Mochamad Farzan Argani",
+    "kelas": "IX D",
+    "username": "10471",
+    "password": "20"
+  },
+  {
+    "fullName": "Muhammad Ilham Ramadhan",
+    "kelas": "IX D",
+    "username": "10436",
+    "password": "21"
+  },
+  {
+    "fullName": "Muhammad Iqbaal Zidan Adi Prasetyo",
+    "kelas": "IX D",
+    "username": "10405",
+    "password": "22"
+  },
+  {
+    "fullName": "Muhammad Rizqi Ikbar Kautsar",
+    "kelas": "IX D",
+    "username": "10531",
+    "password": "23"
+  },
+  {
+    "fullName": "Nadine Fellah Maharani",
+    "kelas": "IX D",
+    "username": "10532",
+    "password": "24"
+  },
+  {
+    "fullName": "Rafan Izyan Arkana",
+    "kelas": "IX D",
+    "username": "10508",
+    "password": "25"
+  },
+  {
+    "fullName": "Regan Chesta Adabi",
+    "kelas": "IX D",
+    "username": "10639",
+    "password": "26"
+  },
+  {
+    "fullName": "Revalina Aditya Radisty",
+    "kelas": "IX D",
+    "username": "10379",
+    "password": "27"
+  },
+  {
+    "fullName": "Rezky Aditya Nugroho",
+    "kelas": "IX D",
+    "username": "10445",
+    "password": "28"
+  },
+  {
+    "fullName": "Rigel Evandio Yuniarto",
+    "kelas": "IX D",
+    "username": "10380",
+    "password": "29"
+  },
+  {
+    "fullName": "Rina Auliyah Romadhoni",
+    "kelas": "IX D",
+    "username": "10478",
+    "password": "30"
+  },
+  {
+    "fullName": "Septia Dwi Wulandari",
+    "kelas": "IX D",
+    "username": "10413",
+    "password": "31"
+  },
+  {
+    "fullName": "Zyachbeina Mazaya Ghaisani",
+    "kelas": "IX D",
+    "username": "10448",
+    "password": "32"
   }
 ];
 const QUESTIONS_BANK = [
   {
-    "kelas": "VIII A",
-    "mapel": "IPA",
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
     "type": "pg",
-    "q": "Bagian sel tumbuhan yang berfungsi sebagai tempat berlangsungnya fotosintesis adalah...",
+    "q": "Perhatikan teks berikut! Sabtu lalu, aku dan teman-teman sekelas mengikuti kerja bakti di tepi Sungai Brantas. Kami tiba pukul 06.30, lalu dibagi menjadi tiga kelompok. Kelompokku memilah sampah plastik hingga siang. Akhirnya, 40 karung sampah berhasil terkumpul. Aku pulang dengan lelah, tetapi bangga. Kalimat yang berfungsi sebagai reorientasi pada teks tersebut adalah...",
     "options": [
-      "Mitokondria",
-      "Kloroplas",
-      "Ribosom",
-      "Vakuola"
+      "Akhirnya, 40 karung sampah berhasil terkumpul.",
+      "Aku pulang dengan lelah, tetapi bangga.",
+      "Kelompokku memilah sampah plastik hingga siang.",
+      "Kami tiba pukul 06.30, lalu dibagi menjadi tiga kelompok."
     ],
     "answer": 1,
-    "poin": 100
+    "poin": 10
   },
   {
-    "kelas": "VIII A",
+    "kelas": "IX A",
     "mapel": "Bahasa Indonesia",
     "type": "pg",
-    "q": "Majas yang membandingkan benda mati seolah-olah memiliki sifat seperti manusia disebut...",
+    "q": "Teks berikut tidak memiliki bagian orientasi. Kemudian, kami menyusuri jalur berbatu menuju puncak. Setelah itu, hujan turun deras sehingga kami berteduh di pos dua. Akhirnya, kami tiba di puncak saat matahari terbit. Kalimat orientasi yang paling tepat ditambahkan di awal teks adalah...",
     "options": [
-      "Hiperbola",
-      "Metafora",
-      "Personifikasi",
-      "Simile"
-    ],
-    "answer": 2,
-    "poin": 100
-  },
-  {
-    "kelas": "VIII A",
-    "mapel": "IPA",
-    "type": "benar_salah",
-    "q": "Air mendidih pada suhu 100°C di tekanan udara normal 1 atm.",
-    "options": [
-      "Benar",
-      "Salah"
+      "Liburan semester lalu, aku mendaki Gunung Penanggungan bersama tiga sepupuku.",
+      "Mendaki gunung adalah kegiatan yang menantang dan menyehatkan badan.",
+      "Gunung Penanggungan terletak di wilayah Kabupaten Mojokerto, Jawa Timur.",
+      "Setiap pendaki wajib membawa perbekalan dan perlengkapan yang memadai."
     ],
     "answer": 0,
-    "poin": 100
+    "poin": 10
   },
   {
-    "kelas": "VIII A",
+    "kelas": "IX A",
     "mapel": "Bahasa Indonesia",
-    "type": "setuju_tidak",
-    "q": "Membaca buku setiap hari dapat memperkaya kosakata dan pemahaman bacaan.",
-    "options": [
-      "Setuju",
-      "Tidak Setuju"
-    ],
-    "answer": 0,
-    "poin": 100
-  },
-  {
-    "kelas": "VIII B",
-    "mapel": "Matematika",
-    "type": "iya_tidak",
-    "q": "Apakah angka 17 termasuk bilangan prima?",
-    "options": [
-      "Iya",
-      "Tidak"
-    ],
-    "answer": 0,
-    "poin": 100
-  },
-  {
-    "kelas": "VIII B",
-    "mapel": "Matematika",
     "type": "pg",
-    "q": "Jika 3x + 5 = 20, maka nilai x adalah...",
+    "q": "Perhatikan kalimat-kalimat berikut! (1) Hadiah ulang tahun sebaiknya dibungkus dengan kertas yang menarik. (2) Rina membuka kotak hadiah itu dengan hati-hati. (3) Kado adalah pemberian yang diberikan pada hari istimewa. (4) Setelah itu, ia memeluk ibunya sambil menangis haru. Pasangan kalimat yang menunjukkan ciri kebahasaan teks rekon adalah...",
     "options": [
-      "3",
-      "4",
-      "5",
-      "6"
+      "(1) dan (2)",
+      "(1) dan (3)",
+      "(2) dan (4)",
+      "(3) dan (4)"
     ],
     "answer": 2,
-    "poin": 100
+    "poin": 10
   },
   {
-    "kelas": "VIII A",
-    "mapel": "IPA",
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Kalimat-kalimat berikut diambil dari sebuah teks rekon, tetapi urutannya acak. (1) Setelah itu, kami berkeliling melihat koleksi fosil. (2) Pagi itu, kami berangkat ke Museum Trinil bersama Bu Ani. (3) Akhirnya, kami pulang membawa banyak pengetahuan baru. (4) Sesampainya di sana, pemandu menyambut kami di pintu masuk. Urutan kalimat yang tepat agar menjadi teks rekon yang runtut adalah...",
+    "options": [
+      "(2)-(1)-(4)-(3)",
+      "(4)-(2)-(1)-(3)",
+      "(2)-(4)-(3)-(1)",
+      "(2)-(4)-(1)-(3)"
+    ],
+    "answer": 3,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Perhatikan kutipan berikut! Pada 17 Agustus 1945, Soekarno dan Mohammad Hatta membacakan teks proklamasi di Jalan Pegangsaan Timur 56, Jakarta. Sebelumnya, naskah proklamasi disusun di rumah Laksamana Maeda pada dini hari. Setelah diketik oleh Sayuti Melik, naskah itu ditandatangani atas nama bangsa Indonesia. Jenis teks rekon dan alasan yang tepat untuk kutipan tersebut adalah...",
+    "options": [
+      "Rekon pribadi, karena penulis menceritakan pengalaman yang ia alami sendiri",
+      "Rekon imajinatif, karena penulis mengembangkan peristiwa dari daya khayalnya",
+      "Rekon faktual, karena menceritakan peristiwa nyata beserta tokoh dan waktunya",
+      "Rekon pribadi, karena peristiwa diceritakan secara berurutan menurut waktu"
+    ],
+    "answer": 2,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Dua siswa menulis kalimat pembuka teks rekon tentang kunjungan ke pasar. Siswa 1: Pasar tradisional menjual berbagai kebutuhan pokok dengan harga murah. Siswa 2: Minggu pagi kemarin, aku menemani nenek berbelanja di Pasar Besar Malang. Penilaian yang paling tepat terhadap kedua kalimat tersebut adalah...",
+    "options": [
+      "Kalimat siswa 2 tepat sebagai orientasi karena memuat pelaku, waktu, tempat, dan kegiatan",
+      "Kalimat siswa 2 kurang tepat sebagai orientasi karena memakai kata ganti orang pertama",
+      "Kalimat siswa 1 tepat sebagai orientasi karena menjelaskan keunggulan pasar secara umum",
+      "Kalimat siswa 1 tepat sebagai orientasi karena memuat fakta yang dapat dibuktikan"
+    ],
+    "answer": 0,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Perhatikan kalimat berikut! Lalu, kami berlari menuju halte, tetapi bus terakhir sudah berangkat. Kata lalu dan tetapi pada kalimat tersebut berturut-turut berfungsi sebagai konjungsi...",
+    "options": [
+      "penambahan dan syarat",
+      "sebab dan temporal",
+      "tujuan dan pertentangan",
+      "temporal dan pertentangan"
+    ],
+    "answer": 3,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Kalimat berikut akan dipakai dalam sebuah teks rekon: Setiap sore Pak Hasan menyiram bunga di halaman rumah. Agar sesuai dengan peristiwa tunggal yang telah terjadi, perbaikan yang paling tepat adalah...",
+    "options": [
+      "Menambahkan kata sifat pada kata bunga, misalnya bunga yang sangat indah",
+      "Mengganti setiap sore dengan keterangan waktu tertentu, misalnya kemarin sore",
+      "Mengganti menyiram dengan kata kerja pasif, misalnya disiram oleh Pak Hasan",
+      "Menambahkan kata hubung sebab, misalnya sebab Pak Hasan menyiram bunga"
+    ],
+    "answer": 1,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Perhatikan teks berikut! Setelah dua jam berdesakan di angkot, Dina baru sadar dompetnya hilang. Ia segera kembali ke terminal dan bertanya kepada petugas. Seorang petugas menyerahkan dompet yang ditemukan penumpang lain. Dina menyodorkan uang terima kasih, tetapi petugas menolaknya dengan ramah. Nilai yang dapat diteladani dari tindakan petugas dan penumpang pada teks tersebut adalah...",
+    "options": [
+      "Kejujuran, karena mengembalikan barang temuan tanpa mengharapkan imbalan",
+      "Kehati-hatian, karena menjaga barang bawaan selama berada di perjalanan",
+      "Keberanian, karena bertindak sendiri tanpa meminta bantuan orang lain",
+      "Kedermawanan, karena memberikan uang kepada orang yang membutuhkan"
+    ],
+    "answer": 0,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Perhatikan teks berikut! Tim futsal kelasku mengikuti turnamen antarkelas. Pada babak pertama, kami tertinggal 0-2 karena bertahan terlalu dalam. Saat jeda, pelatih meminta kami bermain lebih menyerang. Pada babak kedua, kami mencetak tiga gol dan menang 3-2. Peristiwa yang menjadi penyebab utama perubahan hasil pertandingan adalah...",
+    "options": [
+      "Penonton memberi dukungan lebih keras pada babak kedua",
+      "Pelatih mengubah strategi tim saat waktu jeda pertandingan",
+      "Lawan kehilangan satu pemain karena mendapat kartu merah",
+      "Wasit memberi tambahan waktu pada babak kedua pertandingan"
+    ],
+    "answer": 1,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Kalimat dalam sebuah teks rekon berikut kurang efektif: Pada hari Minggu, aku dan adikku pergi ke taman kota dan kemudian setelah itu kami lalu pulang ke rumah. Perbaikan kalimat yang paling efektif adalah...",
+    "options": [
+      "Pada hari Minggu, aku dan adikku pergi ke taman kota kemudian setelah itu pulang.",
+      "Pada hari Minggu, aku dan adikku pergi ke taman kota lalu kemudian pulang ke rumah.",
+      "Pada hari Minggu, aku dan adikku pergi ke taman kota, lalu pulang ke rumah.",
+      "Pada hari Minggu, aku dan adikku pergi ke taman kota, setelah itu lalu pulang."
+    ],
+    "answer": 2,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg",
+    "q": "Rina membandingkan dua teks tentang gempa bumi. Teks 1 menyebut jam kejadian, lokasi, jumlah korban, dan urutan penanganan secara kronologis. Teks 2 menjelaskan penyebab terjadinya gempa dan langkah mitigasinya. Simpulan yang tepat tentang kedua teks tersebut adalah...",
+    "options": [
+      "Teks 1 berupa teks eksplanasi, sedangkan teks 2 berupa teks rekon",
+      "Teks 1 dan teks 2 sama-sama berupa teks rekon peristiwa",
+      "Teks 1 berupa teks prosedur, sedangkan teks 2 berupa teks laporan",
+      "Teks 1 berupa teks rekon, sedangkan teks 2 berupa teks eksplanasi"
+    ],
+    "answer": 3,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
     "type": "pg_kompleks",
-    "q": "Manakah yang termasuk planet dalam tata surya kita? (Pilih lebih dari satu)",
+    "q": "Perhatikan teks berikut! Kamis kemarin, kelompokku mengunjungi pengrajin batik di Jember. Pertama, kami melihat proses mencanting. Lalu, kami mencoba mewarnai kain. Di akhir kunjungan, kami berfoto bersama pengrajin. Kunjungan itu membuatku lebih menghargai batik. Pilihlah pernyataan yang BENAR tentang teks tersebut (jawaban lebih dari satu)!",
     "options": [
-      "Merkurius",
-      "Jupiter",
-      "Venus",
-      "Saturnus"
+      "Kalimat terakhir merupakan salah satu peristiwa utama dalam rangkaian kejadian",
+      "Kalimat pertama memuat orientasi berupa waktu, pelaku, tempat, dan kegiatan",
+      "Teks tersebut termasuk rekon imajinatif karena tokoh dan tempatnya rekaan",
+      "Kata pertama dan lalu menandai urutan peristiwa secara kronologis"
     ],
     "answers": [
-      0,
-      2
+      1,
+      3
     ],
-    "poin": 120
+    "poin": 10
   },
   {
-    "kelas": "VIII A",
+    "kelas": "IX A",
     "mapel": "Bahasa Indonesia",
     "type": "pg_kompleks",
-    "q": "Pilihlah kalimat yang menggunakan huruf kapital dengan tepat:",
+    "q": "Pilihlah ciri kebahasaan yang lazim ditemukan pada teks rekon (jawaban lebih dari satu)!",
     "options": [
-      "Presiden sedang berkunjung ke Jember.",
-      "Hari senin kami upacara bendera.",
-      "Sungai Brantas mengalir di Jawa Timur.",
-      "Adik membeli buku di Gramedia."
+      "Menggunakan kata kerja aksi, misalnya berangkat, menyusuri, dan menemui",
+      "Menggunakan kalimat perintah, misalnya potonglah, aduklah, dan masukkan",
+      "Menggunakan keterangan waktu dan tempat, misalnya pagi itu dan di stasiun",
+      "Menggunakan konjungsi temporal, misalnya kemudian, setelah itu, dan akhirnya"
     ],
     "answers": [
       0,
       2,
       3
     ],
-    "poin": 120
+    "poin": 10
   },
   {
-    "kelas": "VIII B",
-    "mapel": "Matematika",
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
     "type": "pg_kompleks",
-    "q": "Bilangan berikut yang merupakan kelipatan 4 adalah...",
+    "q": "Seorang siswa menulis teks rekon berikut. Kemarin aku ke rumah nenek di Banyuwangi. Aku berangkat pukul 07.00 naik kereta. Kereta itu sangat nyaman, setiap kereta api wajib menjaga kebersihan gerbongnya. Sesampainya di sana, nenek menyambutku dengan senyum. Pilihlah kritik yang tepat terhadap teks tersebut (jawaban lebih dari satu)!",
     "options": [
-      "12",
-      "18",
-      "24",
-      "30"
+      "Kalimat ketiga menyimpang dari alur karena memuat pernyataan umum, bukan peristiwa",
+      "Kalimat kedua perlu dihapus karena waktu keberangkatan tidak penting untuk ditulis",
+      "Teks belum memiliki reorientasi yang berisi kesan atau penutup pengalaman",
+      "Kata sesampainya perlu diganti karena bukan penanda urutan waktu"
     ],
     "answers": [
       0,
       2
     ],
-    "poin": 120
+    "poin": 10
   },
   {
-    "kelas": "VIII A",
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "pg_kompleks",
+    "q": "Perhatikan dua kutipan awal teks rekon berikut. (1) Pada tahun 2018, Gunung Anak Krakatau meletus dan memicu tsunami di Selat Sunda. (2) Ketika berusia lima tahun, aku diajak ayah memancing di waduk dekat rumah. Pilihlah pernyataan yang tepat tentang kedua kutipan tersebut (jawaban lebih dari satu)!",
+    "options": [
+      "Kutipan (1) cocok untuk rekon pribadi karena memuat peristiwa nyata yang besar",
+      "Kutipan (1) cocok untuk rekon faktual karena memuat peristiwa nyata bersifat umum",
+      "Kutipan (2) cocok untuk rekon pribadi karena memuat pengalaman penulis sendiri",
+      "Kutipan (2) cocok untuk rekon faktual karena memuat tokoh dan waktu tertentu"
+    ],
+    "answers": [
+      1,
+      2
+    ],
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "benar_salah",
+    "q": "Sebuah teks memuat urutan peristiwa kronologis, tetapi tidak menyebut waktu dan tempat sama sekali. Bagian orientasi teks tersebut dapat dikatakan sudah lengkap.",
+    "options": [
+      "Benar",
+      "Salah"
+    ],
+    "answer": 1,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "benar_salah",
+    "q": "Teks rekon sejarah umumnya memakai sudut pandang orang ketiga karena penulis menyajikan peristiwa yang tidak ia alami secara langsung.",
+    "options": [
+      "Benar",
+      "Salah"
+    ],
+    "answer": 0,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "setuju_tidak",
+    "q": "Urutan peristiwa dalam teks rekon boleh diacak asalkan penulis tetap memakai konjungsi temporal seperti kemudian dan akhirnya.",
+    "options": [
+      "Setuju",
+      "Tidak Setuju"
+    ],
+    "answer": 1,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "setuju_tidak",
+    "q": "Pengalaman sederhana, seperti membantu ibu berbelanja, layak ditulis menjadi teks rekon asalkan orientasi, peristiwa, dan kesannya dirinci dengan jelas.",
+    "options": [
+      "Setuju",
+      "Tidak Setuju"
+    ],
+    "answer": 0,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "iya_tidak",
+    "q": "Dalam teks rekon, apakah frasa Beberapa jam kemudian dapat membantu pembaca mengikuti urutan waktu kejadian?",
+    "options": [
+      "Iya",
+      "Tidak"
+    ],
+    "answer": 0,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "iya_tidak",
+    "q": "Apakah kalimat Banjir adalah peristiwa meluapnya air melebihi kapasitas sungai cocok dijadikan bagian rangkaian peristiwa dalam teks rekon?",
+    "options": [
+      "Iya",
+      "Tidak"
+    ],
+    "answer": 1,
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
     "mapel": "Bahasa Indonesia",
     "type": "essay",
-    "q": "Jelaskan secara singkat apa yang dimaksud dengan gagasan pokok dalam sebuah paragraf!",
-    "essayKey": "gagasan utama, inti, pikiran pokok",
-    "poin": 150
+    "q": "Tulislah satu paragraf orientasi (2-3 kalimat) untuk teks rekon tentang pengalamanmu mengikuti upacara bendera pertama kali di SMP! Pastikan paragraf memuat pelaku, waktu, tempat, dan kegiatan.",
+    "essayKey": "pelaku, waktu, tempat, kegiatan",
+    "poin": 10
   },
   {
-    "kelas": "VIII B",
-    "mapel": "IPA",
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
     "type": "essay",
-    "q": "Sebutkan salah satu manfaat menjaga kebersihan lingkungan sekolah!",
-    "essayKey": "sehat, nyaman, bebas penyakit, bersih",
-    "poin": 150
+    "q": "Sebuah teks rekon hanya berisi: Aku mengikuti lomba menyanyi. Aku menyanyi. Aku menang. Jelaskan dua kelemahan teks tersebut dan sebutkan bagian apa yang perlu ditambahkan untuk memperbaikinya!",
+    "essayKey": "orientasi, rincian peristiwa, konjungsi temporal, reorientasi",
+    "poin": 10
+  },
+  {
+    "kelas": "IX A",
+    "mapel": "Bahasa Indonesia",
+    "type": "essay",
+    "q": "Mengapa teks rekon biografi tokoh lebih tepat memakai sudut pandang orang ketiga, sedangkan rekon pengalaman pribadi lebih tepat memakai sudut pandang orang pertama? Jelaskan dengan alasanmu!",
+    "essayKey": "orang ketiga, tidak mengalami langsung, orang pertama, pengalaman pribadi",
+    "poin": 10
   }
 ];
 const QUIZ_TOTAL_QUESTIONS = 10;
