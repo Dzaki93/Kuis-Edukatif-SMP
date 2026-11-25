@@ -306,13 +306,13 @@
 
 <div class="container">
   <header>
-    <h1>🛠️ Panel Guru — Manajemen Kuis SMP</h1>
-    <p>Soal &amp; Data Siswa Fokus Per Jenjang • Waktu 60 Menit • 20 Soal Acak Per Murid • Detail Benar/Salah Tiap Soal</p>
+    <h1>??? Panel Guru � Manajemen Kuis SMP</h1>
+    <p>Soal &amp; Data Siswa Fokus Per Jenjang � Waktu 60 Menit � 20 Soal Acak Per Murid � Detail Benar/Salah Tiap Soal</p>
   </header>
 
   <div class="section">
     <div id="lock-view" class="lock-card">
-      <h3>🔐 Masuk Panel Guru</h3>
+      <h3>?? Masuk Panel Guru</h3>
       <p style="color: var(--muted); font-size: 0.9rem;">Masukkan sandi guru untuk mengelola soal, akun siswa, token, dan rekap.</p>
       <input type="password" id="guru-pass-input" placeholder="Ketik sandi guru..." onkeydown="if(event.key==='Enter') unlockGuru()" />
       <div class="error-msg" id="guru-pass-error"></div>
@@ -322,24 +322,24 @@
     <div id="guru-panel" style="display: none;">
       <div class="topbar">
         <div class="sub-tabs">
-          <button class="btn btn-primary btn-sm" id="tab-soal-btn" onclick="switchSubTab('soal')">📝 Buat &amp; Kelola Soal</button>
-          <button class="btn btn-secondary btn-sm" id="tab-siswa-btn" onclick="switchSubTab('siswa')">👥 Data Siswa &amp; Token</button>
-          <button class="btn btn-secondary btn-sm" id="tab-rekap-btn" onclick="switchSubTab('rekap')">📊 Rekap Nilai</button>
+          <button class="btn btn-primary btn-sm" id="tab-soal-btn" onclick="switchSubTab('soal')">?? Buat &amp; Kelola Soal</button>
+          <button class="btn btn-secondary btn-sm" id="tab-siswa-btn" onclick="switchSubTab('siswa')">?? Data Siswa &amp; Token</button>
+          <button class="btn btn-secondary btn-sm" id="tab-rekap-btn" onclick="switchSubTab('rekap')">?? Rekap Nilai</button>
         </div>
-        <button class="btn btn-secondary btn-sm" onclick="lockGuru()">🔒 Kunci Panel</button>
+        <button class="btn btn-secondary btn-sm" onclick="lockGuru()">?? Kunci Panel</button>
       </div>
 
       <div class="publish-banner">
         <div>
-          <h4>📦 Generate <code>index.html</code> (Waktu 60 Menit • 20 Soal Acak Per Murid • Sesuai Jenjang)</h4>
+          <h4>?? Generate <code>index.html</code> (Waktu 60 Menit � 20 Soal Acak Per Murid � Sesuai Jenjang)</h4>
           <p>Setiap murid mendapat 20 soal acak sesuai jenjang kelasnya dengan batas waktu 60 menit dan penilaian tersembunyi dari siswa.</p>
         </div>
-        <button class="btn btn-success" onclick="downloadStudentIndexHTML()">⬇️ Unduh index.html Terbaru</button>
+        <button class="btn btn-success" onclick="downloadStudentIndexHTML()">?? Unduh index.html Terbaru</button>
       </div>
 
       <div id="panel-soal">
         <div class="import-card">
-          <h4>📥 Unggah Soal Khusus Per Jenjang Kelas (PDF, Word .docx, CSV, TXT, JSON)</h4>
+          <h4>?? Unggah Soal Khusus Per Jenjang Kelas (PDF, Word .docx, CSV, TXT, JSON)</h4>
           <p>
             Pilih kotak sesuai jenjang kelas (misalnya <strong>Kelas VII</strong> untuk Bahasa Indonesia Kelas VII), tentukan <strong>Mata Pelajaran</strong>, lalu pilih berkas soalnya.
             Format CSV/TXT: <code>kelas,mapel,tipe,pertanyaan,opsiA,opsiB,opsiC,opsiD,kunci,poin</code>.
@@ -348,62 +348,62 @@
           <div class="jenjang-grid">
             <div class="jenjang-slot">
               <div>
-                <h5><span>📘 Jenjang Kelas VII</span> <span class="jenjang-tag">Kelas VII</span></h5>
+                <h5><span>?? Jenjang Kelas VII</span> <span class="jenjang-tag">Kelas VII</span></h5>
                 <label style="font-size:0.84rem;">Mata Pelajaran (Mapel):</label>
                 <input type="text" id="mapel-kelas-7" value="Bahasa Indonesia" placeholder="Contoh: Bahasa Indonesia" style="margin-bottom:8px;" />
                 <input type="file" id="file-kelas-7" accept="*" onchange="handleJenjangFileSelected('soal', '7')" />
                 <div id="info-soal-kelas-7" style="font-size:0.78rem;color:#0369a1;font-weight:600;margin-bottom:8px;"></div>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-success btn-sm" onclick="importByJenjang('Kelas VII', 'mapel-kelas-7', 'file-kelas-7', false)">➕ Gabung Kelas VII</button>
-                <button class="btn btn-warning btn-sm" onclick="importByJenjang('Kelas VII', 'mapel-kelas-7', 'file-kelas-7', true)">♻️ Ganti Kelas VII</button>
+                <button class="btn btn-success btn-sm" onclick="importByJenjang('Kelas VII', 'mapel-kelas-7', 'file-kelas-7', false)">? Gabung Kelas VII</button>
+                <button class="btn btn-warning btn-sm" onclick="importByJenjang('Kelas VII', 'mapel-kelas-7', 'file-kelas-7', true)">?? Ganti Kelas VII</button>
               </div>
             </div>
 
             <div class="jenjang-slot">
               <div>
-                <h5><span>📗 Jenjang Kelas VIII</span> <span class="jenjang-tag">Kelas VIII</span></h5>
+                <h5><span>?? Jenjang Kelas VIII</span> <span class="jenjang-tag">Kelas VIII</span></h5>
                 <label style="font-size:0.84rem;">Mata Pelajaran (Mapel):</label>
                 <input type="text" id="mapel-kelas-8" value="Bahasa Indonesia" placeholder="Contoh: Bahasa Indonesia" style="margin-bottom:8px;" />
                 <input type="file" id="file-kelas-8" accept="*" onchange="handleJenjangFileSelected('soal', '8')" />
                 <div id="info-soal-kelas-8" style="font-size:0.78rem;color:#0369a1;font-weight:600;margin-bottom:8px;"></div>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-success btn-sm" onclick="importByJenjang('Kelas VIII', 'mapel-kelas-8', 'file-kelas-8', false)">➕ Gabung Kelas VIII</button>
-                <button class="btn btn-warning btn-sm" onclick="importByJenjang('Kelas VIII', 'mapel-kelas-8', 'file-kelas-8', true)">♻️ Ganti Kelas VIII</button>
+                <button class="btn btn-success btn-sm" onclick="importByJenjang('Kelas VIII', 'mapel-kelas-8', 'file-kelas-8', false)">? Gabung Kelas VIII</button>
+                <button class="btn btn-warning btn-sm" onclick="importByJenjang('Kelas VIII', 'mapel-kelas-8', 'file-kelas-8', true)">?? Ganti Kelas VIII</button>
               </div>
             </div>
 
             <div class="jenjang-slot">
               <div>
-                <h5><span>📙 Jenjang Kelas IX</span> <span class="jenjang-tag">Kelas IX</span></h5>
+                <h5><span>?? Jenjang Kelas IX</span> <span class="jenjang-tag">Kelas IX</span></h5>
                 <label style="font-size:0.84rem;">Mata Pelajaran (Mapel):</label>
                 <input type="text" id="mapel-kelas-9" value="Bahasa Indonesia" placeholder="Contoh: Bahasa Indonesia" style="margin-bottom:8px;" />
                 <input type="file" id="file-kelas-9" accept="*" onchange="handleJenjangFileSelected('soal', '9')" />
                 <div id="info-soal-kelas-9" style="font-size:0.78rem;color:#0369a1;font-weight:600;margin-bottom:8px;"></div>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-success btn-sm" onclick="importByJenjang('Kelas IX', 'mapel-kelas-9', 'file-kelas-9', false)">➕ Gabung Kelas IX</button>
-                <button class="btn btn-warning btn-sm" onclick="importByJenjang('Kelas IX', 'mapel-kelas-9', 'file-kelas-9', true)">♻️ Ganti Kelas IX</button>
+                <button class="btn btn-success btn-sm" onclick="importByJenjang('Kelas IX', 'mapel-kelas-9', 'file-kelas-9', false)">? Gabung Kelas IX</button>
+                <button class="btn btn-warning btn-sm" onclick="importByJenjang('Kelas IX', 'mapel-kelas-9', 'file-kelas-9', true)">?? Ganti Kelas IX</button>
               </div>
             </div>
           </div>
 
           <div style="margin-top:12px;padding-top:12px;border-top:1px dashed #93c5fd;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <span style="font-size:0.85rem;color:#334155;">Butuh contoh format CSV per kelas &amp; mapel?</span>
-            <button class="btn btn-info btn-sm" onclick="downloadQuestionTemplate()">⬇️ Unduh Template Soal (.CSV)</button>
+            <button class="btn btn-info btn-sm" onclick="downloadQuestionTemplate()">?? Unduh Template Soal (.CSV)</button>
           </div>
 
           <div id="extracted-text-box" class="extracted-box">
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
-              <strong style="color: #0369a1;">📄 Hasil Ekstraksi / Isi Berkas:</strong>
-              <button class="btn btn-secondary btn-sm" onclick="copyExtractedToQuestionForm()">📋 Salin Teks ke Kolom Pertanyaan</button>
+              <strong style="color: #0369a1;">?? Hasil Ekstraksi / Isi Berkas:</strong>
+              <button class="btn btn-secondary btn-sm" onclick="copyExtractedToQuestionForm()">?? Salin Teks ke Kolom Pertanyaan</button>
             </div>
             <textarea id="extracted-raw-text" rows="5" placeholder="Teks hasil ekstraksi PDF/Word/berkas akan muncul di sini..."></textarea>
           </div>
         </div>
 
-        <h3 id="form-title">➕ Buat Soal Baru</h3>
+        <h3 id="form-title">? Buat Soal Baru</h3>
         <input type="hidden" id="edit-index" value="-1" />
 
         <div class="grid-2">
@@ -478,15 +478,15 @@
         </div>
 
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button class="btn btn-success" onclick="saveQuestion()">💾 Simpan Soal</button>
+          <button class="btn btn-success" onclick="saveQuestion()">?? Simpan Soal</button>
           <button class="btn btn-secondary" onclick="clearForm()">Bersihkan Form</button>
-          <button class="btn btn-danger" onclick="resetDefaultQuestions()">🔄 Reset Bank Soal Bawaan</button>
+          <button class="btn btn-danger" onclick="resetDefaultQuestions()">?? Reset Bank Soal Bawaan</button>
         </div>
 
         <hr style="margin: 24px 0; border: 0; border-top: 1px solid #cbd5e1;" />
 
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-          <h4 style="margin: 0;">📋 Bank Soal Aktif (<span id="total-q">0</span> soal • 20 soal acak per murid)</h4>
+          <h4 style="margin: 0;">?? Bank Soal Aktif (<span id="total-q">0</span> soal � 20 soal acak per murid)</h4>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <input type="text" id="filter-q-kelas" style="width: 155px; margin: 0; padding: 6px 10px;" placeholder="Filter Kelas (cth: VII)..." oninput="renderQuestionsList()" />
             <input type="text" id="filter-q-mapel" style="width: 175px; margin: 0; padding: 6px 10px;" placeholder="Filter Mapel..." oninput="renderQuestionsList()" />
@@ -496,11 +496,11 @@
       </div>
 
       <div id="panel-siswa" style="display: none;">
-        <h3>🔑 Pengaturan Token Ujian</h3>
+        <h3>?? Pengaturan Token Ujian</h3>
         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
           <input type="text" id="input-token-aktif" style="max-width: 260px; margin: 0;" placeholder="Contoh: SMP2026" />
           <button class="btn btn-success" onclick="saveToken()">Simpan Token</button>
-          <button class="btn btn-secondary" onclick="generateRandomToken()">🎲 Acak Token</button>
+          <button class="btn btn-secondary" onclick="generateRandomToken()">?? Acak Token</button>
         </div>
         <p style="font-size: 0.88rem; color: var(--muted); margin-top: 6px;">
           Token aktif saat ini: <strong id="current-token-label" style="color: var(--accent);"></strong>
@@ -509,7 +509,7 @@
         <hr style="margin: 22px 0; border: 0; border-top: 1px solid #cbd5e1;" />
 
         <div class="import-card">
-          <h4>📥 Upload Berkas Data Siswa Fokus Per Jenjang Kelas</h4>
+          <h4>?? Upload Berkas Data Siswa Fokus Per Jenjang Kelas</h4>
           <p>
             Unggah berkas siswa sesuai jenjang kelasnya (<strong>Kelas VII</strong>, <strong>Kelas VIII</strong>, atau <strong>Kelas IX</strong>).
             Format CSV/TXT: <code>nama_lengkap,username,password</code> atau <code>nama_lengkap,kelas,username,password</code> (kelas otomatis disesuaikan dengan kotak jenjang yang dipilih).
@@ -518,48 +518,48 @@
           <div class="jenjang-grid">
             <div class="jenjang-slot">
               <div>
-                <h5><span>📘 Siswa Kelas VII</span> <span class="jenjang-tag">Kelas VII</span></h5>
+                <h5><span>?? Siswa Kelas VII</span> <span class="jenjang-tag">Kelas VII</span></h5>
                 <input type="file" id="file-stu-kelas-7" accept="*" onchange="handleJenjangFileSelected('stu', '7')" />
                 <div id="info-stu-kelas-7" style="font-size:0.78rem;color:#0369a1;font-weight:600;margin-bottom:8px;"></div>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-success btn-sm" onclick="importStudentsByJenjang('Kelas VII', 'file-stu-kelas-7', false)">➕ Gabung Kelas VII</button>
-                <button class="btn btn-warning btn-sm" onclick="importStudentsByJenjang('Kelas VII', 'file-stu-kelas-7', true)">♻️ Ganti Kelas VII</button>
+                <button class="btn btn-success btn-sm" onclick="importStudentsByJenjang('Kelas VII', 'file-stu-kelas-7', false)">? Gabung Kelas VII</button>
+                <button class="btn btn-warning btn-sm" onclick="importStudentsByJenjang('Kelas VII', 'file-stu-kelas-7', true)">?? Ganti Kelas VII</button>
               </div>
             </div>
 
             <div class="jenjang-slot">
               <div>
-                <h5><span>📗 Siswa Kelas VIII</span> <span class="jenjang-tag">Kelas VIII</span></h5>
+                <h5><span>?? Siswa Kelas VIII</span> <span class="jenjang-tag">Kelas VIII</span></h5>
                 <input type="file" id="file-stu-kelas-8" accept="*" onchange="handleJenjangFileSelected('stu', '8')" />
                 <div id="info-stu-kelas-8" style="font-size:0.78rem;color:#0369a1;font-weight:600;margin-bottom:8px;"></div>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-success btn-sm" onclick="importStudentsByJenjang('Kelas VIII', 'file-stu-kelas-8', false)">➕ Gabung Kelas VIII</button>
-                <button class="btn btn-warning btn-sm" onclick="importStudentsByJenjang('Kelas VIII', 'file-stu-kelas-8', true)">♻️ Ganti Kelas VIII</button>
+                <button class="btn btn-success btn-sm" onclick="importStudentsByJenjang('Kelas VIII', 'file-stu-kelas-8', false)">? Gabung Kelas VIII</button>
+                <button class="btn btn-warning btn-sm" onclick="importStudentsByJenjang('Kelas VIII', 'file-stu-kelas-8', true)">?? Ganti Kelas VIII</button>
               </div>
             </div>
 
             <div class="jenjang-slot">
               <div>
-                <h5><span>📙 Siswa Kelas IX</span> <span class="jenjang-tag">Kelas IX</span></h5>
+                <h5><span>?? Siswa Kelas IX</span> <span class="jenjang-tag">Kelas IX</span></h5>
                 <input type="file" id="file-stu-kelas-9" accept="*" onchange="handleJenjangFileSelected('stu', '9')" />
                 <div id="info-stu-kelas-9" style="font-size:0.78rem;color:#0369a1;font-weight:600;margin-bottom:8px;"></div>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-success btn-sm" onclick="importStudentsByJenjang('Kelas IX', 'file-stu-kelas-9', false)">➕ Gabung Kelas IX</button>
-                <button class="btn btn-warning btn-sm" onclick="importStudentsByJenjang('Kelas IX', 'file-stu-kelas-9', true)">♻️ Ganti Kelas IX</button>
+                <button class="btn btn-success btn-sm" onclick="importStudentsByJenjang('Kelas IX', 'file-stu-kelas-9', false)">? Gabung Kelas IX</button>
+                <button class="btn btn-warning btn-sm" onclick="importStudentsByJenjang('Kelas IX', 'file-stu-kelas-9', true)">?? Ganti Kelas IX</button>
               </div>
             </div>
           </div>
 
           <div style="margin-top:12px;padding-top:12px;border-top:1px dashed #93c5fd;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <span style="font-size:0.85rem;color:#334155;">Butuh contoh format CSV akun siswa per jenjang?</span>
-            <button class="btn btn-info btn-sm" onclick="downloadStudentTemplate()">⬇️ Unduh Template Siswa (.CSV)</button>
+            <button class="btn btn-info btn-sm" onclick="downloadStudentTemplate()">?? Unduh Template Siswa (.CSV)</button>
           </div>
         </div>
 
-        <h3>➕ Tambah Akun Siswa Manual</h3>
+        <h3>? Tambah Akun Siswa Manual</h3>
         <div class="grid-4">
           <div>
             <label>Nama Lengkap:</label>
@@ -585,7 +585,7 @@
         <button class="btn btn-primary" onclick="addStudent()">Tambah Akun Siswa</button>
 
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 22px;">
-          <h4 style="margin: 0;">👥 Daftar Akun Siswa Terdaftar (<span id="total-students">0</span>)</h4>
+          <h4 style="margin: 0;">?? Daftar Akun Siswa Terdaftar (<span id="total-students">0</span>)</h4>
           <select id="filter-stu-kelas" style="width: 190px; margin: 0; padding: 6px 10px;" onchange="renderStudentsAndToken()">
             <option value="">Semua Jenjang Kelas</option>
             <option value="Kelas VII">Kelas VII</option>
@@ -598,11 +598,11 @@
 
       <div id="panel-rekap" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-          <h3 style="margin: 0;">📊 Rekap Hasil Pengerjaan Siswa</h3>
+          <h3 style="margin: 0;">?? Rekap Hasil Pengerjaan Siswa</h3>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-info btn-sm" onclick="refreshResultsFromStorage()">🔄 Muat Ulang Rekap</button>
-            <button class="btn btn-success btn-sm" onclick="downloadResultsCSV()">⬇️ Unduh Rekap (.CSV)</button>
-            <button class="btn btn-danger btn-sm" onclick="clearResults()">🗑️ Hapus Rekap</button>
+            <button class="btn btn-info btn-sm" onclick="refreshResultsFromStorage()">?? Muat Ulang Rekap</button>
+            <button class="btn btn-success btn-sm" onclick="downloadResultsCSV()">?? Unduh Rekap (.CSV)</button>
+            <button class="btn btn-danger btn-sm" onclick="clearResults()">??? Hapus Rekap</button>
           </div>
         </div>
         <div style="overflow-x: auto;">
@@ -627,8 +627,8 @@
 
         <div id="student-detail-panel" class="detail-panel">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-            <h4 id="detail-panel-title" style="margin: 0; color: #1e293b;">📝 Rincian Jawaban Per Soal</h4>
-            <button class="btn btn-secondary btn-sm" onclick="closeStudentDetail()">✖ Tutup Detail</button>
+            <h4 id="detail-panel-title" style="margin: 0; color: #1e293b;">?? Rincian Jawaban Per Soal</h4>
+            <button class="btn btn-secondary btn-sm" onclick="closeStudentDetail()">? Tutup Detail</button>
           </div>
           <div style="overflow-x: auto;">
             <table>
@@ -1039,7 +1039,7 @@
     const safeQuestions = JSON.stringify(securedQuestions, null, 2).replace(/<\/script>/gi, "<\\/script>");
 
     const parts = [
-      '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>Portal Kuis Edukasi SMP - Halaman Siswa</title>\n  <style>\n    :root { --primary: #4f46e5; --primary-dark: #3730a3; --success: #10b981; --danger: #ef4444; --card: #ffffff; --text: #1e293b; --muted: #64748b; }\n    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }\n    body { margin: 0; background: linear-gradient(135deg, #e0e7ff 0%, #cffafe 100%); color: var(--text); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }\n    body.quiz-locked { user-select: none; -webkit-user-select: none; -ms-user-select: none; }\n    .container { width: 100%; max-width: 900px; background: var(--card); border-radius: 20px; box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15); overflow: hidden; }\n    header { background: var(--primary); color: white; padding: 20px; text-align: center; }\n    header h1 { margin: 0; font-size: 1.7rem; }\n    header p { margin: 6px 0 0; opacity: 0.92; font-size: 0.92rem; }\n    .section { padding: 25px; }\n    .btn { padding: 10px 16px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px; }\n    .btn-primary { background: var(--primary); color: white; }\n    .btn-success { background: var(--success); color: white; }\n    .btn-danger { background: var(--danger); color: white; }\n    .btn-secondary { background: #e2e8f0; color: var(--text); }\n    .btn-sm { padding: 6px 12px; font-size: 0.84rem; }\n    input[type="text"], input[type="password"], select, textarea { width: 100%; padding: 10px 12px; margin: 6px 0 14px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 0.96rem; }\n    .login-box { max-width: 440px; margin: 10px auto; padding: 24px; border: 2px solid #e2e8f0; border-radius: 16px; background: #f8fafc; }\n    .login-box h3 { margin-top: 0; text-align: center; }\n    .error-msg { color: var(--danger); font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; min-height: 20px; text-align: center; }\n    .focus-banner { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }\n    .lock-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.94); color: white; z-index: 9999; justify-content: center; align-items: center; padding: 20px; text-align: center; }\n    .lock-overlay.active { display: flex; }\n    .lock-modal { max-width: 460px; background: #1e293b; border: 2px solid #ef4444; border-radius: 16px; padding: 24px; }\n    .game-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; font-weight: bold; }\n    .badge { padding: 7px 14px; border-radius: 20px; background: #e0e7ff; color: var(--primary); font-size: 0.88rem; }\n    .badge-timer { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }\n    .badge-warn { background: #fee2e2; color: #991b1b; }\n    .badge-type { background: #cffafe; color: #0e7490; }\n    .badge-mapel { background: #dcfce7; color: #166534; }\n    .q-nav-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 10px 12px; margin-bottom: 16px; }\n    .q-nav-title { font-size: 0.84rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }\n    .q-nav-grid { display: flex; flex-wrap: wrap; gap: 7px; }\n    .q-num-btn { width: 38px; height: 38px; border-radius: 9px; border: 2px solid #cbd5e1; background: white; color: var(--text); font-weight: bold; cursor: pointer; font-size: 0.9rem; }\n    .q-num-btn.answered { background: #d1fae5; border-color: var(--success); color: #065f46; }\n    .q-num-btn.current { background: var(--primary); border-color: var(--primary-dark); color: white; }\n    .question-box { font-size: 1.15rem; font-weight: 600; margin-bottom: 16px; line-height: 1.55; }\n    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }\n    @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }\n    .option-btn { padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; background: #f8fafc; text-align: left; font-size: 0.96rem; cursor: pointer; font-weight: 500; }\n    .option-btn.selected { border-color: var(--primary); background: #e0e7ff; color: var(--primary-dark); }\n    .status-poin { margin-top: 14px; font-weight: bold; min-height: 22px; }\n    .rekap-card { max-width: 540px; margin: 16px auto; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 14px; padding: 16px; text-align: left; font-size: 0.92rem; line-height: 1.65; }\n    .action-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }\n  </style>\n</head>\n<body>\n<div id="focus-warning-overlay" class="lock-overlay"><div class="lock-modal"><h3 style="margin-top:0;color:#fca5a5;">Pelanggaran Fokus / Keamanan Terdeteksi!</h3><p style="font-size:0.95rem;line-height:1.55;">Alasan: <strong id="overlay-reason">Keluar fokus layar</strong><br>Jumlah pelanggaran tercatat: <strong id="overlay-violation-count">0</strong></p><button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="dismissFocusWarning()">Kembali ke Soal Kuis</button></div></div>\n<div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Waktu Pengerjaan 60 Menit - 20 Soal Acak Per Murid Sesuai Jenjang Kelas - Penilaian Diproses Guru</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas / Jenjang:</label><input type="text" id="login-kelas" placeholder="Contoh: Kelas VII" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key===\'Enter\') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis (60 Menit • 20 Soal)</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif (Batas Waktu 60 Menit • 20 Soal Acak):</strong> Keluar layar atau tindakan ilegal dicatat sebagai pelanggaran!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-timer" id="timer-badge">Waktu: 60:00</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/20</span><span class="badge badge-warn" id="violation-badge">Pelanggaran: 0</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk berpindah soal):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Jawaban Telah Dikirim!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p style="color:var(--muted);">Hasil pengerjaan Anda telah terekam ke panel guru. Nilai tidak ditampilkan kepada siswa.</p><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Bukti Pengerjaan</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>\n<script>\n',
+      '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>Portal Kuis Edukasi SMP - Halaman Siswa</title>\n  <style>\n    :root { --primary: #4f46e5; --primary-dark: #3730a3; --success: #10b981; --danger: #ef4444; --card: #ffffff; --text: #1e293b; --muted: #64748b; }\n    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }\n    body { margin: 0; background: linear-gradient(135deg, #e0e7ff 0%, #cffafe 100%); color: var(--text); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }\n    body.quiz-locked { user-select: none; -webkit-user-select: none; -ms-user-select: none; }\n    .container { width: 100%; max-width: 900px; background: var(--card); border-radius: 20px; box-shadow: 0 15px 35px rgba(79, 70, 229, 0.15); overflow: hidden; }\n    header { background: var(--primary); color: white; padding: 20px; text-align: center; }\n    header h1 { margin: 0; font-size: 1.7rem; }\n    header p { margin: 6px 0 0; opacity: 0.92; font-size: 0.92rem; }\n    .section { padding: 25px; }\n    .btn { padding: 10px 16px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px; }\n    .btn-primary { background: var(--primary); color: white; }\n    .btn-success { background: var(--success); color: white; }\n    .btn-danger { background: var(--danger); color: white; }\n    .btn-secondary { background: #e2e8f0; color: var(--text); }\n    .btn-sm { padding: 6px 12px; font-size: 0.84rem; }\n    input[type="text"], input[type="password"], select, textarea { width: 100%; padding: 10px 12px; margin: 6px 0 14px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 0.96rem; }\n    .login-box { max-width: 440px; margin: 10px auto; padding: 24px; border: 2px solid #e2e8f0; border-radius: 16px; background: #f8fafc; }\n    .login-box h3 { margin-top: 0; text-align: center; }\n    .error-msg { color: var(--danger); font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; min-height: 20px; text-align: center; }\n    .focus-banner { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }\n    .lock-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.94); color: white; z-index: 9999; justify-content: center; align-items: center; padding: 20px; text-align: center; }\n    .lock-overlay.active { display: flex; }\n    .lock-modal { max-width: 460px; background: #1e293b; border: 2px solid #ef4444; border-radius: 16px; padding: 24px; }\n    .game-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; font-weight: bold; }\n    .badge { padding: 7px 14px; border-radius: 20px; background: #e0e7ff; color: var(--primary); font-size: 0.88rem; }\n    .badge-timer { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }\n    .badge-warn { background: #fee2e2; color: #991b1b; }\n    .badge-type { background: #cffafe; color: #0e7490; }\n    .badge-mapel { background: #dcfce7; color: #166534; }\n    .q-nav-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 10px 12px; margin-bottom: 16px; }\n    .q-nav-title { font-size: 0.84rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }\n    .q-nav-grid { display: flex; flex-wrap: wrap; gap: 7px; }\n    .q-num-btn { width: 38px; height: 38px; border-radius: 9px; border: 2px solid #cbd5e1; background: white; color: var(--text); font-weight: bold; cursor: pointer; font-size: 0.9rem; }\n    .q-num-btn.answered { background: #d1fae5; border-color: var(--success); color: #065f46; }\n    .q-num-btn.current { background: var(--primary); border-color: var(--primary-dark); color: white; }\n    .question-box { font-size: 1.15rem; font-weight: 600; margin-bottom: 16px; line-height: 1.55; }\n    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }\n    @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }\n    .option-btn { padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; background: #f8fafc; text-align: left; font-size: 0.96rem; cursor: pointer; font-weight: 500; }\n    .option-btn.selected { border-color: var(--primary); background: #e0e7ff; color: var(--primary-dark); }\n    .status-poin { margin-top: 14px; font-weight: bold; min-height: 22px; }\n    .rekap-card { max-width: 540px; margin: 16px auto; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 14px; padding: 16px; text-align: left; font-size: 0.92rem; line-height: 1.65; }\n    .action-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }\n  </style>\n</head>\n<body>\n<div id="focus-warning-overlay" class="lock-overlay"><div class="lock-modal"><h3 style="margin-top:0;color:#fca5a5;">Pelanggaran Fokus / Keamanan Terdeteksi!</h3><p style="font-size:0.95rem;line-height:1.55;">Alasan: <strong id="overlay-reason">Keluar fokus layar</strong><br>Jumlah pelanggaran tercatat: <strong id="overlay-violation-count">0</strong></p><button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="dismissFocusWarning()">Kembali ke Soal Kuis</button></div></div>\n<div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Waktu Pengerjaan 60 Menit - 20 Soal Acak Per Murid Sesuai Jenjang Kelas - Penilaian Diproses Guru</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas / Jenjang:</label><input type="text" id="login-kelas" placeholder="Contoh: Kelas VII" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key===\'Enter\') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis (60 Menit � 20 Soal)</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif (Batas Waktu 60 Menit � 20 Soal Acak):</strong> Keluar layar atau tindakan ilegal dicatat sebagai pelanggaran!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-timer" id="timer-badge">Waktu: 60:00</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/20</span><span class="badge badge-warn" id="violation-badge">Pelanggaran: 0</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk berpindah soal):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Jawaban Telah Dikirim!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p style="color:var(--muted);">Hasil pengerjaan Anda telah terekam ke panel guru. Nilai tidak ditampilkan kepada siswa.</p><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Bukti Pengerjaan</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>\n<script>\n',
       'const STORAGE_NAMESPACE = ' + safeNamespace + ';\n',
       'const REKAP_WEBHOOK_URL = ' + safeWebhook + ';\n',
       'const ACTIVE_TOKEN = ' + safeToken + ';\n',
@@ -1085,7 +1085,7 @@
       'function submitEssayAnswer(val) { const qObj = activeSessionQuestions[currentIdx]; const cl = String(val || "").trim(); if (!cl) { alert("Silakan isi jawaban essay."); return; } qObj.userAnswer = cl; qObj.answerLabel = cl; qObj.answered = true; const kHashes = qObj.keyHashes || []; let ok = false; if (kHashes.length) { const words = cl.toLowerCase().split(/[^a-z0-9\u00c0-\u024f]+/i).filter(Boolean); const fullLower = cl.toLowerCase(); ok = kHashes.some(function(h){ return h === hashDigestSync(qObj.qSalt + "::" + fullLower) || words.some(function(w){ return h === hashDigestSync(qObj.qSalt + "::" + w); }); }); } else { ok = cl.length >= (qObj.minLen || 10); } qObj.isCorrect = ok; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }\n',
       'function saveResultToGuruStorage(record) { try { const key = STORAGE_NAMESPACE + "_res"; const existing = JSON.parse(localStorage.getItem(key)) || []; existing.unshift(record); localStorage.setItem(key, JSON.stringify(existing)); } catch (e) {} if (typeof REKAP_WEBHOOK_URL === "string" && REKAP_WEBHOOK_URL.startsWith("https://")) { fetch(REKAP_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(record) }).catch(function(){}); } }\n',
       'function confirmFinishQuiz() { const unans = activeSessionQuestions.filter(function(q){ return !q.answered; }).length; const msg = unans > 0 ? ("Masih ada " + unans + " soal belum dijawab. Yakin ingin menyelesaikan kuis?") : "Yakin ingin menyelesaikan dan mengumpulkan hasil kuis?"; if (confirm(msg)) finishStudentQuiz(); }\n',
-      'function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); stopCountdownTimer(); isStudentQuizActive = false; setQuizLockVisual(false); document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const correctCnt = activeSessionQuestions.filter(function(q){ return q.answered && q.isCorrect; }).length; const wrongCnt = activeSessionQuestions.filter(function(q){ return q.answered && !q.isCorrect; }).length; const usedSeconds = Math.max(0, QUIZ_DURATION_SECONDS - remainingSeconds); const durasiDipakai = formatClockMMSS(usedSeconds); const details = activeSessionQuestions.map(function(q, idx){ return { no: idx + 1, typeLabel: TYPE_LABELS[q.type] || q.type || "Soal", q: q.q, answer: q.answered ? (q.answerLabel || String(q.userAnswer || "")) : "(Belum dijawab)", answered: !!q.answered, isCorrect: !!(q.answered && q.isCorrect), earnedScore: Number(q.earnedScore || 0) }; }); const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; saveResultToGuruStorage({ fullName: activeStudent.fullName, kelas: activeKelas, mapel: mapelLabel, username: activeStudent.username, answered: ansCnt, total: tot, correctCount: correctCnt, wrongCount: wrongCnt, score: score, violations: violationCount, penalty: totalPenaltyPoints, durationUsed: durasiDipakai, time: ts, questionDetails: details }); lastSummaryText = "BUKTI PENGERJAAN KUIS SISWA\\nNama: " + activeStudent.fullName + "\\nKelas: " + activeKelas + "\\nMapel: " + mapelLabel + "\\nUsername: " + activeStudent.username + "\\nTerjawab: " + ansCnt + "/" + tot + " soal\\nDurasi Terpakai: " + durasiDipakai + " / 60:00\\nPelanggaran: " + violationCount + " kali\\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " • @" + activeStudent.username + ")"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Durasi Terpakai:</strong> " + durasiDipakai + " (Batas 60:00)<br><strong>Pelanggaran:</strong> " + violationCount + " kali<br><strong>Waktu Kirim:</strong> " + ts + "<br><strong>Status Nilai:</strong> Disimpan untuk penilaian guru"; }\n',
+      'function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); stopCountdownTimer(); isStudentQuizActive = false; setQuizLockVisual(false); document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const correctCnt = activeSessionQuestions.filter(function(q){ return q.answered && q.isCorrect; }).length; const wrongCnt = activeSessionQuestions.filter(function(q){ return q.answered && !q.isCorrect; }).length; const usedSeconds = Math.max(0, QUIZ_DURATION_SECONDS - remainingSeconds); const durasiDipakai = formatClockMMSS(usedSeconds); const details = activeSessionQuestions.map(function(q, idx){ return { no: idx + 1, typeLabel: TYPE_LABELS[q.type] || q.type || "Soal", q: q.q, answer: q.answered ? (q.answerLabel || String(q.userAnswer || "")) : "(Belum dijawab)", answered: !!q.answered, isCorrect: !!(q.answered && q.isCorrect), earnedScore: Number(q.earnedScore || 0) }; }); const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; saveResultToGuruStorage({ fullName: activeStudent.fullName, kelas: activeKelas, mapel: mapelLabel, username: activeStudent.username, answered: ansCnt, total: tot, correctCount: correctCnt, wrongCount: wrongCnt, score: score, violations: violationCount, penalty: totalPenaltyPoints, durationUsed: durasiDipakai, time: ts, questionDetails: details }); lastSummaryText = "BUKTI PENGERJAAN KUIS SISWA\\nNama: " + activeStudent.fullName + "\\nKelas: " + activeKelas + "\\nMapel: " + mapelLabel + "\\nUsername: " + activeStudent.username + "\\nTerjawab: " + ansCnt + "/" + tot + " soal\\nDurasi Terpakai: " + durasiDipakai + " / 60:00\\nPelanggaran: " + violationCount + " kali\\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " � @" + activeStudent.username + ")"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Durasi Terpakai:</strong> " + durasiDipakai + " (Batas 60:00)<br><strong>Pelanggaran:</strong> " + violationCount + " kali<br><strong>Waktu Kirim:</strong> " + ts + "<br><strong>Status Nilai:</strong> Disimpan untuk penilaian guru"; }\n',
       'function copyStudentSummary() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastSummaryText).then(function(){ alert("Bukti pengerjaan berhasil disalin!"); }).catch(function(){ prompt("Salin bukti berikut:", lastSummaryText); }); else prompt("Salin bukti berikut:", lastSummaryText); }\n',
       'function downloadStudentSummary() { const blob = new Blob([lastSummaryText], { type: "text/plain;charset=utf-8;" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "bukti_" + (activeStudent.username || "siswa") + ".txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }\n',
       'function loginStudent() { const u = document.getElementById("login-username").value.trim(); const p = document.getElementById("login-password").value.trim(); const k = document.getElementById("login-kelas").value.trim(); const m = document.getElementById("login-mapel").value.trim(); const t = document.getElementById("login-token").value.trim(); const err = document.getElementById("student-login-error"); if (!u || !p || !k || !t) { err.innerText = "Harap isi username, password, kelas, dan token!"; return; } if (t.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { err.innerText = "Token kelas tidak valid!"; return; } const f = STUDENTS_DATA.find(function(s){ return s.username.toLowerCase() === u.toLowerCase() && s.password === p; }); if (!f) { err.innerText = "Username atau password siswa salah!"; return; } const stuKelasKey = normalizeJenjangKey(f.kelas); const inpKelasKey = normalizeJenjangKey(k); if (stuKelasKey && inpKelasKey && stuKelasKey !== inpKelasKey) { err.innerText = "Kelas tidak sesuai dengan akun terdaftar (" + f.kelas + ")!"; return; } const filteredBank = filterBankByKelasAndMapel(QUESTIONS_BANK, k, m); if (!filteredBank.length) { err.innerText = "Belum ada soal untuk kelas " + k + (m ? (" / mapel " + m) : "") + "!"; return; } err.innerText = ""; activeStudent = f; activeKelas = f.kelas || k; activeMapel = m || "Semua Mapel"; currentIdx = 0; score = 0; violationCount = 0; totalPenaltyPoints = 0; lastViolationAt = 0; isStudentQuizActive = true; setQuizLockVisual(true); requestFullscreenMode(); activeSessionQuestions = buildStudentQuizSet(filteredBank); document.getElementById("start-screen").style.display = "none"; document.getElementById("result-screen").style.display = "none"; document.getElementById("quiz-screen").style.display = "block"; document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName + " (" + activeKelas + ")"; document.getElementById("mapel-badge").innerText = "Mapel: " + activeMapel; document.getElementById("violation-badge").innerText = "Pelanggaran: 0"; startCountdownTimer(); loadQuestion(); }\n',
@@ -1559,7 +1559,7 @@
     const tbody = document.getElementById("detail-panel-tbody");
     const details = Array.isArray(r.questionDetails) ? r.questionDetails : [];
 
-    title.innerText = "📝 Rincian Jawaban Per Soal — " + (r.fullName || "-") + " (" + (r.kelas || "-") + " • " + (r.mapel || "-") + ")";
+    title.innerText = "?? Rincian Jawaban Per Soal � " + (r.fullName || "-") + " (" + (r.kelas || "-") + " � " + (r.mapel || "-") + ")";
     panel.style.display = "block";
 
     if (!details.length) {
