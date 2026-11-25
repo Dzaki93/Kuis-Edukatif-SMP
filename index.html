@@ -52,12 +52,12 @@
 </head>
 <body>
 <div id="focus-warning-overlay" class="lock-overlay"><div class="lock-modal"><h3 style="margin-top:0;color:#fca5a5;">Pelanggaran Fokus / Keamanan Terdeteksi!</h3><p style="font-size:0.95rem;line-height:1.55;">Alasan: <strong id="overlay-reason">Keluar fokus layar</strong><br>Jumlah pelanggaran tercatat: <strong id="overlay-violation-count">0</strong></p><button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="dismissFocusWarning()">Kembali ke Soal Kuis</button></div></div>
-<div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Waktu Pengerjaan 60 Menit - 20 Soal Acak Per Murid Sesuai Jenjang Kelas - Penilaian Diproses Guru</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas / Jenjang:</label><input type="text" id="login-kelas" placeholder="Contoh: Kelas VII" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key==='Enter') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis (60 Menit • 20 Soal)</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif (Batas Waktu 60 Menit • 20 Soal Acak):</strong> Keluar layar atau tindakan ilegal dicatat sebagai pelanggaran!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-timer" id="timer-badge">Waktu: 60:00</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/20</span><span class="badge badge-warn" id="violation-badge">Pelanggaran: 0</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk berpindah soal):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Jawaban Telah Dikirim!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p style="color:var(--muted);">Hasil pengerjaan Anda telah terekam ke panel guru. Nilai tidak ditampilkan kepada siswa.</p><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Bukti Pengerjaan</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>
+<div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Waktu Pengerjaan 60 Menit - 20 Soal Acak Per Murid Sesuai Jenjang Kelas - Penilaian Diproses Guru</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas / Jenjang:</label><input type="text" id="login-kelas" placeholder="Contoh: Kelas VII" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key==='Enter') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis (60 Menit � 20 Soal)</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif (Batas Waktu 60 Menit � 20 Soal Acak):</strong> Keluar layar atau tindakan ilegal dicatat sebagai pelanggaran!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-timer" id="timer-badge">Waktu: 60:00</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/20</span><span class="badge badge-warn" id="violation-badge">Pelanggaran: 0</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk berpindah soal):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Jawaban Telah Dikirim!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p style="color:var(--muted);">Hasil pengerjaan Anda telah terekam ke panel guru. Nilai tidak ditampilkan kepada siswa.</p><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Bukti Pengerjaan</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>
 <script>
 const STORAGE_NAMESPACE = "smp_quiz_2link_v10_jenjang60m20q";
 const REKAP_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxIBYUWVF56qo0ogQ06gSm19hHoNcEIgkTbtcRro3pl7iAX-ztZ1uSp5rogtgBpmtHL/exec";
-const ACTIVE_TOKEN = "SMP2026";
-const SESSION_SALT = "sec_mwwcennn_cva2a1";
+const ACTIVE_TOKEN = "PEGAISTIMEWA";
+const SESSION_SALT = "sec_mwwp6dhd_yl6ltw";
 const QUIZ_DURATION_SECONDS = 3600;
 const QUIZ_TOTAL_QUESTIONS = 20;
 const STUDENTS_DATA = [
@@ -78,35 +78,219 @@ const STUDENTS_DATA = [
     "kelas": "Kelas IX",
     "username": "andi9",
     "password": "123"
+  },
+  {
+    "fullName": "Abelia Safana Zenita Wikly",
+    "kelas": "Kelas VII",
+    "username": "abelia",
+    "password": "wikly"
+  },
+  {
+    "fullName": "Achmad Abidzar Athan Muhana",
+    "kelas": "Kelas VII",
+    "username": "achmad",
+    "password": "muhana"
+  },
+  {
+    "fullName": "Adina Zalika Ifra",
+    "kelas": "Kelas VII",
+    "username": "adina",
+    "password": "ifra"
+  },
+  {
+    "fullName": "Afreza Umarsyah Putra",
+    "kelas": "Kelas VII",
+    "username": "afreza",
+    "password": "putra"
+  },
+  {
+    "fullName": "Afumm Saverio Maheswara",
+    "kelas": "Kelas VII",
+    "username": "afumm",
+    "password": "maheswara"
+  },
+  {
+    "fullName": "Alif Naufal Pradana",
+    "kelas": "Kelas VII",
+    "username": "alif",
+    "password": "pradana"
+  },
+  {
+    "fullName": "Almayhira Diora Adiwidya Wulandari",
+    "kelas": "Kelas VII",
+    "username": "almayhira",
+    "password": "wulandari"
+  },
+  {
+    "fullName": "Anaya Kamila",
+    "kelas": "Kelas VII",
+    "username": "anaya",
+    "password": "kamila"
+  },
+  {
+    "fullName": "Anindita Wirasana Admaji",
+    "kelas": "Kelas VII",
+    "username": "anindita",
+    "password": "admaji"
+  },
+  {
+    "fullName": "Atikah Farah Dzakiyah",
+    "kelas": "Kelas VII",
+    "username": "atikah",
+    "password": "dzakiyah"
+  },
+  {
+    "fullName": "Citra Ayu Wulandari",
+    "kelas": "Kelas VII",
+    "username": "citra",
+    "password": "wulandari"
+  },
+  {
+    "fullName": "Delisha Ar Bahtiar",
+    "kelas": "Kelas VII",
+    "username": "delisha",
+    "password": "bahtiar"
+  },
+  {
+    "fullName": "El Dzakky Dhzulfi Ramadan Nurianto",
+    "kelas": "Kelas VII",
+    "username": "eldzakky",
+    "password": "nurianto"
+  },
+  {
+    "fullName": "Ghaniyah Cahya Ratu Permata",
+    "kelas": "Kelas VII",
+    "username": "ghaniyah",
+    "password": "permata"
+  },
+  {
+    "fullName": "Jeremiah Rafael Putra Situmorang",
+    "kelas": "Kelas VII",
+    "username": "jeremiah",
+    "password": "situmorang"
+  },
+  {
+    "fullName": "Khalaf Asyrafnzar Efendi",
+    "kelas": "Kelas VII",
+    "username": "khalaf",
+    "password": "efendi"
+  },
+  {
+    "fullName": "Khalifah Raiha Al Hafiz",
+    "kelas": "Kelas VII",
+    "username": "khalifah",
+    "password": "hafiz"
+  },
+  {
+    "fullName": "Kirana Mindhita Risky Pratiwi",
+    "kelas": "Kelas VII",
+    "username": "kirana",
+    "password": "pratiwi"
+  },
+  {
+    "fullName": "Madu Riski Putri Nadia",
+    "kelas": "Kelas VII",
+    "username": "madu",
+    "password": "nadia"
+  },
+  {
+    "fullName": "Melody Aquina Rinjani",
+    "kelas": "Kelas VII",
+    "username": "melody",
+    "password": "rinjani"
+  },
+  {
+    "fullName": "Muhammad Zaky Darmawanto",
+    "kelas": "Kelas VII",
+    "username": "muhammadzaky",
+    "password": "darmawanto"
+  },
+  {
+    "fullName": "Muhammad Alif Andra Ramadhan",
+    "kelas": "Kelas VII",
+    "username": "muhammadalif",
+    "password": "ramadhan"
+  },
+  {
+    "fullName": "Muhammad Jovan Putra Pratama",
+    "kelas": "Kelas VII",
+    "username": "muhammadjovan",
+    "password": "pratama"
+  },
+  {
+    "fullName": "Muhammad Shahzada Faqor Atmaja",
+    "kelas": "Kelas VII",
+    "username": "muhammadshahzada",
+    "password": "atmaja"
+  },
+  {
+    "fullName": "Nabila Fajrik Salsabila",
+    "kelas": "Kelas VII",
+    "username": "nabilafajrik",
+    "password": "salsabila"
+  },
+  {
+    "fullName": "Nabila Shevalita",
+    "kelas": "Kelas VII",
+    "username": "nabilashevalita",
+    "password": "shevalita"
+  },
+  {
+    "fullName": "Naila Syifa Azzahra",
+    "kelas": "Kelas VII",
+    "username": "naila",
+    "password": "azzahra"
+  },
+  {
+    "fullName": "Nayla Salsabila Barokah",
+    "kelas": "Kelas VII",
+    "username": "nayla",
+    "password": "barokah"
+  },
+  {
+    "fullName": "Raditya Naufal Dary Firmansyah",
+    "kelas": "Kelas VII",
+    "username": "raditya",
+    "password": "firmansyah"
+  },
+  {
+    "fullName": "Rajata Athallah Wiratama",
+    "kelas": "Kelas VII",
+    "username": "rajata",
+    "password": "wiratama"
+  },
+  {
+    "fullName": "Raysha Putri Amelia",
+    "kelas": "Kelas VII",
+    "username": "raysha",
+    "password": "amelia"
+  },
+  {
+    "fullName": "Salsabila Kanza Adiba",
+    "kelas": "Kelas VII",
+    "username": "salsabila",
+    "password": "adiba"
+  },
+  {
+    "fullName": "Syifa Lailatul Adha",
+    "kelas": "Kelas VII",
+    "username": "syifa",
+    "password": "adha"
+  },
+  {
+    "fullName": "Valentino Maulana Al Ghofari",
+    "kelas": "Kelas VII",
+    "username": "valentino",
+    "password": "ghofari"
+  },
+  {
+    "fullName": "Zaskia Thalita Az Zahra",
+    "kelas": "Kelas VII",
+    "username": "zaskia",
+    "password": "zahra"
   }
 ];
 const QUESTIONS_BANK = [
-  {
-    "type": "pg",
-    "kelas": "Kelas IX",
-    "mapel": "Bahasa Indonesia",
-    "q": "Teks tanggapan yang berisi pujian, kritik, atau sanggahan secara santun dan objektif disebut...",
-    "poin": 100,
-    "entries": [
-      {
-        "text": "Teks Tanggapan",
-        "tokenHash": "24a78b4b1ee656c4"
-      },
-      {
-        "text": "Teks Cerpen",
-        "tokenHash": "704a0793c68f1df8"
-      },
-      {
-        "text": "Teks Fabel",
-        "tokenHash": "19b2d700f8821ba5"
-      },
-      {
-        "text": "Teks Berita",
-        "tokenHash": "eb0538656ccc52ce"
-      }
-    ],
-    "correctHash": "24a78b4b1ee656c4"
-  },
   {
     "type": "pg",
     "kelas": "Kelas VII",
@@ -116,22 +300,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "cerita tokoh dalam peristiwa nyata",
-        "tokenHash": "4f02b237dff6ade8"
+        "tokenHash": "5755af984499739d"
       },
       {
         "text": "pendapat penulis tentang suatu hal",
-        "tokenHash": "2201b37a7b9d1189"
+        "tokenHash": "b119111dbfd1b1bc"
       },
       {
         "text": "urutan langkah untuk melakukan sesuatu",
-        "tokenHash": "d8a5eb9ecb833406"
+        "tokenHash": "0f3e1c23a004443d"
       },
       {
         "text": "gambaran suasana pada tempat tertentu",
-        "tokenHash": "45fa6f64866638a3"
+        "tokenHash": "911876eb140962f6"
       }
     ],
-    "correctHash": "d8a5eb9ecb833406"
+    "correctHash": "0f3e1c23a004443d"
   },
   {
     "type": "pg",
@@ -142,22 +326,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "urutan langkah yang wajib diikuti pembaca",
-        "tokenHash": "c1f95c323bb029bf"
+        "tokenHash": "6226f18529c653c2"
       },
       {
         "text": "jumlah kalimat yang ditulis oleh penulis",
-        "tokenHash": "775e0da0ef1717a2"
+        "tokenHash": "87627b1d8c873219"
       },
       {
         "text": "judul yang dipakai pada teks tersebut",
-        "tokenHash": "4749d833b1dbb24d"
+        "tokenHash": "0a88ca2e047de7ce"
       },
       {
         "text": "gambar yang menyertai isi teks tersebut",
-        "tokenHash": "c7b6cdd65bec4f9c"
+        "tokenHash": "6761e0ebad22e57f"
       }
     ],
-    "correctHash": "c1f95c323bb029bf"
+    "correctHash": "6226f18529c653c2"
   },
   {
     "type": "pg",
@@ -168,22 +352,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "makanan utama saat sarapan pagi",
-        "tokenHash": "0a0c4caa62b2d446"
+        "tokenHash": "a62107fdaa8e6f07"
       },
       {
         "text": "minuman dingin saat cuaca panas",
-        "tokenHash": "d9d32e67477dc217"
+        "tokenHash": "4ed80f780b7ec2b6"
       },
       {
         "text": "makanan berat saat makan malam",
-        "tokenHash": "cfae2894f92fbf70"
+        "tokenHash": "7b471dcba75cd2e1"
       },
       {
         "text": "makanan ringan di sela jam makan",
-        "tokenHash": "905162ee8a185b69"
+        "tokenHash": "19298143c66d4f2a"
       }
     ],
-    "correctHash": "905162ee8a185b69"
+    "correctHash": "19298143c66d4f2a"
   },
   {
     "type": "pg",
@@ -194,22 +378,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "memberi saran agar siswa tetap tenang",
-        "tokenHash": "c99bd7252ddc2740"
+        "tokenHash": "e17d57d806212443"
       },
       {
         "text": "menceritakan pengalaman siswa di kelas",
-        "tokenHash": "8b66bafdbeb16360"
+        "tokenHash": "b84d7af6e2c3dee9"
       },
       {
         "text": "membujuk siswa agar membeli perlengkapan",
-        "tokenHash": "4c5ee20e1a5b960d"
+        "tokenHash": "3cfb6aa5e4b657bc"
       },
       {
         "text": "menjelaskan sejarah tempat belajar siswa",
-        "tokenHash": "608cd0cbbe4c1d4e"
+        "tokenHash": "6ba90940ad89c9c7"
       }
     ],
-    "correctHash": "c99bd7252ddc2740"
+    "correctHash": "e17d57d806212443"
   },
   {
     "type": "pg",
@@ -220,22 +404,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Bukalah jendela agar udara masuk.",
-        "tokenHash": "85f085b1f048984e"
+        "tokenHash": "00f41864277bffad"
       },
       {
         "text": "Tutup pintu setelah kamu masuk kelas.",
-        "tokenHash": "45674e9c3d517a59"
+        "tokenHash": "bec5ee193f83e14a"
       },
       {
         "text": "Jangan membuang sampah di selokan.",
-        "tokenHash": "30a31f7c0893aa19"
+        "tokenHash": "4c8fcdb76fce8280"
       },
       {
         "text": "Silakan simpan tas di dalam loker.",
-        "tokenHash": "7702547218ace777"
+        "tokenHash": "09fc5b378823fa4c"
       }
     ],
-    "correctHash": "30a31f7c0893aa19"
+    "correctHash": "4c8fcdb76fce8280"
   },
   {
     "type": "pg",
@@ -246,22 +430,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Cuci sayuran, kemudian potong-potong sayuran itu, lalu rebus.",
-        "tokenHash": "37165b89f5f15ed9"
+        "tokenHash": "68d29f70ac7b2926"
       },
       {
         "text": "Sayuran dicuci, lalu sayuran dipotong dan direbus.",
-        "tokenHash": "d80c291435ce72b8"
+        "tokenHash": "c1bbb695762ee697"
       },
       {
         "text": "Cuci sayuran, kemudian potong-potong, lalu rebus.",
-        "tokenHash": "2fe0ec940285dba3"
+        "tokenHash": "355b48dbc9616f6a"
       },
       {
         "text": "Cuci sayuran, kemudian dipotong, lalu sayuran direbus.",
-        "tokenHash": "126a4d2a59c8108e"
+        "tokenHash": "aad4fb03e282bbb1"
       }
     ],
-    "correctHash": "2fe0ec940285dba3"
+    "correctHash": "355b48dbc9616f6a"
   },
   {
     "type": "pg",
@@ -272,22 +456,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Kamu menyimpan buku itu di rak.",
-        "tokenHash": "c1a80dd73e88b1e5"
+        "tokenHash": "976fbdd6562d394e"
       },
       {
         "text": "Buku itu kamu simpan di rak.",
-        "tokenHash": "dbc1a39a3499580e"
+        "tokenHash": "1702c833ce55d325"
       },
       {
         "text": "Kamu bisa menyimpan buku itu di rak.",
-        "tokenHash": "ffb20a39489f0213"
+        "tokenHash": "4716fda0b8a05f40"
       },
       {
         "text": "Simpanlah buku itu di rak!",
-        "tokenHash": "5bef3f49dbf02a3b"
+        "tokenHash": "e6b2ac3297a01032"
       }
     ],
-    "correctHash": "5bef3f49dbf02a3b"
+    "correctHash": "e6b2ac3297a01032"
   },
   {
     "type": "pg",
@@ -298,22 +482,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Bilas tangan sampai bersih.",
-        "tokenHash": "2ca4c76922150cbf"
+        "tokenHash": "793928969e9fc7be"
       },
       {
         "text": "Minumlah air putih agar sehat.",
-        "tokenHash": "6c6576591dd3bdcf"
+        "tokenHash": "4cb04bb8c1e4a770"
       },
       {
         "text": "Siapkan dua buah jeruk segar.",
-        "tokenHash": "f879cec7ff0202a9"
+        "tokenHash": "cdac2f609ffee358"
       },
       {
         "text": "Tuang sirup ke dalam gelas.",
-        "tokenHash": "49e7730a613ca7e6"
+        "tokenHash": "49fb56c53ab7f6d7"
       }
     ],
-    "correctHash": "6c6576591dd3bdcf"
+    "correctHash": "4cb04bb8c1e4a770"
   },
   {
     "type": "pg",
@@ -324,22 +508,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "pendahuluan, langkah, alat dan bahan, penutup",
-        "tokenHash": "fc310760a7069bb5"
+        "tokenHash": "47ef226969a5bd7a"
       },
       {
         "text": "pendahuluan, alat dan bahan, langkah, penutup",
-        "tokenHash": "425a48f24a82c1cf"
+        "tokenHash": "26968f59e160df8e"
       },
       {
         "text": "alat dan bahan, pendahuluan, langkah, penutup",
-        "tokenHash": "a7be00967a23d6df"
+        "tokenHash": "13c429c7dc5a6970"
       },
       {
         "text": "langkah, pendahuluan, alat dan bahan, penutup",
-        "tokenHash": "f895fdf368580b94"
+        "tokenHash": "6531ce0a79b7bfbb"
       }
     ],
-    "correctHash": "425a48f24a82c1cf"
+    "correctHash": "26968f59e160df8e"
   },
   {
     "type": "pg",
@@ -350,22 +534,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "penerbit teks",
-        "tokenHash": "761f48fbbdd08b7e"
+        "tokenHash": "1efb02bd63d81fd0"
       },
       {
         "text": "pembuat alat dan bahan",
-        "tokenHash": "9c532bbe0399cff9"
+        "tokenHash": "c537a138319c52e9"
       },
       {
         "text": "pembaca sasaran teks",
-        "tokenHash": "0f26ad7a13c0b895"
+        "tokenHash": "b6ab14f097eef872"
       },
       {
         "text": "penjual alat dan bahan",
-        "tokenHash": "516b70e8810f11df"
+        "tokenHash": "7e3599ceac7f6df3"
       }
     ],
-    "correctHash": "0f26ad7a13c0b895"
+    "correctHash": "b6ab14f097eef872"
   },
   {
     "type": "pg",
@@ -376,22 +560,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "denah lokasi",
-        "tokenHash": "d5811c55e68fb8d5"
+        "tokenHash": "8106278a4faca3ee"
       },
       {
         "text": "kolase foto",
-        "tokenHash": "370aac30b208f13e"
+        "tokenHash": "2f9883479f588145"
       },
       {
         "text": "sketsa tangan",
-        "tokenHash": "17510ac3f613a813"
+        "tokenHash": "fb8e63f41ad2c3a0"
       },
       {
         "text": "infografik",
-        "tokenHash": "60614c9b1fe794f3"
+        "tokenHash": "16b3ba8eebbc58aa"
       }
     ],
-    "correctHash": "60614c9b1fe794f3"
+    "correctHash": "16b3ba8eebbc58aa"
   },
   {
     "type": "pg",
@@ -402,22 +586,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Potong wortel dengan pisau tajam.",
-        "tokenHash": "a542c9d6fcb33a47"
+        "tokenHash": "c12e464b7b6f2fda"
       },
       {
         "text": "Potong wortel menjadi dua bagian.",
-        "tokenHash": "918f181c9e467722"
+        "tokenHash": "d862689327cb9aa9"
       },
       {
         "text": "Potong wortel setelah dicuci bersih.",
-        "tokenHash": "7cb5332f790b971d"
+        "tokenHash": "81cb38009a591e6e"
       },
       {
         "text": "Potong wortel secara perlahan-lahan.",
-        "tokenHash": "c32a1df2ae98063c"
+        "tokenHash": "531d99653c27f7bf"
       }
     ],
-    "correctHash": "a542c9d6fcb33a47"
+    "correctHash": "c12e464b7b6f2fda"
   },
   {
     "type": "pg",
@@ -428,22 +612,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "menghibur pembaca dengan cerita lucu",
-        "tokenHash": "c012d133fe3e942d"
+        "tokenHash": "e592137e6ffdfd10"
       },
       {
         "text": "memandu pembaca agar bisa memainkannya",
-        "tokenHash": "690c6eab9898adf6"
+        "tokenHash": "ee6c3b402b7816c1"
       },
       {
         "text": "meyakinkan pembaca untuk membeli mainan",
-        "tokenHash": "6c749b05db547723"
+        "tokenHash": "b3f57aa8889752b6"
       },
       {
         "text": "melaporkan hasil pengamatan tentang mainan",
-        "tokenHash": "f02706a0112b83d2"
+        "tokenHash": "8ec8ac6d1d1a8c47"
       }
     ],
-    "correctHash": "690c6eab9898adf6"
+    "correctHash": "ee6c3b402b7816c1"
   },
   {
     "type": "pg",
@@ -454,22 +638,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Rebuslah air sampai mendidih.",
-        "tokenHash": "2398e7cbd1223649"
+        "tokenHash": "ff6d175446aec3f6"
       },
       {
         "text": "Masukkan teh ke dalam gelas.",
-        "tokenHash": "0f6af90e86bb88e8"
+        "tokenHash": "0837e2c9c7fd3e47"
       },
       {
         "text": "Tambahkan gula sesuai selera.",
-        "tokenHash": "4e72d1fdd81a1b2f"
+        "tokenHash": "d099786a06fec4e0"
       },
       {
         "text": "Air dalam panci mulai mendidih.",
-        "tokenHash": "1c09c4255d692ad4"
+        "tokenHash": "5fa067d4c86fd599"
       }
     ],
-    "correctHash": "1c09c4255d692ad4"
+    "correctHash": "5fa067d4c86fd599"
   },
   {
     "type": "pg",
@@ -480,22 +664,22 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Selamat mencoba ya, teman-teman semua!",
-        "tokenHash": "302d9f989614f849"
+        "tokenHash": "10fb735f7aedd7ba"
       },
       {
         "text": "Demikian laporan ini kami sampaikan.",
-        "tokenHash": "eafa1bb668ea4eec"
+        "tokenHash": "8a0fb91f06c96775"
       },
       {
         "text": "Hormat kami, panitia kegiatan sekolah.",
-        "tokenHash": "b7ae3a65d99bbed3"
+        "tokenHash": "480c664cc9286cca"
       },
       {
         "text": "Atas perhatian Bapak/Ibu, kami berterima kasih.",
-        "tokenHash": "e65bd900700b5a4a"
+        "tokenHash": "886902a14d6d6d53"
       }
     ],
-    "correctHash": "302d9f989614f849"
+    "correctHash": "10fb735f7aedd7ba"
   },
   {
     "type": "essay",
@@ -551,14 +735,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Setuju",
-        "tokenHash": "19b68b095aa4d957"
+        "tokenHash": "b723e3f2d204b6ac"
       },
       {
         "text": "Tidak Setuju",
-        "tokenHash": "b868e3f9edfa188c"
+        "tokenHash": "d5900860b7ec908d"
       }
     ],
-    "correctHash": "19b68b095aa4d957"
+    "correctHash": "b723e3f2d204b6ac"
   },
   {
     "type": "setuju_tidak",
@@ -569,14 +753,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Setuju",
-        "tokenHash": "67924c5180d7771e"
+        "tokenHash": "cc9b6ac2dc624cc1"
       },
       {
         "text": "Tidak Setuju",
-        "tokenHash": "ac933e610d3a0d2d"
+        "tokenHash": "59d05bec21ae0dc4"
       }
     ],
-    "correctHash": "ac933e610d3a0d2d"
+    "correctHash": "59d05bec21ae0dc4"
   },
   {
     "type": "setuju_tidak",
@@ -587,14 +771,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Setuju",
-        "tokenHash": "f42396e30061ab3f"
+        "tokenHash": "d22471b039f7648c"
       },
       {
         "text": "Tidak Setuju",
-        "tokenHash": "b832e7ab36c2b768"
+        "tokenHash": "a58b288eb3118009"
       }
     ],
-    "correctHash": "f42396e30061ab3f"
+    "correctHash": "d22471b039f7648c"
   },
   {
     "type": "iya_tidak",
@@ -605,14 +789,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Iya",
-        "tokenHash": "62a49bc113820c14"
+        "tokenHash": "2b53a9426c2e2483"
       },
       {
         "text": "Tidak",
-        "tokenHash": "a0a0627199c1a62c"
+        "tokenHash": "85adfbd017c88ec1"
       }
     ],
-    "correctHash": "62a49bc113820c14"
+    "correctHash": "2b53a9426c2e2483"
   },
   {
     "type": "iya_tidak",
@@ -623,14 +807,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Iya",
-        "tokenHash": "c641f1094689c803"
+        "tokenHash": "63461218d96f61ce"
       },
       {
         "text": "Tidak",
-        "tokenHash": "57da75f91bc009cf"
+        "tokenHash": "da765b36cfd15410"
       }
     ],
-    "correctHash": "c641f1094689c803"
+    "correctHash": "63461218d96f61ce"
   },
   {
     "type": "iya_tidak",
@@ -641,14 +825,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Iya",
-        "tokenHash": "017841ca234041fd"
+        "tokenHash": "b45fda3d353eac0e"
       },
       {
         "text": "Tidak",
-        "tokenHash": "1c2c3274e160aa08"
+        "tokenHash": "f6707a658f9d503d"
       }
     ],
-    "correctHash": "1c2c3274e160aa08"
+    "correctHash": "f6707a658f9d503d"
   },
   {
     "type": "benar_salah",
@@ -659,14 +843,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Benar",
-        "tokenHash": "6b112686a872cd29"
+        "tokenHash": "e2da6e938b4934c0"
       },
       {
         "text": "Salah",
-        "tokenHash": "548ff82cadcaaa23"
+        "tokenHash": "3ff2393b03c96828"
       }
     ],
-    "correctHash": "6b112686a872cd29"
+    "correctHash": "e2da6e938b4934c0"
   },
   {
     "type": "benar_salah",
@@ -677,14 +861,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Benar",
-        "tokenHash": "4735608d490568a7"
+        "tokenHash": "fcf222de2fe61558"
       },
       {
         "text": "Salah",
-        "tokenHash": "a86a6b55dae35e4c"
+        "tokenHash": "0f3bf8605dbc58f1"
       }
     ],
-    "correctHash": "a86a6b55dae35e4c"
+    "correctHash": "0f3bf8605dbc58f1"
   },
   {
     "type": "benar_salah",
@@ -695,14 +879,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Benar",
-        "tokenHash": "2e2b8dec6d7e464a"
+        "tokenHash": "54a3904b715f49d1"
       },
       {
         "text": "Salah",
-        "tokenHash": "182b20c24d25c1d7"
+        "tokenHash": "fa05e6936eafa86a"
       }
     ],
-    "correctHash": "2e2b8dec6d7e464a"
+    "correctHash": "54a3904b715f49d1"
   },
   {
     "type": "benar_salah",
@@ -713,14 +897,14 @@ const QUESTIONS_BANK = [
     "entries": [
       {
         "text": "Benar",
-        "tokenHash": "99e2a441832fed80"
+        "tokenHash": "f80ed0f15b71dc00"
       },
       {
         "text": "Salah",
-        "tokenHash": "54c88d31754f5427"
+        "tokenHash": "7ddb8341f3f588a7"
       }
     ],
-    "correctHash": "54c88d31754f5427"
+    "correctHash": "7ddb8341f3f588a7"
   }
 ];
 const TYPE_LABELS = { pg: "Pilihan Ganda", pg_kompleks: "Pilihan Ganda Kompleks", benar_salah: "Benar / Salah", setuju_tidak: "Setuju / Tidak Setuju", iya_tidak: "Iya / Tidak", essay: "Essay" };
@@ -760,7 +944,7 @@ function confirmComplexAnswer() { const qObj = activeSessionQuestions[currentIdx
 function submitEssayAnswer(val) { const qObj = activeSessionQuestions[currentIdx]; const cl = String(val || "").trim(); if (!cl) { alert("Silakan isi jawaban essay."); return; } qObj.userAnswer = cl; qObj.answerLabel = cl; qObj.answered = true; const kHashes = qObj.keyHashes || []; let ok = false; if (kHashes.length) { const words = cl.toLowerCase().split(/[^a-z0-9À-ɏ]+/i).filter(Boolean); const fullLower = cl.toLowerCase(); ok = kHashes.some(function(h){ return h === hashDigestSync(qObj.qSalt + "::" + fullLower) || words.some(function(w){ return h === hashDigestSync(qObj.qSalt + "::" + w); }); }); } else { ok = cl.length >= (qObj.minLen || 10); } qObj.isCorrect = ok; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }
 function saveResultToGuruStorage(record) { try { const key = STORAGE_NAMESPACE + "_res"; const existing = JSON.parse(localStorage.getItem(key)) || []; existing.unshift(record); localStorage.setItem(key, JSON.stringify(existing)); } catch (e) {} if (typeof REKAP_WEBHOOK_URL === "string" && REKAP_WEBHOOK_URL.startsWith("https://")) { fetch(REKAP_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(record) }).catch(function(){}); } }
 function confirmFinishQuiz() { const unans = activeSessionQuestions.filter(function(q){ return !q.answered; }).length; const msg = unans > 0 ? ("Masih ada " + unans + " soal belum dijawab. Yakin ingin menyelesaikan kuis?") : "Yakin ingin menyelesaikan dan mengumpulkan hasil kuis?"; if (confirm(msg)) finishStudentQuiz(); }
-function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); stopCountdownTimer(); isStudentQuizActive = false; setQuizLockVisual(false); document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const correctCnt = activeSessionQuestions.filter(function(q){ return q.answered && q.isCorrect; }).length; const wrongCnt = activeSessionQuestions.filter(function(q){ return q.answered && !q.isCorrect; }).length; const usedSeconds = Math.max(0, QUIZ_DURATION_SECONDS - remainingSeconds); const durasiDipakai = formatClockMMSS(usedSeconds); const details = activeSessionQuestions.map(function(q, idx){ return { no: idx + 1, typeLabel: TYPE_LABELS[q.type] || q.type || "Soal", q: q.q, answer: q.answered ? (q.answerLabel || String(q.userAnswer || "")) : "(Belum dijawab)", answered: !!q.answered, isCorrect: !!(q.answered && q.isCorrect), earnedScore: Number(q.earnedScore || 0) }; }); const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; saveResultToGuruStorage({ fullName: activeStudent.fullName, kelas: activeKelas, mapel: mapelLabel, username: activeStudent.username, answered: ansCnt, total: tot, correctCount: correctCnt, wrongCount: wrongCnt, score: score, violations: violationCount, penalty: totalPenaltyPoints, durationUsed: durasiDipakai, time: ts, questionDetails: details }); lastSummaryText = "BUKTI PENGERJAAN KUIS SISWA\nNama: " + activeStudent.fullName + "\nKelas: " + activeKelas + "\nMapel: " + mapelLabel + "\nUsername: " + activeStudent.username + "\nTerjawab: " + ansCnt + "/" + tot + " soal\nDurasi Terpakai: " + durasiDipakai + " / 60:00\nPelanggaran: " + violationCount + " kali\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " • @" + activeStudent.username + ")"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Durasi Terpakai:</strong> " + durasiDipakai + " (Batas 60:00)<br><strong>Pelanggaran:</strong> " + violationCount + " kali<br><strong>Waktu Kirim:</strong> " + ts + "<br><strong>Status Nilai:</strong> Disimpan untuk penilaian guru"; }
+function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); stopCountdownTimer(); isStudentQuizActive = false; setQuizLockVisual(false); document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const correctCnt = activeSessionQuestions.filter(function(q){ return q.answered && q.isCorrect; }).length; const wrongCnt = activeSessionQuestions.filter(function(q){ return q.answered && !q.isCorrect; }).length; const usedSeconds = Math.max(0, QUIZ_DURATION_SECONDS - remainingSeconds); const durasiDipakai = formatClockMMSS(usedSeconds); const details = activeSessionQuestions.map(function(q, idx){ return { no: idx + 1, typeLabel: TYPE_LABELS[q.type] || q.type || "Soal", q: q.q, answer: q.answered ? (q.answerLabel || String(q.userAnswer || "")) : "(Belum dijawab)", answered: !!q.answered, isCorrect: !!(q.answered && q.isCorrect), earnedScore: Number(q.earnedScore || 0) }; }); const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; saveResultToGuruStorage({ fullName: activeStudent.fullName, kelas: activeKelas, mapel: mapelLabel, username: activeStudent.username, answered: ansCnt, total: tot, correctCount: correctCnt, wrongCount: wrongCnt, score: score, violations: violationCount, penalty: totalPenaltyPoints, durationUsed: durasiDipakai, time: ts, questionDetails: details }); lastSummaryText = "BUKTI PENGERJAAN KUIS SISWA\nNama: " + activeStudent.fullName + "\nKelas: " + activeKelas + "\nMapel: " + mapelLabel + "\nUsername: " + activeStudent.username + "\nTerjawab: " + ansCnt + "/" + tot + " soal\nDurasi Terpakai: " + durasiDipakai + " / 60:00\nPelanggaran: " + violationCount + " kali\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " � @" + activeStudent.username + ")"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Durasi Terpakai:</strong> " + durasiDipakai + " (Batas 60:00)<br><strong>Pelanggaran:</strong> " + violationCount + " kali<br><strong>Waktu Kirim:</strong> " + ts + "<br><strong>Status Nilai:</strong> Disimpan untuk penilaian guru"; }
 function copyStudentSummary() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastSummaryText).then(function(){ alert("Bukti pengerjaan berhasil disalin!"); }).catch(function(){ prompt("Salin bukti berikut:", lastSummaryText); }); else prompt("Salin bukti berikut:", lastSummaryText); }
 function downloadStudentSummary() { const blob = new Blob([lastSummaryText], { type: "text/plain;charset=utf-8;" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "bukti_" + (activeStudent.username || "siswa") + ".txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
 function loginStudent() { const u = document.getElementById("login-username").value.trim(); const p = document.getElementById("login-password").value.trim(); const k = document.getElementById("login-kelas").value.trim(); const m = document.getElementById("login-mapel").value.trim(); const t = document.getElementById("login-token").value.trim(); const err = document.getElementById("student-login-error"); if (!u || !p || !k || !t) { err.innerText = "Harap isi username, password, kelas, dan token!"; return; } if (t.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { err.innerText = "Token kelas tidak valid!"; return; } const f = STUDENTS_DATA.find(function(s){ return s.username.toLowerCase() === u.toLowerCase() && s.password === p; }); if (!f) { err.innerText = "Username atau password siswa salah!"; return; } const stuKelasKey = normalizeJenjangKey(f.kelas); const inpKelasKey = normalizeJenjangKey(k); if (stuKelasKey && inpKelasKey && stuKelasKey !== inpKelasKey) { err.innerText = "Kelas tidak sesuai dengan akun terdaftar (" + f.kelas + ")!"; return; } const filteredBank = filterBankByKelasAndMapel(QUESTIONS_BANK, k, m); if (!filteredBank.length) { err.innerText = "Belum ada soal untuk kelas " + k + (m ? (" / mapel " + m) : "") + "!"; return; } err.innerText = ""; activeStudent = f; activeKelas = f.kelas || k; activeMapel = m || "Semua Mapel"; currentIdx = 0; score = 0; violationCount = 0; totalPenaltyPoints = 0; lastViolationAt = 0; isStudentQuizActive = true; setQuizLockVisual(true); requestFullscreenMode(); activeSessionQuestions = buildStudentQuizSet(filteredBank); document.getElementById("start-screen").style.display = "none"; document.getElementById("result-screen").style.display = "none"; document.getElementById("quiz-screen").style.display = "block"; document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName + " (" + activeKelas + ")"; document.getElementById("mapel-badge").innerText = "Mapel: " + activeMapel; document.getElementById("violation-badge").innerText = "Pelanggaran: 0"; startCountdownTimer(); loadQuestion(); }
