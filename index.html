@@ -30,6 +30,7 @@
     .lock-modal { max-width: 460px; background: #1e293b; border: 2px solid #ef4444; border-radius: 16px; padding: 24px; }
     .game-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; font-weight: bold; }
     .badge { padding: 7px 14px; border-radius: 20px; background: #e0e7ff; color: var(--primary); font-size: 0.88rem; }
+    .badge-timer { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
     .badge-warn { background: #fee2e2; color: #991b1b; }
     .badge-type { background: #cffafe; color: #0e7490; }
     .badge-mapel { background: #dcfce7; color: #166534; }
@@ -51,792 +52,686 @@
 </head>
 <body>
 <div id="focus-warning-overlay" class="lock-overlay"><div class="lock-modal"><h3 style="margin-top:0;color:#fca5a5;">Pelanggaran Fokus / Keamanan Terdeteksi!</h3><p style="font-size:0.95rem;line-height:1.55;">Alasan: <strong id="overlay-reason">Keluar fokus layar</strong><br>Jumlah pelanggaran tercatat: <strong id="overlay-violation-count">0</strong></p><button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="dismissFocusWarning()">Kembali ke Soal Kuis</button></div></div>
-<div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Mode Ujian Terproteksi - Soal Sesuai Kelas & Mapel - Penilaian Diproses Guru</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas:</label><input type="text" id="login-kelas" placeholder="Contoh: VIII A" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key==='Enter') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif:</strong> Keluar layar atau tindakan ilegal dicatat sebagai pelanggaran!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/10</span><span class="badge badge-warn" id="violation-badge">Pelanggaran: 0</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk berpindah soal):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Jawaban Telah Dikirim!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p style="color:var(--muted);">Hasil pengerjaan Anda telah terekam ke panel guru. Nilai tidak ditampilkan kepada siswa.</p><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Bukti Pengerjaan</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>
+<div class="container"><header><h1>Portal Kuis Edukasi SMP</h1><p>Waktu Pengerjaan 60 Menit - 20 Soal Acak Per Murid Sesuai Jenjang Kelas - Penilaian Diproses Guru</p></header><div class="section"><div id="start-screen" class="login-box"><h3>Login Siswa</h3><label>Username:</label><input type="text" id="login-username" placeholder="Masukkan username siswa" /><label>Password:</label><input type="password" id="login-password" placeholder="Masukkan password siswa" /><label>Kelas / Jenjang:</label><input type="text" id="login-kelas" placeholder="Contoh: Kelas VII" /><label>Mata Pelajaran (Mapel):</label><select id="login-mapel"><option value="">Semua Mapel di Kelas Ini</option></select><label>Token Kelas / Ujian:</label><input type="text" id="login-token" placeholder="Masukkan token dari guru" onkeydown="if(event.key==='Enter') loginStudent()" /><div class="error-msg" id="student-login-error"></div><button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="loginStudent()">Masuk & Mulai Kuis (60 Menit • 20 Soal)</button></div><div id="quiz-screen" style="display:none;"><div class="focus-banner"><span><strong>Mode Fokus Aktif (Batas Waktu 60 Menit • 20 Soal Acak):</strong> Keluar layar atau tindakan ilegal dicatat sebagai pelanggaran!</span><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onclick="requestFullscreenMode()">Layar Penuh</button><button class="btn btn-success btn-sm" onclick="confirmFinishQuiz()">Selesaikan Kuis</button></div></div><div class="game-header"><span class="badge" id="student-badge">Siswa: -</span><span class="badge badge-mapel" id="mapel-badge">Mapel: -</span><span class="badge badge-timer" id="timer-badge">Waktu: 60:00</span><span class="badge badge-type" id="q-type-badge">Tipe: -</span><span class="badge" id="q-counter">Soal 1/20</span><span class="badge badge-warn" id="violation-badge">Pelanggaran: 0</span></div><div class="q-nav-box"><div class="q-nav-title">Menu Nomor Soal (Klik nomor mana saja untuk berpindah soal):</div><div class="q-nav-grid" id="question-nav-grid"></div></div><div class="question-box" id="question-text">Memuat soal...</div><div id="answer-area"></div><div class="status-poin" id="status-poin"></div></div><div id="result-screen" style="display:none;text-align:center;"><h2>Jawaban Telah Dikirim!</h2><p id="final-player" style="font-size:1.15rem;font-weight:bold;"></p><p style="color:var(--muted);">Hasil pengerjaan Anda telah terekam ke panel guru. Nilai tidak ditampilkan kepada siswa.</p><div class="rekap-card" id="student-summary-box"></div><div class="action-row"><button class="btn btn-success" onclick="copyStudentSummary()">Salin Bukti Pengerjaan</button><button class="btn btn-secondary" onclick="downloadStudentSummary()">Unduh Bukti (.TXT)</button></div><div class="action-row" style="margin-top:22px;"><button class="btn btn-primary" onclick="logoutStudent()">Selesai & Kembali ke Login</button></div></div></div></div>
 <script>
-const STORAGE_NAMESPACE = "smp_quiz_2link_v5_detail";
+const STORAGE_NAMESPACE = "smp_quiz_2link_v10_jenjang60m20q";
 const REKAP_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxIBYUWVF56qo0ogQ06gSm19hHoNcEIgkTbtcRro3pl7iAX-ztZ1uSp5rogtgBpmtHL/exec";
-const ACTIVE_TOKEN = "PEGAISTIMEWA";
-const SESSION_SALT = "sec_mwunu720_o0z2mw";
+const ACTIVE_TOKEN = "SMP2026";
+const SESSION_SALT = "sec_mwwcennn_cva2a1";
+const QUIZ_DURATION_SECONDS = 3600;
+const QUIZ_TOTAL_QUESTIONS = 20;
 const STUDENTS_DATA = [
   {
-    "fullName": "Adiliya Nopitasari",
-    "kelas": "IX D",
-    "username": "10516",
-    "password": "1"
+    "fullName": "Budi Santoso",
+    "kelas": "Kelas VII",
+    "username": "budi7",
+    "password": "123"
   },
   {
-    "fullName": "Ahmad Abyyan Setya Wahyuda",
-    "kelas": "IX D",
-    "username": "10353",
-    "password": "2"
+    "fullName": "Siti Aminah",
+    "kelas": "Kelas VIII",
+    "username": "siti8",
+    "password": "123"
   },
   {
-    "fullName": "Aksan Kurniawan",
-    "kelas": "IX D",
-    "username": "10388",
-    "password": "3"
-  },
-  {
-    "fullName": "Anya Nirwashyta Tyaga",
-    "kelas": "IX D",
-    "username": "10625",
-    "password": "4"
-  },
-  {
-    "fullName": "Aqil Falah Ferdyanto",
-    "kelas": "IX D",
-    "username": "10626",
-    "password": "5"
-  },
-  {
-    "fullName": "Ardhani Radithya Tyaga",
-    "kelas": "IX D",
-    "username": "10551",
-    "password": "6"
-  },
-  {
-    "fullName": "Ayka Queenza Azzahra",
-    "kelas": "IX D",
-    "username": "10488",
-    "password": "7"
-  },
-  {
-    "fullName": "Daffa Dzakir Khafadi",
-    "kelas": "IX D",
-    "username": "10459",
-    "password": "8"
-  },
-  {
-    "fullName": "Eka Satria Alviansyah",
-    "kelas": "IX D",
-    "username": "10422",
-    "password": "9"
-  },
-  {
-    "fullName": "Eva Julia Putri",
-    "kelas": "IX D",
-    "username": "10397",
-    "password": "10"
-  },
-  {
-    "fullName": "Evan Keandre Zavier Hidayat",
-    "kelas": "IX D",
-    "username": "10491",
-    "password": "11"
-  },
-  {
-    "fullName": "Ezra Ferdinand Pranaja",
-    "kelas": "IX D",
-    "username": "10520",
-    "password": "12"
-  },
-  {
-    "fullName": "Jabriel Faishal Listio Daniswara",
-    "kelas": "IX D",
-    "username": "10597",
-    "password": "13"
-  },
-  {
-    "fullName": "Jihan Rania Ufaira",
-    "kelas": "IX D",
-    "username": "10464",
-    "password": "14"
-  },
-  {
-    "fullName": "Kania Zhafirah Putri",
-    "kelas": "IX D",
-    "username": "10430",
-    "password": "15"
-  },
-  {
-    "fullName": "Kayla Andini Widiyanto",
-    "kelas": "IX D",
-    "username": "10366",
-    "password": "16"
-  },
-  {
-    "fullName": "Kinanthi Eka Yudha",
-    "kelas": "IX D",
-    "username": "10403",
-    "password": "17"
-  },
-  {
-    "fullName": "Ksatria Lintang Dewantara",
-    "kelas": "IX D",
-    "username": "10566",
-    "password": "18"
-  },
-  {
-    "fullName": "Laudya Aisha Marizka Khanani",
-    "kelas": "IX D",
-    "username": "10500",
-    "password": "19"
-  },
-  {
-    "fullName": "Mochamad Farzan Argani",
-    "kelas": "IX D",
-    "username": "10471",
-    "password": "20"
-  },
-  {
-    "fullName": "Muhammad Ilham Ramadhan",
-    "kelas": "IX D",
-    "username": "10436",
-    "password": "21"
-  },
-  {
-    "fullName": "Muhammad Iqbaal Zidan Adi Prasetyo",
-    "kelas": "IX D",
-    "username": "10405",
-    "password": "22"
-  },
-  {
-    "fullName": "Muhammad Rizqi Ikbar Kautsar",
-    "kelas": "IX D",
-    "username": "10531",
-    "password": "23"
-  },
-  {
-    "fullName": "Nadine Fellah Maharani",
-    "kelas": "IX D",
-    "username": "10532",
-    "password": "24"
-  },
-  {
-    "fullName": "Rafan Izyan Arkana",
-    "kelas": "IX D",
-    "username": "10508",
-    "password": "25"
-  },
-  {
-    "fullName": "Regan Chesta Adabi",
-    "kelas": "IX D",
-    "username": "10639",
-    "password": "26"
-  },
-  {
-    "fullName": "Revalina Aditya Radisty",
-    "kelas": "IX D",
-    "username": "10379",
-    "password": "27"
-  },
-  {
-    "fullName": "Rezky Aditya Nugroho",
-    "kelas": "IX D",
-    "username": "10445",
-    "password": "28"
-  },
-  {
-    "fullName": "Rigel Evandio Yuniarto",
-    "kelas": "IX D",
-    "username": "10380",
-    "password": "29"
-  },
-  {
-    "fullName": "Rina Auliyah Romadhoni",
-    "kelas": "IX D",
-    "username": "10478",
-    "password": "30"
-  },
-  {
-    "fullName": "Septia Dwi Wulandari",
-    "kelas": "IX D",
-    "username": "10413",
-    "password": "31"
-  },
-  {
-    "fullName": "Zyachbeina Mazaya Ghaisani",
-    "kelas": "IX D",
-    "username": "10448",
-    "password": "32"
+    "fullName": "Andi Pratama",
+    "kelas": "Kelas IX",
+    "username": "andi9",
+    "password": "123"
   }
 ];
 const QUESTIONS_BANK = [
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas IX",
     "mapel": "Bahasa Indonesia",
-    "q": "Perhatikan teks berikut! Sabtu lalu, aku dan teman-teman sekelas mengikuti kerja bakti di tepi Sungai Brantas. Kami tiba pukul 06.30, lalu dibagi menjadi tiga kelompok. Kelompokku memilah sampah plastik hingga siang. Akhirnya, 40 karung sampah berhasil terkumpul. Aku pulang dengan lelah, tetapi bangga. Kalimat yang berfungsi sebagai reorientasi pada teks tersebut adalah...",
-    "poin": 10,
+    "q": "Teks tanggapan yang berisi pujian, kritik, atau sanggahan secara santun dan objektif disebut...",
+    "poin": 100,
     "entries": [
       {
-        "text": "Akhirnya, 40 karung sampah berhasil terkumpul.",
-        "tokenHash": "b5adf93282c836f9"
+        "text": "Teks Tanggapan",
+        "tokenHash": "24a78b4b1ee656c4"
       },
       {
-        "text": "Aku pulang dengan lelah, tetapi bangga.",
-        "tokenHash": "cedaec3c46f92287"
+        "text": "Teks Cerpen",
+        "tokenHash": "704a0793c68f1df8"
       },
       {
-        "text": "Kelompokku memilah sampah plastik hingga siang.",
-        "tokenHash": "6ac4ab5c1dc2825b"
+        "text": "Teks Fabel",
+        "tokenHash": "19b2d700f8821ba5"
       },
       {
-        "text": "Kami tiba pukul 06.30, lalu dibagi menjadi tiga kelompok.",
-        "tokenHash": "d7c8a171520e6fd8"
+        "text": "Teks Berita",
+        "tokenHash": "eb0538656ccc52ce"
       }
     ],
-    "correctHash": "cedaec3c46f92287"
+    "correctHash": "24a78b4b1ee656c4"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Teks berikut tidak memiliki bagian orientasi. Kemudian, kami menyusuri jalur berbatu menuju puncak. Setelah itu, hujan turun deras sehingga kami berteduh di pos dua. Akhirnya, kami tiba di puncak saat matahari terbit. Kalimat orientasi yang paling tepat ditambahkan di awal teks adalah...",
-    "poin": 10,
+    "q": "Teks prosedur adalah teks yang berisi ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Liburan semester lalu, aku mendaki Gunung Penanggungan bersama tiga sepupuku.",
-        "tokenHash": "d020e5a6c6d9f7c7"
+        "text": "cerita tokoh dalam peristiwa nyata",
+        "tokenHash": "4f02b237dff6ade8"
       },
       {
-        "text": "Mendaki gunung adalah kegiatan yang menantang dan menyehatkan badan.",
-        "tokenHash": "b1271c8c2dc08a32"
+        "text": "pendapat penulis tentang suatu hal",
+        "tokenHash": "2201b37a7b9d1189"
       },
       {
-        "text": "Gunung Penanggungan terletak di wilayah Kabupaten Mojokerto, Jawa Timur.",
-        "tokenHash": "70abf75fad47bf4d"
+        "text": "urutan langkah untuk melakukan sesuatu",
+        "tokenHash": "d8a5eb9ecb833406"
       },
       {
-        "text": "Setiap pendaki wajib membawa perbekalan dan perlengkapan yang memadai.",
-        "tokenHash": "b7049e22e7ba6f0c"
+        "text": "gambaran suasana pada tempat tertentu",
+        "tokenHash": "45fa6f64866638a3"
       }
     ],
-    "correctHash": "d020e5a6c6d9f7c7"
+    "correctHash": "d8a5eb9ecb833406"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Perhatikan kalimat-kalimat berikut! (1) Hadiah ulang tahun sebaiknya dibungkus dengan kertas yang menarik. (2) Rina membuka kotak hadiah itu dengan hati-hati. (3) Kado adalah pemberian yang diberikan pada hari istimewa. (4) Setelah itu, ia memeluk ibunya sambil menangis haru. Pasangan kalimat yang menunjukkan ciri kebahasaan teks rekon adalah...",
-    "poin": 10,
+    "q": "Perbedaan utama teks prosedur dan tip terletak pada ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "(1) dan (2)",
-        "tokenHash": "6f28d00aefc4cc9f"
+        "text": "urutan langkah yang wajib diikuti pembaca",
+        "tokenHash": "c1f95c323bb029bf"
       },
       {
-        "text": "(1) dan (3)",
-        "tokenHash": "1dbb2bc74d533008"
+        "text": "jumlah kalimat yang ditulis oleh penulis",
+        "tokenHash": "775e0da0ef1717a2"
       },
       {
-        "text": "(2) dan (4)",
-        "tokenHash": "03acc5593cfa80ee"
+        "text": "judul yang dipakai pada teks tersebut",
+        "tokenHash": "4749d833b1dbb24d"
       },
       {
-        "text": "(3) dan (4)",
-        "tokenHash": "51e6246975398776"
+        "text": "gambar yang menyertai isi teks tersebut",
+        "tokenHash": "c7b6cdd65bec4f9c"
       }
     ],
-    "correctHash": "03acc5593cfa80ee"
+    "correctHash": "c1f95c323bb029bf"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Kalimat-kalimat berikut diambil dari sebuah teks rekon, tetapi urutannya acak. (1) Setelah itu, kami berkeliling melihat koleksi fosil. (2) Pagi itu, kami berangkat ke Museum Trinil bersama Bu Ani. (3) Akhirnya, kami pulang membawa banyak pengetahuan baru. (4) Sesampainya di sana, pemandu menyambut kami di pintu masuk. Urutan kalimat yang tepat agar menjadi teks rekon yang runtut adalah...",
-    "poin": 10,
+    "q": "Pada kalimat \"Siapkan kudapan sehat untuk bekal di sekolah.\", kata kudapan bermakna ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "(2)-(1)-(4)-(3)",
-        "tokenHash": "9f28a15d6ff09c43"
+        "text": "makanan utama saat sarapan pagi",
+        "tokenHash": "0a0c4caa62b2d446"
       },
       {
-        "text": "(4)-(2)-(1)-(3)",
-        "tokenHash": "47dfa8d8373136e2"
+        "text": "minuman dingin saat cuaca panas",
+        "tokenHash": "d9d32e67477dc217"
       },
       {
-        "text": "(2)-(4)-(3)-(1)",
-        "tokenHash": "137bdb2b10f9a20d"
+        "text": "makanan berat saat makan malam",
+        "tokenHash": "cfae2894f92fbf70"
       },
       {
-        "text": "(2)-(4)-(1)-(3)",
-        "tokenHash": "7bfd0563b51a60ee"
+        "text": "makanan ringan di sela jam makan",
+        "tokenHash": "905162ee8a185b69"
       }
     ],
-    "correctHash": "7bfd0563b51a60ee"
+    "correctHash": "905162ee8a185b69"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Perhatikan kutipan berikut! Pada 17 Agustus 1945, Soekarno dan Mohammad Hatta membacakan teks proklamasi di Jalan Pegangsaan Timur 56, Jakarta. Sebelumnya, naskah proklamasi disusun di rumah Laksamana Maeda pada dini hari. Setelah diketik oleh Sayuti Melik, naskah itu ditandatangani atas nama bangsa Indonesia. Jenis teks rekon dan alasan yang tepat untuk kutipan tersebut adalah...",
-    "poin": 10,
+    "q": "Teks berjudul \"Tetap Rileks Saat di Kelas\" berisi saran, seperti mengatur napas dan duduk dengan nyaman. Tujuan penulisan teks tersebut adalah ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Rekon pribadi, karena penulis menceritakan pengalaman yang ia alami sendiri",
-        "tokenHash": "c2e973452f55b4a4"
+        "text": "memberi saran agar siswa tetap tenang",
+        "tokenHash": "c99bd7252ddc2740"
       },
       {
-        "text": "Rekon imajinatif, karena penulis mengembangkan peristiwa dari daya khayalnya",
-        "tokenHash": "469a4be0a7c5aa93"
+        "text": "menceritakan pengalaman siswa di kelas",
+        "tokenHash": "8b66bafdbeb16360"
       },
       {
-        "text": "Rekon faktual, karena menceritakan peristiwa nyata beserta tokoh dan waktunya",
-        "tokenHash": "a26d8d3834490dc7"
+        "text": "membujuk siswa agar membeli perlengkapan",
+        "tokenHash": "4c5ee20e1a5b960d"
       },
       {
-        "text": "Rekon pribadi, karena peristiwa diceritakan secara berurutan menurut waktu",
-        "tokenHash": "f2274516f6d533fd"
+        "text": "menjelaskan sejarah tempat belajar siswa",
+        "tokenHash": "608cd0cbbe4c1d4e"
       }
     ],
-    "correctHash": "a26d8d3834490dc7"
+    "correctHash": "c99bd7252ddc2740"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Dua siswa menulis kalimat pembuka teks rekon tentang kunjungan ke pasar. Siswa 1: Pasar tradisional menjual berbagai kebutuhan pokok dengan harga murah. Siswa 2: Minggu pagi kemarin, aku menemani nenek berbelanja di Pasar Besar Malang. Penilaian yang paling tepat terhadap kedua kalimat tersebut adalah...",
-    "poin": 10,
+    "q": "Kalimat yang merupakan kalimat larangan adalah ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Kalimat siswa 2 tepat sebagai orientasi karena memuat pelaku, waktu, tempat, dan kegiatan",
-        "tokenHash": "989f493bb2f8fbc3"
+        "text": "Bukalah jendela agar udara masuk.",
+        "tokenHash": "85f085b1f048984e"
       },
       {
-        "text": "Kalimat siswa 2 kurang tepat sebagai orientasi karena memakai kata ganti orang pertama",
-        "tokenHash": "deeddda3dd3a57fb"
+        "text": "Tutup pintu setelah kamu masuk kelas.",
+        "tokenHash": "45674e9c3d517a59"
       },
       {
-        "text": "Kalimat siswa 1 tepat sebagai orientasi karena menjelaskan keunggulan pasar secara umum",
-        "tokenHash": "41003890e0b83b86"
+        "text": "Jangan membuang sampah di selokan.",
+        "tokenHash": "30a31f7c0893aa19"
       },
       {
-        "text": "Kalimat siswa 1 tepat sebagai orientasi karena memuat fakta yang dapat dibuktikan",
-        "tokenHash": "3d2068b5dffcb4c9"
+        "text": "Silakan simpan tas di dalam loker.",
+        "tokenHash": "7702547218ace777"
       }
     ],
-    "correctHash": "989f493bb2f8fbc3"
+    "correctHash": "30a31f7c0893aa19"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Perhatikan kalimat berikut! Lalu, kami berlari menuju halte, tetapi bus terakhir sudah berangkat. Kata lalu dan tetapi pada kalimat tersebut berturut-turut berfungsi sebagai konjungsi...",
-    "poin": 10,
+    "q": "Kalimat langkah yang telah menerapkan pelesapan dengan tepat adalah ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "penambahan dan syarat",
-        "tokenHash": "15e087eb4d1c6bfe"
+        "text": "Cuci sayuran, kemudian potong-potong sayuran itu, lalu rebus.",
+        "tokenHash": "37165b89f5f15ed9"
       },
       {
-        "text": "sebab dan temporal",
-        "tokenHash": "b907712e1a70a837"
+        "text": "Sayuran dicuci, lalu sayuran dipotong dan direbus.",
+        "tokenHash": "d80c291435ce72b8"
       },
       {
-        "text": "tujuan dan pertentangan",
-        "tokenHash": "35e1221d8e2f8624"
+        "text": "Cuci sayuran, kemudian potong-potong, lalu rebus.",
+        "tokenHash": "2fe0ec940285dba3"
       },
       {
-        "text": "temporal dan pertentangan",
-        "tokenHash": "71320e85946452db"
+        "text": "Cuci sayuran, kemudian dipotong, lalu sayuran direbus.",
+        "tokenHash": "126a4d2a59c8108e"
       }
     ],
-    "correctHash": "71320e85946452db"
+    "correctHash": "2fe0ec940285dba3"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Kalimat berikut akan dipakai dalam sebuah teks rekon: Setiap sore Pak Hasan menyiram bunga di halaman rumah. Agar sesuai dengan peristiwa tunggal yang telah terjadi, perbaikan yang paling tepat adalah...",
-    "poin": 10,
+    "q": "Kalimat perintah berpola inversi (predikat berada di awal kalimat) terdapat pada kalimat ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Menambahkan kata sifat pada kata bunga, misalnya bunga yang sangat indah",
-        "tokenHash": "2fe28c719ca92e22"
+        "text": "Kamu menyimpan buku itu di rak.",
+        "tokenHash": "c1a80dd73e88b1e5"
       },
       {
-        "text": "Mengganti setiap sore dengan keterangan waktu tertentu, misalnya kemarin sore",
-        "tokenHash": "4adc09c1ddfbef1e"
+        "text": "Buku itu kamu simpan di rak.",
+        "tokenHash": "dbc1a39a3499580e"
       },
       {
-        "text": "Mengganti menyiram dengan kata kerja pasif, misalnya disiram oleh Pak Hasan",
-        "tokenHash": "da7ddd6f69a7db88"
+        "text": "Kamu bisa menyimpan buku itu di rak.",
+        "tokenHash": "ffb20a39489f0213"
       },
       {
-        "text": "Menambahkan kata hubung sebab, misalnya sebab Pak Hasan menyiram bunga",
-        "tokenHash": "0dc7e4324db10da3"
+        "text": "Simpanlah buku itu di rak!",
+        "tokenHash": "5bef3f49dbf02a3b"
       }
     ],
-    "correctHash": "4adc09c1ddfbef1e"
+    "correctHash": "5bef3f49dbf02a3b"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Perhatikan teks berikut! Setelah dua jam berdesakan di angkot, Dina baru sadar dompetnya hilang. Ia segera kembali ke terminal dan bertanya kepada petugas. Seorang petugas menyerahkan dompet yang ditemukan penumpang lain. Dina menyodorkan uang terima kasih, tetapi petugas menolaknya dengan ramah. Nilai yang dapat diteladani dari tindakan petugas dan penumpang pada teks tersebut adalah...",
-    "poin": 10,
+    "q": "Kalimat yang memuat keterangan tujuan adalah ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Kejujuran, karena mengembalikan barang temuan tanpa mengharapkan imbalan",
-        "tokenHash": "f8aea6d67aef7d4a"
+        "text": "Bilas tangan sampai bersih.",
+        "tokenHash": "2ca4c76922150cbf"
       },
       {
-        "text": "Kehati-hatian, karena menjaga barang bawaan selama berada di perjalanan",
-        "tokenHash": "e45bff1cddc2116b"
+        "text": "Minumlah air putih agar sehat.",
+        "tokenHash": "6c6576591dd3bdcf"
       },
       {
-        "text": "Keberanian, karena bertindak sendiri tanpa meminta bantuan orang lain",
-        "tokenHash": "cf821a2fed011bb8"
+        "text": "Siapkan dua buah jeruk segar.",
+        "tokenHash": "f879cec7ff0202a9"
       },
       {
-        "text": "Kedermawanan, karena memberikan uang kepada orang yang membutuhkan",
-        "tokenHash": "15f704f296106511"
+        "text": "Tuang sirup ke dalam gelas.",
+        "tokenHash": "49e7730a613ca7e6"
       }
     ],
-    "correctHash": "f8aea6d67aef7d4a"
+    "correctHash": "6c6576591dd3bdcf"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Perhatikan teks berikut! Tim futsal kelasku mengikuti turnamen antarkelas. Pada babak pertama, kami tertinggal 0-2 karena bertahan terlalu dalam. Saat jeda, pelatih meminta kami bermain lebih menyerang. Pada babak kedua, kami mencetak tiga gol dan menang 3-2. Peristiwa yang menjadi penyebab utama perubahan hasil pertandingan adalah...",
-    "poin": 10,
+    "q": "Struktur teks prosedur secara berurutan adalah ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Penonton memberi dukungan lebih keras pada babak kedua",
-        "tokenHash": "0211907f44387a39"
+        "text": "pendahuluan, langkah, alat dan bahan, penutup",
+        "tokenHash": "fc310760a7069bb5"
       },
       {
-        "text": "Pelatih mengubah strategi tim saat waktu jeda pertandingan",
-        "tokenHash": "f423fc7fabf2aeea"
+        "text": "pendahuluan, alat dan bahan, langkah, penutup",
+        "tokenHash": "425a48f24a82c1cf"
       },
       {
-        "text": "Lawan kehilangan satu pemain karena mendapat kartu merah",
-        "tokenHash": "d192aa81ef0f8d8f"
+        "text": "alat dan bahan, pendahuluan, langkah, penutup",
+        "tokenHash": "a7be00967a23d6df"
       },
       {
-        "text": "Wasit memberi tambahan waktu pada babak kedua pertandingan",
-        "tokenHash": "962f042cac5e783e"
+        "text": "langkah, pendahuluan, alat dan bahan, penutup",
+        "tokenHash": "f895fdf368580b94"
       }
     ],
-    "correctHash": "f423fc7fabf2aeea"
+    "correctHash": "425a48f24a82c1cf"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Kalimat dalam sebuah teks rekon berikut kurang efektif: Pada hari Minggu, aku dan adikku pergi ke taman kota dan kemudian setelah itu kami lalu pulang ke rumah. Perbaikan kalimat yang paling efektif adalah...",
-    "poin": 10,
+    "q": "Sebelum menulis teks prosedur, penulis perlu merencanakan siapa ... agar dapat memilih sapaan dan kosakata yang tepat.",
+    "poin": 5,
     "entries": [
       {
-        "text": "Pada hari Minggu, aku dan adikku pergi ke taman kota kemudian setelah itu pulang.",
-        "tokenHash": "1f063b67820ac44f"
+        "text": "penerbit teks",
+        "tokenHash": "761f48fbbdd08b7e"
       },
       {
-        "text": "Pada hari Minggu, aku dan adikku pergi ke taman kota lalu kemudian pulang ke rumah.",
-        "tokenHash": "4f3f59aab9ec8f34"
+        "text": "pembuat alat dan bahan",
+        "tokenHash": "9c532bbe0399cff9"
       },
       {
-        "text": "Pada hari Minggu, aku dan adikku pergi ke taman kota, lalu pulang ke rumah.",
-        "tokenHash": "f1ae41ee24d162e4"
+        "text": "pembaca sasaran teks",
+        "tokenHash": "0f26ad7a13c0b895"
       },
       {
-        "text": "Pada hari Minggu, aku dan adikku pergi ke taman kota, setelah itu lalu pulang.",
-        "tokenHash": "14e13594ba1bf6b6"
+        "text": "penjual alat dan bahan",
+        "tokenHash": "516b70e8810f11df"
       }
     ],
-    "correctHash": "f1ae41ee24d162e4"
+    "correctHash": "0f26ad7a13c0b895"
   },
   {
     "type": "pg",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Rina membandingkan dua teks tentang gempa bumi. Teks 1 menyebut jam kejadian, lokasi, jumlah korban, dan urutan penanganan secara kronologis. Teks 2 menjelaskan penyebab terjadinya gempa dan langkah mitigasinya. Simpulan yang tepat tentang kedua teks tersebut adalah...",
-    "poin": 10,
+    "q": "Teks prosedur dapat disajikan secara visual dengan memadukan gambar, grafik, dan teks singkat. Bentuk penyajian informasi seperti itu dinamakan ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Teks 1 berupa teks eksplanasi, sedangkan teks 2 berupa teks rekon",
-        "tokenHash": "98033a5c7f2d8dcd"
+        "text": "denah lokasi",
+        "tokenHash": "d5811c55e68fb8d5"
       },
       {
-        "text": "Teks 1 dan teks 2 sama-sama berupa teks rekon peristiwa",
-        "tokenHash": "0507307176a65a44"
+        "text": "kolase foto",
+        "tokenHash": "370aac30b208f13e"
       },
       {
-        "text": "Teks 1 berupa teks prosedur, sedangkan teks 2 berupa teks laporan",
-        "tokenHash": "e2ec8832a5ec74ff"
+        "text": "sketsa tangan",
+        "tokenHash": "17510ac3f613a813"
       },
       {
-        "text": "Teks 1 berupa teks rekon, sedangkan teks 2 berupa teks eksplanasi",
-        "tokenHash": "f5b7813c31aed1b6"
+        "text": "infografik",
+        "tokenHash": "60614c9b1fe794f3"
       }
     ],
-    "correctHash": "f5b7813c31aed1b6"
+    "correctHash": "60614c9b1fe794f3"
   },
   {
-    "type": "pg_kompleks",
-    "kelas": "IX D",
+    "type": "pg",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Perhatikan teks berikut! Kamis kemarin, kelompokku mengunjungi pengrajin batik di Jember. Pertama, kami melihat proses mencanting. Lalu, kami mencoba mewarnai kain. Di akhir kunjungan, kami berfoto bersama pengrajin. Kunjungan itu membuatku lebih menghargai batik. Pilihlah pernyataan yang BENAR tentang teks tersebut (jawaban lebih dari satu)!",
-    "poin": 10,
+    "q": "Kalimat yang memuat keterangan alat adalah ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Kalimat terakhir merupakan salah satu peristiwa utama dalam rangkaian kejadian",
-        "tokenHash": "739622ca463daf98"
+        "text": "Potong wortel dengan pisau tajam.",
+        "tokenHash": "a542c9d6fcb33a47"
       },
       {
-        "text": "Kalimat pertama memuat orientasi berupa waktu, pelaku, tempat, dan kegiatan",
-        "tokenHash": "40076d747a3bc3ea"
+        "text": "Potong wortel menjadi dua bagian.",
+        "tokenHash": "918f181c9e467722"
       },
       {
-        "text": "Teks tersebut termasuk rekon imajinatif karena tokoh dan tempatnya rekaan",
-        "tokenHash": "ee1e5f3402ef95ee"
+        "text": "Potong wortel setelah dicuci bersih.",
+        "tokenHash": "7cb5332f790b971d"
       },
       {
-        "text": "Kata pertama dan lalu menandai urutan peristiwa secara kronologis",
-        "tokenHash": "d3299fcec04677a4"
+        "text": "Potong wortel secara perlahan-lahan.",
+        "tokenHash": "c32a1df2ae98063c"
       }
     ],
-    "expectedHashes": [
-      "40076d747a3bc3ea",
-      "d3299fcec04677a4"
-    ]
+    "correctHash": "a542c9d6fcb33a47"
   },
   {
-    "type": "pg_kompleks",
-    "kelas": "IX D",
+    "type": "pg",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Pilihlah ciri kebahasaan yang lazim ditemukan pada teks rekon (jawaban lebih dari satu)!",
-    "poin": 10,
+    "q": "Teks \"Aturan Bermain Congklak\" berisi tata cara memainkan permainan tradisional tersebut. Tujuan penulisan teks itu adalah ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Menggunakan kata kerja aksi, misalnya berangkat, menyusuri, dan menemui",
-        "tokenHash": "1aa7e4e640df64f6"
+        "text": "menghibur pembaca dengan cerita lucu",
+        "tokenHash": "c012d133fe3e942d"
       },
       {
-        "text": "Menggunakan kalimat perintah, misalnya potonglah, aduklah, dan masukkan",
-        "tokenHash": "7e1e5eccb536226c"
+        "text": "memandu pembaca agar bisa memainkannya",
+        "tokenHash": "690c6eab9898adf6"
       },
       {
-        "text": "Menggunakan keterangan waktu dan tempat, misalnya pagi itu dan di stasiun",
-        "tokenHash": "cb7438cc30e36bc4"
+        "text": "meyakinkan pembaca untuk membeli mainan",
+        "tokenHash": "6c749b05db547723"
       },
       {
-        "text": "Menggunakan konjungsi temporal, misalnya kemudian, setelah itu, dan akhirnya",
-        "tokenHash": "81dee8df445b6b15"
+        "text": "melaporkan hasil pengamatan tentang mainan",
+        "tokenHash": "f02706a0112b83d2"
       }
     ],
-    "expectedHashes": [
-      "1aa7e4e640df64f6",
-      "cb7438cc30e36bc4",
-      "81dee8df445b6b15"
-    ]
+    "correctHash": "690c6eab9898adf6"
   },
   {
-    "type": "pg_kompleks",
-    "kelas": "IX D",
+    "type": "pg",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Seorang siswa menulis teks rekon berikut. Kemarin aku ke rumah nenek di Banyuwangi. Aku berangkat pukul 07.00 naik kereta. Kereta itu sangat nyaman, setiap kereta api wajib menjaga kebersihan gerbongnya. Sesampainya di sana, nenek menyambutku dengan senyum. Pilihlah kritik yang tepat terhadap teks tersebut (jawaban lebih dari satu)!",
-    "poin": 10,
+    "q": "Kalimat berikut yang BUKAN kalimat perintah adalah ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Kalimat ketiga menyimpang dari alur karena memuat pernyataan umum, bukan peristiwa",
-        "tokenHash": "0041095014b6b899"
+        "text": "Rebuslah air sampai mendidih.",
+        "tokenHash": "2398e7cbd1223649"
       },
       {
-        "text": "Kalimat kedua perlu dihapus karena waktu keberangkatan tidak penting untuk ditulis",
-        "tokenHash": "deb695ee5932689f"
+        "text": "Masukkan teh ke dalam gelas.",
+        "tokenHash": "0f6af90e86bb88e8"
       },
       {
-        "text": "Teks belum memiliki reorientasi yang berisi kesan atau penutup pengalaman",
-        "tokenHash": "fc52f70a9f837ab3"
+        "text": "Tambahkan gula sesuai selera.",
+        "tokenHash": "4e72d1fdd81a1b2f"
       },
       {
-        "text": "Kata sesampainya perlu diganti karena bukan penanda urutan waktu",
-        "tokenHash": "eafc2c58c8521899"
+        "text": "Air dalam panci mulai mendidih.",
+        "tokenHash": "1c09c4255d692ad4"
       }
     ],
-    "expectedHashes": [
-      "0041095014b6b899",
-      "fc52f70a9f837ab3"
-    ]
+    "correctHash": "1c09c4255d692ad4"
   },
   {
-    "type": "pg_kompleks",
-    "kelas": "IX D",
+    "type": "pg",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Perhatikan dua kutipan awal teks rekon berikut. (1) Pada tahun 2018, Gunung Anak Krakatau meletus dan memicu tsunami di Selat Sunda. (2) Ketika berusia lima tahun, aku diajak ayah memancing di waduk dekat rumah. Pilihlah pernyataan yang tepat tentang kedua kutipan tersebut (jawaban lebih dari satu)!",
-    "poin": 10,
+    "q": "Kalimat penutup yang tepat untuk teks prosedur yang ditujukan bagi teman sebaya adalah ....",
+    "poin": 5,
     "entries": [
       {
-        "text": "Kutipan (1) cocok untuk rekon pribadi karena memuat peristiwa nyata yang besar",
-        "tokenHash": "3c7e8e92226db2b6"
+        "text": "Selamat mencoba ya, teman-teman semua!",
+        "tokenHash": "302d9f989614f849"
       },
       {
-        "text": "Kutipan (1) cocok untuk rekon faktual karena memuat peristiwa nyata bersifat umum",
-        "tokenHash": "458ed6dc3320964c"
+        "text": "Demikian laporan ini kami sampaikan.",
+        "tokenHash": "eafa1bb668ea4eec"
       },
       {
-        "text": "Kutipan (2) cocok untuk rekon pribadi karena memuat pengalaman penulis sendiri",
-        "tokenHash": "bff0796199f96cd7"
+        "text": "Hormat kami, panitia kegiatan sekolah.",
+        "tokenHash": "b7ae3a65d99bbed3"
       },
       {
-        "text": "Kutipan (2) cocok untuk rekon faktual karena memuat tokoh dan waktu tertentu",
-        "tokenHash": "e3562d510a51c8a7"
+        "text": "Atas perhatian Bapak/Ibu, kami berterima kasih.",
+        "tokenHash": "e65bd900700b5a4a"
       }
     ],
-    "expectedHashes": [
-      "458ed6dc3320964c",
-      "bff0796199f96cd7"
-    ]
+    "correctHash": "302d9f989614f849"
   },
   {
-    "type": "benar_salah",
-    "kelas": "IX D",
+    "type": "essay",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Sebuah teks memuat urutan peristiwa kronologis, tetapi tidak menyebut waktu dan tempat sama sekali. Bagian orientasi teks tersebut dapat dikatakan sudah lengkap.",
-    "poin": 10,
-    "entries": [
-      {
-        "text": "Benar",
-        "tokenHash": "7680a1382092a721"
-      },
-      {
-        "text": "Salah",
-        "tokenHash": "3bd5992a7c7d20f4"
-      }
-    ],
-    "correctHash": "3bd5992a7c7d20f4"
+    "q": "pgk,\"Perhatikan dua teks berikut. Teks 1: \"\"Agar tubuh tetap bugar, usahakan tidur cukup, minum air putih, dan bergerak setiap hari.\"\" Teks 2: \"\"Cara Mencuci Tangan. (1) Basahi tangan dengan air mengalir. (2) Tuang sabun ke telapak tangan, lalu gosok hingga berbusa. (3) Bilas tangan sampai bersih.\"\" Pilih pernyataan yang benar tentang kedua teks tersebut:\",Teks 2 berisi saran tanpa urutan tetap.,Teks 1 berisi saran tanpa urutan tetap.,Teks 1 berisi langkah yang harus berurutan.,Teks 2 berisi langkah yang harus berurutan.,B|D,5",
+    "poin": 100,
+    "keyHashes": [],
+    "minLen": 10
   },
   {
-    "type": "benar_salah",
-    "kelas": "IX D",
+    "type": "essay",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Teks rekon sejarah umumnya memakai sudut pandang orang ketiga karena penulis menyajikan peristiwa yang tidak ia alami secara langsung.",
-    "poin": 10,
-    "entries": [
-      {
-        "text": "Benar",
-        "tokenHash": "10f936d4d181bf23"
-      },
-      {
-        "text": "Salah",
-        "tokenHash": "ff67556aeea148bd"
-      }
-    ],
-    "correctHash": "10f936d4d181bf23"
+    "q": "pgk,\"Seorang siswa menulis teks prosedur \"\"Cara Membuat Es Jeruk\"\" untuk teman sebayanya. Pilih bagian yang perlu ada dalam teks tersebut:\",Pendahuluan yang mengajak pembaca mencoba,Kisah pribadi penulis saat berlibur,Alat dan bahan dengan ukuran jelas,Langkah berurutan dengan kalimat perintah,A|C|D,5",
+    "poin": 100,
+    "keyHashes": [],
+    "minLen": 10
+  },
+  {
+    "type": "essay",
+    "kelas": "Kelas VII",
+    "mapel": "Bahasa Indonesia",
+    "q": "pgk,\"Perhatikan kalimat \"\"Tekan tombol blender selama satu menit agar buahnya halus.\"\" Pilih pasangan keterangan dan jenisnya yang tepat:\",agar buahnya halus: keterangan tujuan,tombol blender: keterangan alat,selama satu menit: keterangan jumlah,buahnya halus: keterangan cara,A|C,5",
+    "poin": 100,
+    "keyHashes": [],
+    "minLen": 10
+  },
+  {
+    "type": "essay",
+    "kelas": "Kelas VII",
+    "mapel": "Bahasa Indonesia",
+    "q": "pgk,Pilih unsur kebahasaan yang umum ditemukan dalam teks prosedur:,Kalimat perintah untuk setiap langkah,Dialog langsung antartokoh cerita,Majas perbandingan di setiap langkah,Konjungsi penanda urutan langkah,A|D,5",
+    "poin": 100,
+    "keyHashes": [],
+    "minLen": 10
+  },
+  {
+    "type": "essay",
+    "kelas": "Kelas VII",
+    "mapel": "Bahasa Indonesia",
+    "q": "pgk,Teks prosedur dapat disajikan melalui berbagai media. Pilih contoh penyajian teks prosedur yang tepat:,Cerpen tentang persahabatan dua siswa,Video tutorial cara memasak telur,Poster langkah menyeberang jalan,Demonstrasi lisan cara membuat kerajinan,B|C|D,5",
+    "poin": 100,
+    "keyHashes": [],
+    "minLen": 10
   },
   {
     "type": "setuju_tidak",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Urutan peristiwa dalam teks rekon boleh diacak asalkan penulis tetap memakai konjungsi temporal seperti kemudian dan akhirnya.",
-    "poin": 10,
+    "q": "Teks \"Cuci tomat sampai bersih. Setelah tomat bersih, potong tomat menjadi empat bagian.\" dapat dipadatkan dengan pelesapan menjadi \"Cuci tomat sampai bersih, kemudian potong menjadi empat bagian.\"",
+    "poin": 5,
     "entries": [
       {
         "text": "Setuju",
-        "tokenHash": "215c650b7ecc1b68"
+        "tokenHash": "19b68b095aa4d957"
       },
       {
         "text": "Tidak Setuju",
-        "tokenHash": "cb3f2b832946be54"
+        "tokenHash": "b868e3f9edfa188c"
       }
     ],
-    "correctHash": "cb3f2b832946be54"
+    "correctHash": "19b68b095aa4d957"
   },
   {
     "type": "setuju_tidak",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Pengalaman sederhana, seperti membantu ibu berbelanja, layak ditulis menjadi teks rekon asalkan orientasi, peristiwa, dan kesannya dirinci dengan jelas.",
-    "poin": 10,
+    "q": "Kalimat \"Pakailah masker saat berada di tempat ramai!\" termasuk kalimat larangan.",
+    "poin": 5,
     "entries": [
       {
         "text": "Setuju",
-        "tokenHash": "4b8da86609996a48"
+        "tokenHash": "67924c5180d7771e"
       },
       {
         "text": "Tidak Setuju",
-        "tokenHash": "f7d1214cc639bdce"
+        "tokenHash": "ac933e610d3a0d2d"
       }
     ],
-    "correctHash": "4b8da86609996a48"
+    "correctHash": "ac933e610d3a0d2d"
+  },
+  {
+    "type": "setuju_tidak",
+    "kelas": "Kelas VII",
+    "mapel": "Bahasa Indonesia",
+    "q": "Penulis teks prosedur untuk teman sebaya sebaiknya memakai bahasa yang santun dan mudah dipahami.",
+    "poin": 5,
+    "entries": [
+      {
+        "text": "Setuju",
+        "tokenHash": "f42396e30061ab3f"
+      },
+      {
+        "text": "Tidak Setuju",
+        "tokenHash": "b832e7ab36c2b768"
+      }
+    ],
+    "correctHash": "f42396e30061ab3f"
   },
   {
     "type": "iya_tidak",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Dalam teks rekon, apakah frasa Beberapa jam kemudian dapat membantu pembaca mengikuti urutan waktu kejadian?",
-    "poin": 10,
+    "q": "Apakah frasa \"minimal selama satu jam\" pada kalimat \"Bekukan adonan minimal selama satu jam.\" merupakan keterangan jumlah?",
+    "poin": 5,
     "entries": [
       {
         "text": "Iya",
-        "tokenHash": "60dd92f86d6f44a8"
+        "tokenHash": "62a49bc113820c14"
       },
       {
         "text": "Tidak",
-        "tokenHash": "d04077d67bf60ba2"
+        "tokenHash": "a0a0627199c1a62c"
       }
     ],
-    "correctHash": "60dd92f86d6f44a8"
+    "correctHash": "62a49bc113820c14"
   },
   {
     "type": "iya_tidak",
-    "kelas": "IX D",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Apakah kalimat Banjir adalah peristiwa meluapnya air melebihi kapasitas sungai cocok dijadikan bagian rangkaian peristiwa dalam teks rekon?",
-    "poin": 10,
+    "q": "Apakah kalimat \"Simpan susu di lemari es agar tidak basi!\" memuat keterangan tujuan?",
+    "poin": 5,
     "entries": [
       {
         "text": "Iya",
-        "tokenHash": "4aedb3232f13f70d"
+        "tokenHash": "c641f1094689c803"
       },
       {
         "text": "Tidak",
-        "tokenHash": "8b3b8dbbca74bee2"
+        "tokenHash": "57da75f91bc009cf"
       }
     ],
-    "correctHash": "8b3b8dbbca74bee2"
+    "correctHash": "c641f1094689c803"
   },
   {
-    "type": "essay",
-    "kelas": "IX D",
+    "type": "iya_tidak",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Tulislah satu paragraf orientasi (2-3 kalimat) untuk teks rekon tentang pengalamanmu mengikuti upacara bendera pertama kali di SMP! Pastikan paragraf memuat pelaku, waktu, tempat, dan kegiatan.",
-    "poin": 10,
-    "keyHashes": [
-      "de7833277093e537",
-      "69cb09874aa67640",
-      "c100b31090711af8",
-      "07cbdcf1476c702c"
+    "q": "Apakah kalimat \"Kamu membuang sampah sembarangan.\" sudah berupa kalimat larangan?",
+    "poin": 5,
+    "entries": [
+      {
+        "text": "Iya",
+        "tokenHash": "017841ca234041fd"
+      },
+      {
+        "text": "Tidak",
+        "tokenHash": "1c2c3274e160aa08"
+      }
     ],
-    "minLen": 0
+    "correctHash": "1c2c3274e160aa08"
   },
   {
-    "type": "essay",
-    "kelas": "IX D",
+    "type": "benar_salah",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Sebuah teks rekon hanya berisi: Aku mengikuti lomba menyanyi. Aku menyanyi. Aku menang. Jelaskan dua kelemahan teks tersebut dan sebutkan bagian apa yang perlu ditambahkan untuk memperbaikinya!",
-    "poin": 10,
-    "keyHashes": [
-      "35b0aa9a5c2fc505",
-      "e23adcf8287ee54b",
-      "98a5af321d789eb0",
-      "9f1cd6c192980b27"
+    "q": "Teks prosedur berisi langkah-langkah berurutan untuk mencapai suatu hasil.",
+    "poin": 5,
+    "entries": [
+      {
+        "text": "Benar",
+        "tokenHash": "6b112686a872cd29"
+      },
+      {
+        "text": "Salah",
+        "tokenHash": "548ff82cadcaaa23"
+      }
     ],
-    "minLen": 0
+    "correctHash": "6b112686a872cd29"
   },
   {
-    "type": "essay",
-    "kelas": "IX D",
+    "type": "benar_salah",
+    "kelas": "Kelas VII",
     "mapel": "Bahasa Indonesia",
-    "q": "Mengapa teks rekon biografi tokoh lebih tepat memakai sudut pandang orang ketiga, sedangkan rekon pengalaman pribadi lebih tepat memakai sudut pandang orang pertama? Jelaskan dengan alasanmu!",
-    "poin": 10,
-    "keyHashes": [
-      "0d19e484adca4bc2",
-      "39489d6d726aaecf",
-      "a95c38df649f5457",
-      "abcd257dd8971f4a"
+    "q": "Pelesapan dalam kalimat langkah berarti menambahkan kata yang sama pada setiap langkah.",
+    "poin": 5,
+    "entries": [
+      {
+        "text": "Benar",
+        "tokenHash": "4735608d490568a7"
+      },
+      {
+        "text": "Salah",
+        "tokenHash": "a86a6b55dae35e4c"
+      }
     ],
-    "minLen": 0
+    "correctHash": "a86a6b55dae35e4c"
+  },
+  {
+    "type": "benar_salah",
+    "kelas": "Kelas VII",
+    "mapel": "Bahasa Indonesia",
+    "q": "Kata \"agar\" pada kalimat \"Minumlah air putih agar tubuh tetap sehat.\" menandai keterangan tujuan.",
+    "poin": 5,
+    "entries": [
+      {
+        "text": "Benar",
+        "tokenHash": "2e2b8dec6d7e464a"
+      },
+      {
+        "text": "Salah",
+        "tokenHash": "182b20c24d25c1d7"
+      }
+    ],
+    "correctHash": "2e2b8dec6d7e464a"
+  },
+  {
+    "type": "benar_salah",
+    "kelas": "Kelas VII",
+    "mapel": "Bahasa Indonesia",
+    "q": "Teks prosedur hanya dapat disajikan secara tertulis dan tidak dapat disajikan dalam bentuk video.",
+    "poin": 5,
+    "entries": [
+      {
+        "text": "Benar",
+        "tokenHash": "99e2a441832fed80"
+      },
+      {
+        "text": "Salah",
+        "tokenHash": "54c88d31754f5427"
+      }
+    ],
+    "correctHash": "54c88d31754f5427"
   }
 ];
-const QUIZ_TOTAL_QUESTIONS = 10;
 const TYPE_LABELS = { pg: "Pilihan Ganda", pg_kompleks: "Pilihan Ganda Kompleks", benar_salah: "Benar / Salah", setuju_tidak: "Setuju / Tidak Setuju", iya_tidak: "Iya / Tidak", essay: "Essay" };
 (function populateMapelSelect(){ const sel = document.getElementById("login-mapel"); const set = new Set(QUESTIONS_BANK.map(function(q){ return (q.mapel || "").trim(); }).filter(Boolean)); Array.from(set).sort().forEach(function(m){ const opt = document.createElement("option"); opt.value = m; opt.textContent = m; sel.appendChild(opt); }); })();
+function normalizeJenjangKey(rawKelas) { const clean = String(rawKelas || "").trim().toLowerCase().replace(/[^a-z0-9]/g, ""); if (!clean) return ""; if (clean === "semua" || clean === "all") return "semua"; if (clean === "7" || clean === "kelas7" || clean === "vii" || clean === "kelasvii" || clean.startsWith("kelas7") || clean.startsWith("kelasvii")) return "7"; if (clean === "8" || clean === "kelas8" || clean === "viii" || clean === "kelasviii" || clean.startsWith("kelas8") || clean.startsWith("kelasviii")) return "8"; if (clean === "9" || clean === "kelas9" || clean === "ix" || clean === "kelasix" || clean.startsWith("kelas9") || clean.startsWith("kelasix")) return "9"; return clean; }
 function hashDigestSync(str) { let h1 = 0x811c9dc5, h2 = 0x01000193; const s = String(str || ""); for (let i = 0; i < s.length; i++) { const ch = s.charCodeAt(i); h1 ^= ch; h1 = Math.imul(h1, 0x01000193); h2 ^= ch + i; h2 = Math.imul(h2, 0x85ebca6b); } return ((h1 >>> 0).toString(16).padStart(8, "0") + (h2 >>> 0).toString(16).padStart(8, "0")); }
-let isStudentQuizActive = false, violationCount = 0, totalPenaltyPoints = 0, activeSessionQuestions = [], currentIdx = 0, score = 0, activeStudent = null, activeKelas = "", activeMapel = "", lastSummaryText = "", autoAdvanceTimer = null, lastViolationAt = 0;
+let isStudentQuizActive = false, violationCount = 0, totalPenaltyPoints = 0, activeSessionQuestions = [], currentIdx = 0, score = 0, activeStudent = null, activeKelas = "", activeMapel = "", lastSummaryText = "", autoAdvanceTimer = null, countdownTimer = null, remainingSeconds = QUIZ_DURATION_SECONDS, lastViolationAt = 0;
+function formatClockMMSS(sec) { const safe = Math.max(0, Number(sec) || 0); const mm = Math.floor(safe / 60); const ss = safe % 60; return String(mm).padStart(2, "0") + ":" + String(ss).padStart(2, "0"); }
+function updateTimerDisplay() { const el = document.getElementById("timer-badge"); if (el) el.innerText = "Waktu: " + formatClockMMSS(remainingSeconds); }
+function startCountdownTimer() { stopCountdownTimer(); remainingSeconds = QUIZ_DURATION_SECONDS; updateTimerDisplay(); countdownTimer = setInterval(function(){ if (!isStudentQuizActive) return; remainingSeconds--; updateTimerDisplay(); if (remainingSeconds <= 0) { stopCountdownTimer(); alert("Waktu pengerjaan 60 menit telah habis. Jawaban Anda akan dikirim otomatis."); finishStudentQuiz(); } }, 1000); }
+function stopCountdownTimer() { if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; } }
 function setQuizLockVisual(locked) { if (locked) document.body.classList.add("quiz-locked"); else document.body.classList.remove("quiz-locked"); }
 function recordFocusViolation(reasonText) { if (!isStudentQuizActive || !activeSessionQuestions.length) return; const now = Date.now(); if (now - lastViolationAt < 800) return; lastViolationAt = now; violationCount++; const p = Number((activeSessionQuestions[currentIdx] && activeSessionQuestions[currentIdx].poin) || 100); totalPenaltyPoints += p; document.getElementById("violation-badge").innerText = "Pelanggaran: " + violationCount; document.getElementById("overlay-reason").innerText = reasonText || "Keluar fokus layar"; document.getElementById("overlay-violation-count").innerText = violationCount; document.getElementById("focus-warning-overlay").classList.add("active"); }
 function dismissFocusWarning() { document.getElementById("focus-warning-overlay").classList.remove("active"); requestFullscreenMode(); }
@@ -851,9 +746,9 @@ document.addEventListener("cut", function(e){ if (isStudentQuizActive && e.targe
 document.addEventListener("keydown", function(e){ if (!isStudentQuizActive) return; const k = String(e.key || "").toLowerCase(); const isDevShortcut = k === "f12" || (e.ctrlKey && e.shiftKey && (k === "i" || k === "j" || k === "c")) || (e.ctrlKey && k === "u"); const isCopyShortcut = (e.ctrlKey || e.metaKey) && (k === "c" || k === "x" || k === "a" || k === "s" || k === "p"); if (isDevShortcut) { e.preventDefault(); recordFocusViolation("Mencoba membuka pintasan inspeksi/kode sumber"); } else if (isCopyShortcut && e.target.tagName !== "TEXTAREA") { e.preventDefault(); recordFocusViolation("Mencoba menyalin/menyimpan halaman kuis"); } });
 window.addEventListener("beforeunload", function(e){ if (isStudentQuizActive) { e.preventDefault(); e.returnValue = "Sesi kuis sedang berlangsung."; return e.returnValue; } });
 function shuffleArray(arr) { const c = arr.slice(); for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = c[i]; c[i] = c[j]; c[j] = t; } return c; }
-function filterBankByKelasAndMapel(bank, kelasInput, mapelInput) { const kNorm = String(kelasInput || "").trim().toLowerCase(); const mNorm = String(mapelInput || "").trim().toLowerCase(); const byKelas = bank.filter(function(q){ const qk = String(q.kelas || "semua").trim().toLowerCase(); return !kNorm || qk === "semua" || qk === kNorm; }); const poolKelas = byKelas.length ? byKelas : bank; if (!mNorm) return poolKelas; const byMapel = poolKelas.filter(function(q){ return String(q.mapel || "").trim().toLowerCase() === mNorm; }); return byMapel.length ? byMapel : poolKelas; }
+function filterBankByKelasAndMapel(bank, kelasInput, mapelInput) { const kKey = normalizeJenjangKey(kelasInput); const mNorm = String(mapelInput || "").trim().toLowerCase(); const byKelas = bank.filter(function(q){ const qKey = normalizeJenjangKey(q.kelas || "semua"); return !kKey || qKey === "semua" || qKey === kKey; }); if (!mNorm) return byKelas; return byKelas.filter(function(q){ return String(q.mapel || "").trim().toLowerCase() === mNorm; }); }
 function prepareSingleQuestionForStudent(item, bankIdx) { const type = item.type || "pg"; const poin = Number(item.poin) || 100; const mapel = item.mapel || "Umum"; const kelas = item.kelas || "Semua"; const qSalt = SESSION_SALT + ":" + bankIdx + ":" + String(item.q || ""); if (type === "essay") return { type: "essay", kelas: kelas, mapel: mapel, q: item.q, qSalt: qSalt, keyHashes: item.keyHashes || [], minLen: item.minLen || 0, poin: poin, userAnswer: "", answerLabel: "", answered: false, isCorrect: false, earnedScore: 0 }; const shEntries = shuffleArray(item.entries || []); if (type === "pg_kompleks") return { type: "pg_kompleks", kelas: kelas, mapel: mapel, q: item.q, entries: shEntries, expectedHashes: item.expectedHashes || [], poin: poin, userAnswer: [], answerLabel: "", answered: false, isCorrect: false, earnedScore: 0 }; return { type: type, kelas: kelas, mapel: mapel, q: item.q, entries: shEntries, correctHash: item.correctHash || "", poin: poin, userAnswer: null, answerLabel: "", answered: false, isCorrect: false, earnedScore: 0 }; }
-function buildStudentQuizSet(bank) { const indexed = bank.map(function(q, idx){ return { q: q, idx: idx }; }); const limit = Math.min(QUIZ_TOTAL_QUESTIONS, indexed.length); const sPool = shuffleArray(indexed.filter(function(x){ return ["pg", "benar_salah", "setuju_tidak", "iya_tidak"].indexOf(x.q.type || "pg") !== -1; })); const cPool = shuffleArray(indexed.filter(function(x){ return x.q.type === "pg_kompleks"; })); const ePool = shuffleArray(indexed.filter(function(x){ return x.q.type === "essay"; })); const picked = []; const used = new Set(); function take(pool, cnt) { for (let i = 0; i < pool.length; i++) { if (picked.length >= limit || cnt <= 0) break; if (!used.has(pool[i].idx)) { picked.push(pool[i]); used.add(pool[i].idx); cnt--; } } } take(sPool, 5); take(cPool, 3); take(ePool, 2); if (picked.length < limit) { const rem = shuffleArray(indexed.filter(function(x){ return !used.has(x.idx); })); for (let i = 0; i < rem.length; i++) { if (picked.length >= limit) break; picked.push(rem[i]); used.add(rem[i].idx); } } return shuffleArray(picked).map(function(entry){ return prepareSingleQuestionForStudent(entry.q, entry.idx); }); }
+function buildStudentQuizSet(bank) { const indexed = bank.map(function(q, idx){ return { q: q, idx: idx }; }); const limit = Math.min(QUIZ_TOTAL_QUESTIONS, indexed.length); const sPool = shuffleArray(indexed.filter(function(x){ return ["pg", "benar_salah", "setuju_tidak", "iya_tidak"].indexOf(x.q.type || "pg") !== -1; })); const cPool = shuffleArray(indexed.filter(function(x){ return x.q.type === "pg_kompleks"; })); const ePool = shuffleArray(indexed.filter(function(x){ return x.q.type === "essay"; })); const picked = []; const used = new Set(); function take(pool, cnt) { for (let i = 0; i < pool.length; i++) { if (picked.length >= limit || cnt <= 0) break; if (!used.has(pool[i].idx)) { picked.push(pool[i]); used.add(pool[i].idx); cnt--; } } } take(sPool, 10); take(cPool, 6); take(ePool, 4); if (picked.length < limit) { const rem = shuffleArray(indexed.filter(function(x){ return !used.has(x.idx); })); for (let i = 0; i < rem.length; i++) { if (picked.length >= limit) break; picked.push(rem[i]); used.add(rem[i].idx); } } return shuffleArray(picked).map(function(entry){ return prepareSingleQuestionForStudent(entry.q, entry.idx); }); }
 function renderQuestionNav() { const grid = document.getElementById("question-nav-grid"); grid.innerHTML = ""; activeSessionQuestions.forEach(function(qItem, idx){ const btn = document.createElement("button"); btn.className = "q-num-btn" + (qItem.answered ? " answered" : "") + (idx === currentIdx ? " current" : ""); btn.innerText = String(idx + 1); btn.onclick = function(){ jumpToQuestion(idx); }; grid.appendChild(btn); }); }
 function jumpToQuestion(idx) { if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; } currentIdx = idx; loadQuestion(); }
 function recalculateTotalScore() { const sum = activeSessionQuestions.reduce(function(acc, q){ return acc + (q.earnedScore || 0); }, 0); score = sum - totalPenaltyPoints; }
@@ -865,11 +760,11 @@ function confirmComplexAnswer() { const qObj = activeSessionQuestions[currentIdx
 function submitEssayAnswer(val) { const qObj = activeSessionQuestions[currentIdx]; const cl = String(val || "").trim(); if (!cl) { alert("Silakan isi jawaban essay."); return; } qObj.userAnswer = cl; qObj.answerLabel = cl; qObj.answered = true; const kHashes = qObj.keyHashes || []; let ok = false; if (kHashes.length) { const words = cl.toLowerCase().split(/[^a-z0-9À-ɏ]+/i).filter(Boolean); const fullLower = cl.toLowerCase(); ok = kHashes.some(function(h){ return h === hashDigestSync(qObj.qSalt + "::" + fullLower) || words.some(function(w){ return h === hashDigestSync(qObj.qSalt + "::" + w); }); }); } else { ok = cl.length >= (qObj.minLen || 10); } qObj.isCorrect = ok; qObj.earnedScore = ok ? qObj.poin : 0; recalculateTotalScore(); renderQuestionNav(); const st = document.getElementById("status-poin"); st.style.color = "var(--muted)"; st.innerText = "Jawaban tercatat - berpindah ke soal berikutnya..."; scheduleNextQuestion(); }
 function saveResultToGuruStorage(record) { try { const key = STORAGE_NAMESPACE + "_res"; const existing = JSON.parse(localStorage.getItem(key)) || []; existing.unshift(record); localStorage.setItem(key, JSON.stringify(existing)); } catch (e) {} if (typeof REKAP_WEBHOOK_URL === "string" && REKAP_WEBHOOK_URL.startsWith("https://")) { fetch(REKAP_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(record) }).catch(function(){}); } }
 function confirmFinishQuiz() { const unans = activeSessionQuestions.filter(function(q){ return !q.answered; }).length; const msg = unans > 0 ? ("Masih ada " + unans + " soal belum dijawab. Yakin ingin menyelesaikan kuis?") : "Yakin ingin menyelesaikan dan mengumpulkan hasil kuis?"; if (confirm(msg)) finishStudentQuiz(); }
-function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); isStudentQuizActive = false; setQuizLockVisual(false); document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const correctCnt = activeSessionQuestions.filter(function(q){ return q.answered && q.isCorrect; }).length; const wrongCnt = activeSessionQuestions.filter(function(q){ return q.answered && !q.isCorrect; }).length; const details = activeSessionQuestions.map(function(q, idx){ return { no: idx + 1, typeLabel: TYPE_LABELS[q.type] || q.type || "Soal", q: q.q, answer: q.answered ? (q.answerLabel || String(q.userAnswer || "")) : "(Belum dijawab)", answered: !!q.answered, isCorrect: !!(q.answered && q.isCorrect), earnedScore: Number(q.earnedScore || 0) }; }); const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; saveResultToGuruStorage({ fullName: activeStudent.fullName, kelas: activeKelas, mapel: mapelLabel, username: activeStudent.username, answered: ansCnt, total: tot, correctCount: correctCnt, wrongCount: wrongCnt, score: score, violations: violationCount, penalty: totalPenaltyPoints, time: ts, questionDetails: details }); lastSummaryText = "BUKTI PENGERJAAN KUIS SISWA\nNama: " + activeStudent.fullName + "\nKelas: " + activeKelas + "\nMapel: " + mapelLabel + "\nUsername: " + activeStudent.username + "\nTerjawab: " + ansCnt + "/" + tot + " soal\nPelanggaran: " + violationCount + " kali\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " • @" + activeStudent.username + ")"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Pelanggaran:</strong> " + violationCount + " kali<br><strong>Waktu Kirim:</strong> " + ts + "<br><strong>Status Nilai:</strong> Disimpan untuk penilaian guru"; }
+function finishStudentQuiz() { if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer); stopCountdownTimer(); isStudentQuizActive = false; setQuizLockVisual(false); document.getElementById("focus-warning-overlay").classList.remove("active"); exitFullscreenMode(); recalculateTotalScore(); const ansCnt = activeSessionQuestions.filter(function(q){ return q.answered; }).length; const tot = activeSessionQuestions.length; const correctCnt = activeSessionQuestions.filter(function(q){ return q.answered && q.isCorrect; }).length; const wrongCnt = activeSessionQuestions.filter(function(q){ return q.answered && !q.isCorrect; }).length; const usedSeconds = Math.max(0, QUIZ_DURATION_SECONDS - remainingSeconds); const durasiDipakai = formatClockMMSS(usedSeconds); const details = activeSessionQuestions.map(function(q, idx){ return { no: idx + 1, typeLabel: TYPE_LABELS[q.type] || q.type || "Soal", q: q.q, answer: q.answered ? (q.answerLabel || String(q.userAnswer || "")) : "(Belum dijawab)", answered: !!q.answered, isCorrect: !!(q.answered && q.isCorrect), earnedScore: Number(q.earnedScore || 0) }; }); const ts = new Date().toLocaleString("id-ID"); const mapelLabel = activeMapel || "Semua Mapel"; saveResultToGuruStorage({ fullName: activeStudent.fullName, kelas: activeKelas, mapel: mapelLabel, username: activeStudent.username, answered: ansCnt, total: tot, correctCount: correctCnt, wrongCount: wrongCnt, score: score, violations: violationCount, penalty: totalPenaltyPoints, durationUsed: durasiDipakai, time: ts, questionDetails: details }); lastSummaryText = "BUKTI PENGERJAAN KUIS SISWA\nNama: " + activeStudent.fullName + "\nKelas: " + activeKelas + "\nMapel: " + mapelLabel + "\nUsername: " + activeStudent.username + "\nTerjawab: " + ansCnt + "/" + tot + " soal\nDurasi Terpakai: " + durasiDipakai + " / 60:00\nPelanggaran: " + violationCount + " kali\nWaktu: " + ts; document.getElementById("quiz-screen").style.display = "none"; document.getElementById("result-screen").style.display = "block"; document.getElementById("final-player").innerText = activeStudent.fullName + " (" + activeKelas + " • @" + activeStudent.username + ")"; document.getElementById("student-summary-box").innerHTML = "<strong>Nama:</strong> " + activeStudent.fullName + "<br><strong>Kelas:</strong> " + activeKelas + "<br><strong>Mapel:</strong> " + mapelLabel + "<br><strong>Username:</strong> " + activeStudent.username + "<br><strong>Soal Terjawab:</strong> " + ansCnt + " dari " + tot + " soal<br><strong>Durasi Terpakai:</strong> " + durasiDipakai + " (Batas 60:00)<br><strong>Pelanggaran:</strong> " + violationCount + " kali<br><strong>Waktu Kirim:</strong> " + ts + "<br><strong>Status Nilai:</strong> Disimpan untuk penilaian guru"; }
 function copyStudentSummary() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastSummaryText).then(function(){ alert("Bukti pengerjaan berhasil disalin!"); }).catch(function(){ prompt("Salin bukti berikut:", lastSummaryText); }); else prompt("Salin bukti berikut:", lastSummaryText); }
 function downloadStudentSummary() { const blob = new Blob([lastSummaryText], { type: "text/plain;charset=utf-8;" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "bukti_" + (activeStudent.username || "siswa") + ".txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
-function loginStudent() { const u = document.getElementById("login-username").value.trim(); const p = document.getElementById("login-password").value.trim(); const k = document.getElementById("login-kelas").value.trim(); const m = document.getElementById("login-mapel").value.trim(); const t = document.getElementById("login-token").value.trim(); const err = document.getElementById("student-login-error"); if (!u || !p || !k || !t) { err.innerText = "Harap isi username, password, kelas, dan token!"; return; } if (t.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { err.innerText = "Token kelas tidak valid!"; return; } const f = STUDENTS_DATA.find(function(s){ return s.username.toLowerCase() === u.toLowerCase() && s.password === p; }); if (!f) { err.innerText = "Username atau password siswa salah!"; return; } if (f.kelas && f.kelas.trim().toLowerCase() !== k.toLowerCase()) { err.innerText = "Kelas tidak sesuai dengan akun terdaftar (" + f.kelas + ")!"; return; } const filteredBank = filterBankByKelasAndMapel(QUESTIONS_BANK, k, m); if (!filteredBank.length) { err.innerText = "Belum ada soal tersedia."; return; } err.innerText = ""; activeStudent = f; activeKelas = f.kelas || k; activeMapel = m || "Semua Mapel"; currentIdx = 0; score = 0; violationCount = 0; totalPenaltyPoints = 0; lastViolationAt = 0; isStudentQuizActive = true; setQuizLockVisual(true); requestFullscreenMode(); activeSessionQuestions = buildStudentQuizSet(filteredBank); document.getElementById("start-screen").style.display = "none"; document.getElementById("result-screen").style.display = "none"; document.getElementById("quiz-screen").style.display = "block"; document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName + " (" + activeKelas + ")"; document.getElementById("mapel-badge").innerText = "Mapel: " + activeMapel; document.getElementById("violation-badge").innerText = "Pelanggaran: 0"; loadQuestion(); }
-function logoutStudent() { isStudentQuizActive = false; setQuizLockVisual(false); activeStudent = null; activeKelas = ""; activeMapel = ""; activeSessionQuestions = []; violationCount = 0; totalPenaltyPoints = 0; document.getElementById("login-username").value = ""; document.getElementById("login-password").value = ""; document.getElementById("login-kelas").value = ""; document.getElementById("login-token").value = ""; document.getElementById("result-screen").style.display = "none"; document.getElementById("start-screen").style.display = "block"; }
+function loginStudent() { const u = document.getElementById("login-username").value.trim(); const p = document.getElementById("login-password").value.trim(); const k = document.getElementById("login-kelas").value.trim(); const m = document.getElementById("login-mapel").value.trim(); const t = document.getElementById("login-token").value.trim(); const err = document.getElementById("student-login-error"); if (!u || !p || !k || !t) { err.innerText = "Harap isi username, password, kelas, dan token!"; return; } if (t.toUpperCase() !== ACTIVE_TOKEN.toUpperCase()) { err.innerText = "Token kelas tidak valid!"; return; } const f = STUDENTS_DATA.find(function(s){ return s.username.toLowerCase() === u.toLowerCase() && s.password === p; }); if (!f) { err.innerText = "Username atau password siswa salah!"; return; } const stuKelasKey = normalizeJenjangKey(f.kelas); const inpKelasKey = normalizeJenjangKey(k); if (stuKelasKey && inpKelasKey && stuKelasKey !== inpKelasKey) { err.innerText = "Kelas tidak sesuai dengan akun terdaftar (" + f.kelas + ")!"; return; } const filteredBank = filterBankByKelasAndMapel(QUESTIONS_BANK, k, m); if (!filteredBank.length) { err.innerText = "Belum ada soal untuk kelas " + k + (m ? (" / mapel " + m) : "") + "!"; return; } err.innerText = ""; activeStudent = f; activeKelas = f.kelas || k; activeMapel = m || "Semua Mapel"; currentIdx = 0; score = 0; violationCount = 0; totalPenaltyPoints = 0; lastViolationAt = 0; isStudentQuizActive = true; setQuizLockVisual(true); requestFullscreenMode(); activeSessionQuestions = buildStudentQuizSet(filteredBank); document.getElementById("start-screen").style.display = "none"; document.getElementById("result-screen").style.display = "none"; document.getElementById("quiz-screen").style.display = "block"; document.getElementById("student-badge").innerText = "Siswa: " + activeStudent.fullName + " (" + activeKelas + ")"; document.getElementById("mapel-badge").innerText = "Mapel: " + activeMapel; document.getElementById("violation-badge").innerText = "Pelanggaran: 0"; startCountdownTimer(); loadQuestion(); }
+function logoutStudent() { stopCountdownTimer(); isStudentQuizActive = false; setQuizLockVisual(false); activeStudent = null; activeKelas = ""; activeMapel = ""; activeSessionQuestions = []; violationCount = 0; totalPenaltyPoints = 0; document.getElementById("login-username").value = ""; document.getElementById("login-password").value = ""; document.getElementById("login-kelas").value = ""; document.getElementById("login-token").value = ""; document.getElementById("result-screen").style.display = "none"; document.getElementById("start-screen").style.display = "block"; }
 </script>
 </body>
 </html>
